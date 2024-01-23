@@ -57,7 +57,7 @@ class ValidateRpm(Validation, DownloadUtils):
             for project in self.args.projects:
                 execute(f'sudo systemctl start {project}', ".")
                 time.sleep(20)
-                (stdout, stderr, status) = execute(f'sudo systemctl status {project}', ".")
+                (stdout, stderr, status) = execute(f'sudo systemctl status {project}', ".", True, False)
                 if(status == 0):
                     logging.info(stdout)
                 else:
@@ -68,8 +68,16 @@ class ValidateRpm(Validation, DownloadUtils):
         return True
 
     def validation(self) -> bool:
-        test_result, counter = ApiTestCases().test_apis(self.args.projects)
-        if (test_result):
+        (exit_code, stdout, stderr) = execute("find ./ -type d -iname 'opensearch-plugin'", "/usr", True, False)
+        logging.info(f"opensearch path- {stdout}")
+        if (stdout):
+            (exit_code, stdout, stderr) = execute("./opensearch-plugin list", stdout.replace("opensearch-plugin", ""), True, False)
+            allow_without_security = self.args.allow_without_security and "opensearch-security" not in stdout
+        else:
+            allow_without_security = False
+        logging.info(f"allow_without_security set to: {allow_without_security}")
+        test_result, counter = ApiTestCases().test_apis(self.args.projects, allow_without_security)
+        if(test_result):
             logging.info(f'All tests Pass : {counter}')
             return True
         else:
