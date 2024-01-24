@@ -72,7 +72,7 @@ class ValidateRpm(Validation, DownloadUtils):
             (status, stdout, stderr) = execute("find /usr/ -type f -iname 'opensearch-plugin'", ".", True, False)
             logging.info(f"opensearch path- {stdout}")
             if (stdout):
-                (status, stdout, stderr) = execute("./opensearch-plugin list", stdout.replace("opensearch-plugin", ""), True, False)
+                (status, stdout, stderr) = execute("./opensearch-plugin list", stdout.replace("opensearch-plugin", "").rstrip("\n"), True, False)
                 self.args.allow_without_security = "opensearch-security" in stdout
 
         logging.info(f"allow_without_security set to: {self.args.allow_without_security}")
