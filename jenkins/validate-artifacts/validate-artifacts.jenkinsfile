@@ -183,7 +183,7 @@ pipeline {
                                                         "osd-build-number": "$OSD_BUILD_NUMBER",
                                                         projects: "$PROJECTS",
                                                         "$OPTIONAL_ARGS" : "",
-                                                        "allow-without-security" : ""
+                                                        "allow-without-security"
 
                                                     )
                                                 }
@@ -216,7 +216,7 @@ pipeline {
                                                                     "osd-build-number": "$OSD_BUILD_NUMBER",
                                                                     projects: "$PROJECTS",
                                                                     "artifact-type": "$ARTIFACT_TYPE",
-                                                                    "allow-without-security" : ""
+                                                                    "allow-without-security"
                                                                 )
                                                             }
                                                             else {
