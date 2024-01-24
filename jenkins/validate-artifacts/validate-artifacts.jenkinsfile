@@ -94,10 +94,10 @@ pipeline {
             description: 'Determine the artifact type among staging or production.',
             choices: ['production', 'staging'],
         )
-        booleanParam(
+        choice(
             name: 'TEST_WITHOUT_SECURITY',
             description: 'Allow validation even when the security plugin is absent',
-            defaultValue: true
+            choices: ['allow-without-security', 'with-security'],
         )
 
     }
@@ -183,8 +183,7 @@ pipeline {
                                                         "osd-build-number": "$OSD_BUILD_NUMBER",
                                                         projects: "$PROJECTS",
                                                         "$OPTIONAL_ARGS" : "",
-                                                        "allow-without-security"
-
+                                                        "$TEST_WITHOUT_SECURITY" : ""
                                                     )
                                                 }
                                             } catch (e) {
@@ -216,7 +215,7 @@ pipeline {
                                                                     "osd-build-number": "$OSD_BUILD_NUMBER",
                                                                     projects: "$PROJECTS",
                                                                     "artifact-type": "$ARTIFACT_TYPE",
-                                                                    "allow-without-security"
+                                                                    "$TEST_WITHOUT_SECURITY" : ""
                                                                 )
                                                             }
                                                             else {
