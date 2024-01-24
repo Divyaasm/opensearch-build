@@ -221,8 +221,10 @@ pipeline {
                                                             }
                                                             else {
 
-                                                                validateArtifacts("file-path": "$FILEPATH")
-
+                                                                validateArtifacts(
+                                                                    "file-path": "$FILEPATH",
+                                                                    "allow-without-security": params.TEST_WITHOUT_SECURITY
+                                                                )
                                                             }
                                                         }
                                                     } catch (e) {
