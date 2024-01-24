@@ -67,7 +67,7 @@ class ValidateTar(Validation, DownloadUtils):
 
     def validation(self) -> bool:
         if self.args.allow_without_security:
-            (status, stdout, stderr) = execute('./bin/opensearch-' + self.args.version + '/bin/opensearch-plugin list', ".", True, False)
+            (status, stdout, stderr) = execute(f'./bin/opensearch-{self.args.version}/bin/opensearch-plugin list', ".", True, False)
             logging.info(self.args.allow_without_security)
             if (stdout):
                 self.args.allow_without_security = "opensearch-security" in stdout

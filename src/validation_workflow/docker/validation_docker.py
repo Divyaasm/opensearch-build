@@ -86,8 +86,7 @@ class ValidateDocker(Validation):
                 if self.check_cluster_readiness():
                     # STEP 4 . OS, OSD API validation
                     if self.args.allow_without_security:
-                        error_code, stdout, stderr = execute(
-                            f'docker ps --filter "ancestor={self.args.OS_image}" --format "{{{{.ID}}}}"', ".", True, False)
+                        error_code, stdout, stderr = execute(f'docker ps --filter "ancestor= {self.args.OS_image}" --format "{{{{.ID}}}}"', ".", True, False)
                         container_id = stdout.strip().split('\n')[0]
                         error_code, stdout, stderr = execute(f'docker exec -it {container_id} /bin/bash', ".", True, False)
                         if not stderr:
