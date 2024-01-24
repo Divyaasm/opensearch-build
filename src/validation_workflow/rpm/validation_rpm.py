@@ -68,15 +68,15 @@ class ValidateRpm(Validation, DownloadUtils):
         return True
 
     def validation(self) -> bool:
-        (exit_code, stdout, stderr) = execute("find ./ -type d -iname 'opensearch-plugin'", "/usr", True, False)
-        logging.info(f"opensearch path- {stdout}")
-        if (stdout):
-            (exit_code, stdout, stderr) = execute("./opensearch-plugin list", stdout.replace("opensearch-plugin", ""), True, False)
-            allow_without_security = self.args.allow_without_security and "opensearch-security" not in stdout
-        else:
-            allow_without_security = False
-        logging.info(f"allow_without_security set to: {allow_without_security}")
-        test_result, counter = ApiTestCases().test_apis(self.args.projects, allow_without_security)
+        if self.args.allow_without_security:
+            (exit_code, stdout, stderr) = execute("find ./ -type d -iname 'opensearch-plugin'", "/usr", True, False)
+            logging.info(f"opensearch path- {stdout}")
+            if (stdout):
+                (exit_code, stdout, stderr) = execute("./opensearch-plugin list", stdout.replace("opensearch-plugin", ""), True, False)
+                self.args.allow_without_security = "opensearch-security" in stdout
+
+        logging.info(f"allow_without_security set to: {self.args.allow_without_security}")
+        test_result, counter = ApiTestCases().test_apis(self.args.projects, self.args.allow_without_security)
         if(test_result):
             logging.info(f'All tests Pass : {counter}')
             return True

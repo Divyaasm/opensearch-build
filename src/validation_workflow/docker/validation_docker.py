@@ -15,6 +15,7 @@ from typing import Any
 
 import requests
 
+from system.execute import execute
 from system.temporary_directory import TemporaryDirectory
 from validation_workflow.api_request import ApiTest
 from validation_workflow.api_test_cases import ApiTestCases
@@ -84,10 +85,16 @@ class ValidateDocker(Validation):
 
                 if self.check_cluster_readiness():
                     # STEP 4 . OS, OSD API validation
-                    command = "docker ps"
-                    get_id = subprocess.run(command, shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-                    logging.info(f'Running docker containers list {get_id.stdout}')
-                    _test_result, _counter = ApiTestCases().test_apis(self.args.projects)
+                    if self.args.allow_without_security:
+                        error_code, stdout, stderr = execute(
+                            f'docker ps --filter "ancestor={self.args.OS_image}" --format "{{{{.ID}}}}"', ".", True, False)
+                        container_id = stdout.strip().split('\n')[0]
+                        error_code, stdout, stderr = execute(f'docker exec -it {container_id} /bin/bash', ".", True, False)
+                        if not stderr:
+                            (status, stdout, stderr) = execute('./bin/opensearch-' + self.args.version + 'list', ".", True, False)
+                            self.args.allow_without_security = "opensearch-security" in stdout
+
+                    _test_result, _counter = ApiTestCases().test_apis(self.args.projects, self.args.allow_without_security)
 
                     if _test_result:
                         logging.info(f'All tests Pass : {_counter}')

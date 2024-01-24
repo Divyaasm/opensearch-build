@@ -66,15 +66,12 @@ class ValidateTar(Validation, DownloadUtils):
         return True
 
     def validation(self) -> bool:
-        (status, stdout, stderr) = execute('./bin/opensearch-' + self.args.version + 'list', ".", True, False)
-        logging.info(self.args.allow_without_security)
-        allow_without_security = False
         if self.args.allow_without_security:
-            allow_without_security = True
-            if not stderr and "opensearch-security" in stdout:
-                allow_without_security = False
+            (status, stdout, stderr) = execute('./bin/opensearch-' + self.args.version + 'list', ".", True, False)
+            logging.info(self.args.allow_without_security)
+            self.args.allow_without_security = "opensearch-security" in stdout
 
-        test_result, counter = ApiTestCases().test_apis(self.args.projects, allow_without_security)
+        test_result, counter = ApiTestCases().test_apis(self.args.projects, self.args.allow_without_security)
         if (test_result):
             logging.info(f'All tests Pass : {counter}')
         else:
