@@ -222,7 +222,7 @@ pipeline {
 
                                                                 validateArtifacts(
                                                                     "file-path": "$FILEPATH",
-                                                                    "allow-without-security": params.TEST_WITHOUT_SECURITY
+                                                                    "$TEST_WITHOUT_SECURITY" : ""
                                                                 )
                                                             }
                                                         }
