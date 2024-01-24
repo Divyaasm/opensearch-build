@@ -182,7 +182,8 @@ pipeline {
                                                         "os-build-number": "$OS_BUILD_NUMBER",
                                                         "osd-build-number": "$OSD_BUILD_NUMBER",
                                                         projects: "$PROJECTS",
-                                                        "$OPTIONAL_ARGS" : ""
+                                                        "$OPTIONAL_ARGS" : "",
+                                                        "$TEST_WITHOUT_SECURITY" : ""
                                                     )
                                                 }
                                             } catch (e) {
