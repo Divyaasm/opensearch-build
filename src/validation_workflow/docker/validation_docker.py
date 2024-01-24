@@ -84,6 +84,9 @@ class ValidateDocker(Validation):
 
                 if self.check_cluster_readiness():
                     # STEP 4 . OS, OSD API validation
+                    command = "docker ps"
+                    get_id = subprocess.run(command, shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+                    logging.info(f'Running docker containers list {get_id.stdout}')
                     _test_result, _counter = ApiTestCases().test_apis(self.args.projects)
 
                     if _test_result:
