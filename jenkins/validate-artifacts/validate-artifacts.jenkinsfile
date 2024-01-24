@@ -216,7 +216,7 @@ pipeline {
                                                                     "osd-build-number": "$OSD_BUILD_NUMBER",
                                                                     projects: "$PROJECTS",
                                                                     "artifact-type": "$ARTIFACT_TYPE",
-                                                                    "allow-without-security": params.TEST_WITHOUT_SECURITY
+                                                                    "allow-without-security" : ""
                                                                 )
                                                             }
                                                             else {
