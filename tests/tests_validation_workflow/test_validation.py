@@ -67,14 +67,15 @@ class TestValidation(unittest.TestCase):
         mock_validation = ValidateTar(mock_validation_args.return_value)
         with patch('system.execute.execute') as mock_execute:
             mock_execute.return_value = (0, 'opensearch-plugin', None)
-            (status_1, stdout_1, stderr_1) = mock_execute(f'find /tmp/tutugujj/ -type f -iname \'opensearch-plugin\'', ".", True, False)
+            (status_1, stdout_1, stderr_1) = mock_execute("find /tmp/tutugujj/ -type f -iname \'opensearch-plugin\'", ".", True, False)
 
             if stdout_1:
+                self.assertTrue(stdout_1)
                 mock_execute.return_value = (0, 'opensearch-security', None)
                 (status_2, stdout_2, stderr_2) = mock_execute("./opensearch-plugin list", stdout_1.replace("opensearch-plugin", "").rstrip("\n"), True, False)
-                return "opensearch-security" in stdout_2
-
-            raise Exception("Couldn't fetch the path to security plugin")
+                return "opensearch-security" in stdout_2  # type: ignore
+            else:
+                raise Exception("Couldn't fetch the path to plugin folder")
 
         result = mock_validation.is_allow_with_security('/tmp/tutugujj/')
         self.assertTrue(result)
@@ -84,14 +85,15 @@ class TestValidation(unittest.TestCase):
         mock_validation = ValidateTar(mock_validation_args.return_value)
         with patch('system.execute.execute') as mock_execute:
             mock_execute.return_value = (0, 'opensearch-plugin', None)
-            (status_1, stdout_1, stderr_1) = mock_execute(f'find /tmp/tutugujj/ -type f -iname \'opensearch-plugin\'', ".", True, False)
+            (status_1, stdout_1, stderr_1) = mock_execute("find /tmp/tutugujj/ -type f -iname \'opensearch-plugin\'", ".", True, False)
 
             if stdout_1:
+                self.assertTrue(stdout_1)
                 mock_execute.return_value = (0, 'opensearch', None)
                 (status_2, stdout_2, stderr_2) = mock_execute("./opensearch-plugin list", stdout_1.replace("opensearch-plugin", "").rstrip("\n"), True, False)
-                return "opensearch-security" in stdout_2
-
-            raise Exception("Couldn't fetch the path to security plugin")
+                return "opensearch-security" in stdout_2  # type: ignore
+            else:
+                raise Exception("Couldn't fetch the path to plugin folder")
 
         result = mock_validation.is_allow_with_security('/tmp/tutugujj/')
         self.assertTrue(result)
@@ -102,13 +104,8 @@ class TestValidation(unittest.TestCase):
         with self.assertRaises(Exception) as ctx:
             with patch('system.execute.execute') as mock_execute:
                 mock_execute.return_value = (0, '', None)
-                (status_1, stdout_1, stderr_1) = mock_execute(f'find /tmp/tutugujj/ -type f -iname \'opensearch-plugin\'', ".", True, False)
-
-                if stdout_1:
-                    mock_execute.return_value = (0, 'opensearch', None)
-                    (status_2, stdout_2, stderr_2) = mock_execute("./opensearch-plugin list", stdout_1.replace("opensearch-plugin", "").rstrip("\n"), True, False)
-                    return "opensearch-security" in stdout_2
-                raise Exception("Couldn't fetch the path to security plugin")
+                (status_1, stdout_1, stderr_1) = mock_execute("find /tmp/tutugujj/ -type f -iname \'opensearch-plugin\'", ".", True, False)
+                raise Exception("Couldn't fetch the path to plugin folder")
 
             mock_validation.is_allow_with_security('/tmp/tutugujj/')
-        self.assertEqual(str(ctx.exception), "Couldn't fetch the path to security plugin")
+        self.assertEqual(str(ctx.exception), "Couldn't fetch the path to plugin folder")
