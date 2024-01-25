@@ -61,3 +61,54 @@ class TestValidation(unittest.TestCase):
 
         result = mock_validation.copy_artifact(url, "tmp/tthcdhfh/")
         self.assertTrue(result)
+
+    @patch('validation_workflow.tar.validation_tar.ValidationArgs')
+    def test_is_allow_with_security_true(self, mock_validation_args: Mock) -> None:
+        mock_validation = ValidateTar(mock_validation_args.return_value)
+        with patch('system.execute.execute') as mock_execute:
+            mock_execute.return_value = (0, 'opensearch-plugin', None)
+            (status_1, stdout_1, stderr_1) = mock_execute(f'find /tmp/tutugujj/ -type f -iname \'opensearch-plugin\'', ".", True, False)
+
+            if stdout_1:
+                mock_execute.return_value = (0, 'opensearch-security', None)
+                (status_2, stdout_2, stderr_2) = mock_execute("./opensearch-plugin list", stdout_1.replace("opensearch-plugin", "").rstrip("\n"), True, False)
+                return "opensearch-security" in stdout_2
+
+            raise Exception("Couldn't fetch the path to security plugin")
+
+        result = mock_validation.is_allow_with_security('/tmp/tutugujj/')
+        self.assertTrue(result)
+
+    @patch('validation_workflow.tar.validation_tar.ValidationArgs')
+    def test_is_allow_with_security_false(self, mock_validation_args: Mock) -> None:
+        mock_validation = ValidateTar(mock_validation_args.return_value)
+        with patch('system.execute.execute') as mock_execute:
+            mock_execute.return_value = (0, 'opensearch-plugin', None)
+            (status_1, stdout_1, stderr_1) = mock_execute(f'find /tmp/tutugujj/ -type f -iname \'opensearch-plugin\'', ".", True, False)
+
+            if stdout_1:
+                mock_execute.return_value = (0, 'opensearch', None)
+                (status_2, stdout_2, stderr_2) = mock_execute("./opensearch-plugin list", stdout_1.replace("opensearch-plugin", "").rstrip("\n"), True, False)
+                return "opensearch-security" in stdout_2
+
+            raise Exception("Couldn't fetch the path to security plugin")
+
+        result = mock_validation.is_allow_with_security('/tmp/tutugujj/')
+        self.assertTrue(result)
+
+    @patch('validation_workflow.tar.validation_tar.ValidationArgs')
+    def test_is_allow_with_security_raise_exception(self, mock_validation_args: Mock) -> None:
+        mock_validation = ValidateTar(mock_validation_args.return_value)
+        with self.assertRaises(Exception) as ctx:
+            with patch('system.execute.execute') as mock_execute:
+                mock_execute.return_value = (0, '', None)
+                (status_1, stdout_1, stderr_1) = mock_execute(f'find /tmp/tutugujj/ -type f -iname \'opensearch-plugin\'', ".", True, False)
+
+                if stdout_1:
+                    mock_execute.return_value = (0, 'opensearch', None)
+                    (status_2, stdout_2, stderr_2) = mock_execute("./opensearch-plugin list", stdout_1.replace("opensearch-plugin", "").rstrip("\n"), True, False)
+                    return "opensearch-security" in stdout_2
+                raise Exception("Couldn't fetch the path to security plugin")
+
+            mock_validation.is_allow_with_security('/tmp/tutugujj/')
+        self.assertEqual(str(ctx.exception), "Couldn't fetch the path to security plugin")
