@@ -41,14 +41,11 @@ class Validation(ABC):
 
     def is_allow_with_security(self, work_dir: str) -> bool:
 
-        (status, stdout, stderr) = execute(f'find {work_dir} -type f -iname \'opensearch-plugin\'', ".",
-                                           True, False)
-        logging.info(f"opensearch path- {stdout}")
+        (status, stdout, stderr) = execute(f'find {work_dir} -type f -iname \'opensearch-plugin\'', ".", True, False)
         if (stdout):
-            (status, stdout, stderr) = execute("./opensearch-plugin list",
-                                               stdout.replace("opensearch-plugin", "").rstrip("\n"), True, False)
-            return "opensearch-security" in stdout
-        return True
+            (status2, stdout2, stderr2) = execute("./opensearch-plugin list", stdout.replace("opensearch-plugin", "").rstrip("\n"), True, False)
+            return "opensearch-security" in stdout2
+        raise Exception("Couldn't fetch the path to security plugin")
 
     def run(self) -> Any:
         try:

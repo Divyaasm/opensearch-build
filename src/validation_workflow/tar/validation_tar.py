@@ -69,7 +69,6 @@ class ValidateTar(Validation, DownloadUtils):
         if self.args.allow_without_security:
             self.args.allow_without_security = self.is_allow_with_security(str(self.tmp_dir.path))
 
-        logging.info(f"allow_without_security set to: {self.args.allow_without_security}")
         test_result, counter = ApiTestCases().test_apis(self.args.projects, self.args.allow_without_security)
         if (test_result):
             logging.info(f'All tests Pass : {counter}')
