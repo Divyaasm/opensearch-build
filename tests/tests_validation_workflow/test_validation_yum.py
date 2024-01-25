@@ -110,9 +110,25 @@ class TestValidationYum(unittest.TestCase):
 
     @patch('validation_workflow.yum.validation_yum.ValidationArgs')
     @patch('validation_workflow.yum.validation_yum.ApiTestCases')
+    def test_validation_with_security_parameter(self, mock_test_apis: Mock, mock_validation_args: Mock) -> None:
+        # Set up mock objects
+        mock_validation_args.return_value.version = '2.3.0'
+        mock_validation_args.return_value.allow_without_security = True
+        mock_test_apis_instance = mock_test_apis.return_value
+        mock_test_apis_instance.test_apis.return_value = (True, 4)
+
+        with patch.object(self.call_methods, 'is_allow_with_security') as mock_security:
+            result = self.call_methods.validation()
+            mock_test_apis.assert_called_once()
+        self.assertTrue(result)
+        mock_security.assert_called_once()
+
+    @patch('validation_workflow.yum.validation_yum.ValidationArgs')
+    @patch('validation_workflow.yum.validation_yum.ApiTestCases')
     def test_validation(self, mock_test_apis: Mock, mock_validation_args: Mock) -> None:
         # Set up mock objects
         mock_validation_args.return_value.version = '2.3.0'
+        mock_validation_args.return_value.allow_without_security = False
         mock_test_apis_instance = mock_test_apis.return_value
         mock_test_apis_instance.test_apis.return_value = (True, 4)
 
@@ -131,6 +147,7 @@ class TestValidationYum(unittest.TestCase):
     def test_failed_testcases(self, mock_test_apis: Mock, mock_validation_args: Mock) -> None:
         # Set up mock objects
         mock_validation_args.return_value.version = '2.3.0'
+        mock_validation_args.return_value.allow_without_security = False
         mock_test_apis_instance = mock_test_apis.return_value
         mock_test_apis_instance.test_apis.return_value = (True, 1)
 

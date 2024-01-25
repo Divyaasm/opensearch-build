@@ -106,8 +106,24 @@ class TestValidateTar(unittest.TestCase):
 
     @patch('validation_workflow.tar.validation_tar.ValidationArgs')
     @patch('validation_workflow.tar.validation_tar.ApiTestCases')
+    def test_validation_with_security_parameter(self, mock_test_apis: Mock, mock_validation_args: Mock) -> None:
+        # Set up mock objects
+        mock_validation_args.return_value.version = '2.3.0'
+        mock_validation_args.return_value.allow_without_security = True
+        mock_test_apis_instance = mock_test_apis.return_value
+        mock_test_apis_instance.test_apis.return_value = (True, 4)
+
+        with patch.object(self.call_methods, 'is_allow_with_security') as mock_security:
+            result = self.call_methods.validation()
+            mock_test_apis.assert_called_once()
+        self.assertTrue(result)
+        mock_security.assert_called_once()
+
+    @patch('validation_workflow.tar.validation_tar.ValidationArgs')
+    @patch('validation_workflow.tar.validation_tar.ApiTestCases')
     def test_validation(self, mock_test_apis: Mock, mock_validation_args: Mock) -> None:
         mock_validation_args.return_value.version = '2.3.0'
+        mock_validation_args.return_value.allow_without_security = False
         mock_test_apis_instance = mock_test_apis.return_value
         mock_test_apis_instance.test_apis.return_value = (True, 3)
 
@@ -123,15 +139,18 @@ class TestValidateTar(unittest.TestCase):
     def test_failed_testcases(self, mock_test_apis: Mock, mock_validation_args: Mock) -> None:
         # Set up mock objects
         mock_validation_args.return_value.version = '2.3.0'
+        mock_validation_args.return_value.allow_without_security = False
         mock_test_apis_instance = mock_test_apis.return_value
-        mock_test_apis_instance.test_apis.return_value = (True, 1)
+        mock_test_apis_instance.test_apis.return_value = (False, 1)
 
         # Create instance of ValidateTar class
         validate_tar = ValidateTar(mock_validation_args.return_value)
 
         # Call validation method and assert the result
-        validate_tar.validation()
-        self.assertRaises(Exception, "Not all tests Pass : 1")
+        with self.assertRaises(Exception) as context:
+            validate_tar.validation()
+
+        self.assertEqual(str(context.exception), 'Not all tests Pass : 1')
 
         # Assert that the mock methods are called as expected
         mock_test_apis.assert_called_once()

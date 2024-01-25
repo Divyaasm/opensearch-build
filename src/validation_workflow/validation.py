@@ -45,7 +45,7 @@ class Validation(ABC):
         if (stdout):
             (status2, stdout2, stderr2) = execute("./opensearch-plugin list", stdout.replace("opensearch-plugin", "").rstrip("\n"), True, False)
             return "opensearch-security" in stdout2
-        raise Exception("Couldn't fetch the path to security plugin")
+        raise Exception("Couldn't fetch the path to plugin folder")
 
     def run(self) -> Any:
         try:

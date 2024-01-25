@@ -69,7 +69,7 @@ class TestValidationArgs(unittest.TestCase):
 
     @patch("argparse._sys.argv", [VALIDATION_PY, "--version", "1.3.6", "--distribution", "rpm", "--artifact-type", "staging", "--os-build-number", "1234", "--osd-build-number", "2312", "--allow-without-security"])
     def test_allow_without_security(self) -> None:
-        self.assertEqual(ValidationArgs().allow-without-security, True)
+        self.assertEqual(ValidationArgs().allow_without_security, True)
 
     @patch("argparse._sys.argv", [VALIDATION_PY, "--version", "1.3.0", "--projects", "opensearch"])
     def test_set_projects(self) -> None:

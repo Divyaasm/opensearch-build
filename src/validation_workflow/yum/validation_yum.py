@@ -70,7 +70,7 @@ class ValidateYum(Validation, DownloadUtils):
 
     def validation(self) -> bool:
         if self.args.allow_without_security:
-            self.args.allow_without_security = self.is_allow_with_security(str(self.tmp_dir.path))
+            self.args.allow_without_security = self.is_allow_with_security("/usr/")
 
         logging.info(f"allow_without_security set to: {self.args.allow_without_security}")
         test_result, counter = ApiTestCases().test_apis(self.args.projects, self.args.allow_without_security)
