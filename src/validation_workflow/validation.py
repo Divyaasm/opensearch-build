@@ -11,6 +11,7 @@ import shutil
 from abc import ABC, abstractmethod
 from typing import Any
 
+from system.execute import execute
 from validation_workflow.download_utils import DownloadUtils
 from validation_workflow.validation_args import ValidationArgs
 
@@ -37,6 +38,17 @@ class Validation(ABC):
             return True
         else:
             raise Exception("Provided path for local artifacts does not exist")
+
+    def is_allow_with_security(self, work_dir: str) -> bool:
+
+        (status, stdout, stderr) = execute(f'find {work_dir} -type f -iname \'opensearch-plugin\'', ".",
+                                           True, False)
+        logging.info(f"opensearch path- {stdout}")
+        if (stdout):
+            (status, stdout, stderr) = execute("./opensearch-plugin list",
+                                               stdout.replace("opensearch-plugin", "").rstrip("\n"), True, False)
+            return "opensearch-security" in stdout
+        return True
 
     def run(self) -> Any:
         try:

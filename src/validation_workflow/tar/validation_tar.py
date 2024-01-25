@@ -66,11 +66,8 @@ class ValidateTar(Validation, DownloadUtils):
         return True
 
     def validation(self) -> bool:
-        (status, stdout, stderr) = execute(f'find {self.tmp_dir.path} -type f -iname \'opensearch-plugin\'', ".", True, False)
-        logging.info(f"opensearch path- {stdout}")
-        if (stdout):
-            (status, stdout, stderr) = execute("./opensearch-plugin list", stdout.replace("opensearch-plugin", "").rstrip("\n"), True, False)
-            self.args.allow_without_security = "opensearch-security" in stdout
+        if self.args.allow_without_security:
+            self.args.allow_without_security = self.is_allow_with_security(str(self.tmp_dir.path))
 
         logging.info(f"allow_without_security set to: {self.args.allow_without_security}")
         test_result, counter = ApiTestCases().test_apis(self.args.projects, self.args.allow_without_security)
