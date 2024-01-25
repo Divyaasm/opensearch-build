@@ -37,6 +37,8 @@ class ApiTestCases:
         if ("opensearch-dashboards" in projects):
             test_apis.append(['http://localhost:5601/api/status', 200, ''])
 
+        logging.info("Inside api-tests")
+
         for test_api in test_apis:
             request_url = test_api.__getitem__(0)
             success_status_code = test_api.__getitem__(1)
