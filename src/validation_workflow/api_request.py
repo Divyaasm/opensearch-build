@@ -32,7 +32,7 @@ class ApiTest:
         self.apiHeaders.update(self.apiHeaders_content_type)
 
     def api_get(self) -> Any:
-        password = 'myStrongPassword123!' if get_password() == 'myStrongPassword123!' else None
+        password = 'myStrongPassword123!' if get_password("2.12.0") == 'myStrongPassword123!' else None
         logging.info("password:" + password)
 
         response = requests.get(self.request_url, headers=self.apiHeaders, verify=False)
