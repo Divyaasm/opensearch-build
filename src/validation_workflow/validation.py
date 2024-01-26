@@ -41,9 +41,9 @@ class Validation(ABC):
 
     def is_allow_with_security(self, work_dir: str) -> bool:
 
-        (status_1, stdout_1, stderr_1) = execute(f'find {work_dir} -type f -iname \'opensearch-plugin\'', ".", True, False)
-        if (stdout_1):
-            (status_2, stdout_2, stderr_2) = execute("./opensearch-plugin list", stdout_1.replace("opensearch-plugin", "").rstrip("\n"), True, False)
+        (_, stdout_1, _) = execute(f'find {work_dir} -type f -iname \'opensearch-plugin\'', ".", True, False)
+        if stdout_1:
+            (_, stdout_2, _) = execute("./opensearch-plugin list", stdout_1.replace("opensearch-plugin", "").rstrip("\n"), True, False)
             return "opensearch-security" in stdout_2
         else:
             raise Exception("Couldn't fetch the path to plugin folder")
