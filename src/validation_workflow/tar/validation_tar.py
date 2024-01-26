@@ -57,7 +57,7 @@ class ValidateTar(Validation, DownloadUtils):
         try:
             if self.args.allow_without_security:
                 self.args.allow_without_security = self.is_allow_with_security(str(self.tmp_dir.path))
-                self.os_process.start(f'OPENSEARCH_INITIAL_ADMIN_PASSWORD=myStrongPassword123! && opensearch-tar-install.sh', os.path.join(self.tmp_dir.path, "opensearch"))
+                self.os_process.start(f'export OPENSEARCH_INITIAL_ADMIN_PASSWORD=myStrongPassword123! && ./opensearch-tar-install.sh', os.path.join(self.tmp_dir.path, "opensearch"))
             time.sleep(85)
             if ("opensearch-dashboards" in self.args.projects):
                 self.osd_process.start(os.path.join(str(self.tmp_dir.path), "opensearch-dashboards", "bin", "opensearch-dashboards"), ".")
