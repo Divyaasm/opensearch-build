@@ -7,7 +7,7 @@
 # compatible open source license.
 
 from typing import Any
-from test_workflow.integ_test. utils.version_utils import get_password
+from test_workflow.integ_test.utils.version_utils import get_password
 
 import logging
 import requests
