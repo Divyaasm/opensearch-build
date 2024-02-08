@@ -165,8 +165,6 @@ class ValidationArgs:
             return 'yum'
         elif (any("rpm" in value for value in file_path.values())):
             return 'rpm'
-        elif (any("zip" in value for value in file_path.values())):
-            return 'zip'
         else:
             raise Exception("Provided distribution is not supported")
 

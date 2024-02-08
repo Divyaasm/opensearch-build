@@ -70,7 +70,7 @@ class TestValidation(unittest.TestCase):
         mock_validation_args.projects.return_value = ["opensearch"]
         mock_validation = ValidateTar(mock_validation_args.return_value)
 
-        result = mock_validation.check_for_security_plugin("/tmp/tmkuiuo/opensearch", "zip")
+        result = mock_validation.check_for_security_plugin("/tmp/tmkuiuo/opensearch", "tar")
 
         self.assertTrue(result)
 
