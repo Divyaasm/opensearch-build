@@ -34,6 +34,7 @@ class ValidateYum(Validation, DownloadUtils):
                     self.copy_artifact(self.args.file_path.get(project), str(self.tmp_dir.path))
                 else:
                     self.args.version = self.get_version(self.args.file_path.get(project))
+                    logging.info(self.args.version)
                     self.check_url(self.args.file_path.get(project))
 
             else:
