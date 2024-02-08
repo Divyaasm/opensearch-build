@@ -43,7 +43,7 @@ class Validation(ABC):
 
     def check_for_security_plugin(self, work_dir: str, distribution: str) -> bool:
         pwd = os.getcwd()
-        path = os.path.exists(os.path.join(workdir, "plugins", "opensearch-security"))
+        path = os.path.exists(os.path.join(work_dir, "plugins", "opensearch-security"))
         logging.info(pwd, path)
         (status, plugins_list, error) = execute(f"{list_cmd} plugins", work_dir, True, False)
         return "opensearch-security" in plugins_list
