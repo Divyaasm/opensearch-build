@@ -37,7 +37,7 @@ class BenchmarkTestRunnerOpenSearch(BenchmarkTestRunner):
         return "https://github.com/opensearch-project/opensearch-cluster-cdk.git"
 
     def run_tests(self) -> None:
-        config = yaml.safe_load(self.args.config)
+        # config = yaml.safe_load(self.args.config)
 
         with TemporaryDirectory(keep=self.args.keep, chdir=True) as work_dir:
             current_workspace = os.path.join(work_dir.name, "opensearch-cluster-cdk")
