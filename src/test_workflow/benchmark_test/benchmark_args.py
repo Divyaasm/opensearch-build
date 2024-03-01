@@ -18,6 +18,7 @@ from test_workflow.json_args import JsonArgs
 # Contains the arguments required to run a perf test.
 class BenchmarkArgs:
     bundle_manifest: IO
+    cluster_endpoint: str
     distribution_url: str
     distribution_version: str
     stack_suffix: str
@@ -54,6 +55,8 @@ class BenchmarkArgs:
         parser = argparse.ArgumentParser(description="Test an OpenSearch Bundle")
         parser.add_argument("--bundle-manifest", type=argparse.FileType("r"), help="Bundle Manifest file.")
         parser.add_argument("--distribution-url", dest="distribution_url", help="Link to a downloadable OpenSearch tarball.")
+        parser.add_argument("--cluster-endpoint", dest="cluster_endpoint",
+                            help="Load balancer url for benchmark testing")
         parser.add_argument("--distribution-version", dest="distribution_version",
                             help="provide OpenSearch version if using distribution-url param.")
         parser.add_argument("--suffix", dest="suffix", help="Suffix to be added to stack name for performance test")
@@ -121,6 +124,7 @@ class BenchmarkArgs:
         args = parser.parse_args()
         self.bundle_manifest = args.bundle_manifest if args.bundle_manifest else None
         self.distribution_url = args.distribution_url if args.distribution_url else None
+        self.cluster_endpoint = args.cluster_endpoint if args.cluster_endpoint else None
         self.distribution_version = args.distribution_version if args.distribution_version else None
         self.stack_suffix = args.suffix if args.suffix else None
         self.config = args.config

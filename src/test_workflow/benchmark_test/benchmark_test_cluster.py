@@ -31,7 +31,6 @@ class BenchmarkTestCluster:
     output_file: str
     params: str
     is_endpoint_public: bool
-    cluster_endpoint: str
     cluster_endpoint_with_port: str
 
     """
@@ -50,7 +49,7 @@ class BenchmarkTestCluster:
         self.current_workspace = current_workspace
         self.args = args
         self.output_file = "output.json"
-        role = config["Constants"]["Role"]
+        """role = config["Constants"]["Role"]
         params_dict = self.setup_cdk_params(config)
         params_list = []
         for key, value in params_dict.items():
@@ -69,33 +68,33 @@ class BenchmarkTestCluster:
             f" -c assume-role-credentials:writeIamRoleName={role} -c assume-role-credentials:readIamRoleName={role} "
         )
         self.params = "".join(params_list) + role_params
+        """
         self.is_endpoint_public = False
-        self.cluster_endpoint = None
         self.cluster_endpoint_with_port = None
         self.stack_name = f"opensearch-infra-stack-{self.args.stack_suffix}"
         if self.manifest:
             self.stack_name += f"-{self.manifest.build.id}-{self.manifest.build.architecture}"
 
     def start(self) -> None:
-        command = f"npm install && cdk deploy \"*\" {self.params} --outputs-file {self.output_file}"
+        if self.args.cluster_endpoint is None:
+            command = f"npm install && cdk deploy \"*\" {self.params} --outputs-file {self.output_file}"
 
-        logging.info(f'Executing "{command}" in {os.getcwd()}')
-        subprocess.check_call(command, cwd=os.getcwd(), shell=True)
-        with open(self.output_file, "r") as read_file:
-            load_output = json.load(read_file)
-            self.create_endpoint(load_output)
+            logging.info(f'Executing "{command}" in {os.getcwd()}')
+            subprocess.check_call(command, cwd=os.getcwd(), shell=True)
+            with open(self.output_file, "r") as read_file:
+                load_output = json.load(read_file)
+                self.create_endpoint(load_output)
         self.wait_for_processing()
+        self.cluster_endpoint_with_port = "".join([self.args.cluster_endpoint, ":", str(self.port)])
 
     def create_endpoint(self, cdk_output: dict) -> None:
-        loadbalancer_url = cdk_output[self.stack_name].get('loadbalancerurl', None)
-        if loadbalancer_url is None:
+        self.args.cluster_endpoint = cdk_output[self.stack_name].get('loadbalancerurl', None)
+        if self.args.cluster_endpoint is None:
             raise RuntimeError("Unable to fetch the cluster endpoint from cdk output")
-        self.cluster_endpoint = loadbalancer_url
-        self.cluster_endpoint_with_port = "".join([loadbalancer_url, ":", str(self.port)])
 
     @property
     def endpoint(self) -> str:
-        return self.cluster_endpoint
+        return self.args.cluster_endpoint
 
     @property
     def endpoint_with_port(self) -> str:
