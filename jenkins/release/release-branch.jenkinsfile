@@ -63,7 +63,7 @@ pipeline {
                         }
                         else{
                         echo "2"
-                            MANIFEST_OBJ = lib.jenkins.TestManifest.new(readYaml(file: "manifests/${manifest}"))
+                            MANIFEST_OBJ = lib.jenkins.InputManifest.new(readYaml(file: "manifests/${manifest}"))
                         }
                         componentNames = MANIFEST_OBJ.getNames()
                         echo "componenet names: $componentNames"
