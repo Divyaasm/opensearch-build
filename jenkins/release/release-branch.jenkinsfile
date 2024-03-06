@@ -66,6 +66,7 @@ pipeline {
                             MANIFEST_OBJ = lib.jenkins.TestManifest.new(readYaml(file: "manifests/${manifest}"))
                         }
                         componentNames = MANIFEST_OBJ.getNames()
+                        echo "componenet names: $componentNames"
 
                         for (component in componentNames) {
                             repoUrl = MANIFEST_OBJ.getRepo(component)
