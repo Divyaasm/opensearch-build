@@ -53,13 +53,16 @@ pipeline {
                     def manifestList = MANIFEST_URL ? MANIFEST_URL.trim().split(' ') as List : null
                     for (manifest in manifestList) {
                         if ("https" in manifest) {
+                            echo "1"
+
                             downloadBuildManifest(
-                                url: BUILD_MANIFEST_URL,
+                                url: MANIFEST_URL,
                                 path: BUILD_MANIFEST
                             )
                             MANIFEST_OBJ = lib.jenkins.BuildManifest.new(readYaml(file: BUILD_MANIFEST))
                         }
                         else{
+                        echo "2"
                             MANIFEST_OBJ = lib.jenkins.TestManifest.new(readYaml(file: "manifests/${manifest}"))
                         }
                         componentNames = MANIFEST_OBJ.getNames()
