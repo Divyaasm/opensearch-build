@@ -52,7 +52,7 @@ pipeline {
                 script {
                     def manifestList = MANIFEST_URL ? MANIFEST_URL.trim().split(' ') as List : null
                     for (manifest in manifestList) {
-                        if (manifest.contains("https") {
+                        if (manifest.contains("https")) {
                             echo "1"
 
                             downloadBuildManifest(
