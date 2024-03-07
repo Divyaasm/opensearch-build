@@ -70,7 +70,7 @@ pipeline {
 
                         for (component in componentNames) {
                             repoUrl = MANIFEST_OBJ.getRepo(component)
-                            def gitCloneOutput = sh(script: "git clone -b ${TARGET_BRANCH} ${repoUrl}", returnStdout: true, returnStatus: true)
+                            def gitCloneOutput = sh(script: "git ls-remote --exit-code --heads ${TARGET_BRANCH} ${repoUrl}  ${TARGET_BRANCH}", returnStdout: true, returnStatus: true)
                             if (gitCloneOutput == 0) {
                                 echo "Branch already exists"
                                 continue
