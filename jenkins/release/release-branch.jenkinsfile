@@ -75,9 +75,11 @@ pipeline {
                                 echo "Branch already exists"
                                 continue
                             }
-                            sh "git clone -b $SOURCE_BRANCH $repoUrl"
-                            sh "cd $component"
-                            sh "git checkout -b $TARGET_BRANCH"
+                            dir('component_directory') {
+                                checkout([$class: 'GitSCM', branches: [[name: "$SOURCE_BRANCH"]], userRemoteConfigs: [[url: 'repoUrl']]])
+
+                                sh "git checkout -b $TARGET_BRANCH"
+                            }
                         }
                     }
                 }
