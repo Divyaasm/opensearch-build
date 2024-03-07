@@ -75,12 +75,11 @@ pipeline {
                                 echo "Branch already exists"
                                 continue
                             }
-                        }
-                        dir("opensearch-build") {
-                                checkout([$class: 'GitSCM', branches: [[name: "oncall"]], userRemoteConfigs: [[url: "https://github.com/Divyaasm/opensearch-build.git"]]])
+                            dir(component) {
+                                checkout([$class: 'GitSCM', branches: [[name: SOURCE_BRANCH]], userRemoteConfigs: [[url: repoUrl]]])
 
                                 sh "git checkout -b $TARGET_BRANCH"
-                                sh "git push origin $TARGET_BRANCH"
+                            }
                         }
                     }
                 }
