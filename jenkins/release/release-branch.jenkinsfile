@@ -76,7 +76,7 @@ pipeline {
                                 continue
                             }
                             dir('component_directory') {
-                                checkout([$class: 'GitSCM', branches: [[name: "$SOURCE_BRANCH"]], userRemoteConfigs: [[url: 'repoUrl']]])
+                                checkout([$class: 'GitSCM', branches: [[name: "$SOURCE_BRANCH"]], userRemoteConfigs: [[url: "$repoUrl"]]])
 
                                 sh "git checkout -b $TARGET_BRANCH"
                             }
