@@ -76,6 +76,7 @@ pipeline {
                                 continue
                             }
                             sh "git clone -b $SOURCE_BRANCH $repoUrl"
+                            sh "cd $component"
                             sh "git checkout -b $TARGET_BRANCH"
                         }
                     }
