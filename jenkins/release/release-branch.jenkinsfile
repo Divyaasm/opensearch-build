@@ -27,7 +27,7 @@ pipeline {
     parameters {
         string(
             name: 'MANIFEST_URL',
-            description: 'The build manifest URL for OpenSearch, e.g. "https://ci.opensearch.org/ci/dbc/distribution-build-opensearch/2.9.0/8172/linux/x64/tar/builds/opensearch/manifest.yml".',
+            description: "Provide either Build Manifest url's or path to manifest files separated by space for branch creation.",
             trim: true
         )
         string(
@@ -37,7 +37,7 @@ pipeline {
         )
         string(
             name: 'TARGET_BRANCH',
-            description: 'Provide name of the target branch that needs to be created',
+            description: 'Provide name of the target branch that needs to be created.',
             trim: true
         )
     }
@@ -50,36 +50,40 @@ pipeline {
         stage('Create Release Branch') {
             steps {
                 script {
-                    def manifestList = MANIFEST_URL ? MANIFEST_URL.trim().split(' ') as List : null
-                    for (manifest in manifestList) {
-                        if (manifest.contains("https")) {
-                            echo "1"
+                    def manifestList = MANIFEST_URL.trim().split(' ') as List
 
-                            downloadBuildManifest(
-                                url: MANIFEST_URL,
-                                path: BUILD_MANIFEST
-                            )
-                            MANIFEST_OBJ = lib.jenkins.BuildManifest.new(readYaml(file: BUILD_MANIFEST))
-                        }
-                        else{
-                        echo "2"
-                            MANIFEST_OBJ = lib.jenkins.InputManifest.new(readYaml(file: "manifests/${manifest}"))
-                        }
-                        componentNames = MANIFEST_OBJ.getNames()
-                        echo "componenet names: $componentNames"
+                    withCredentials([usernamePassword(credentialsId: "${GITHUB_BOT_TOKEN_NAME}", usernameVariable: 'GITHUB_USER', passwordVariable: 'GITHUB_TOKEN')]) {
+                        for (manifest in manifestList) {
+                            if (manifest.contains("builds")) {
 
-                        for (component in componentNames) {
-                            repoUrl = MANIFEST_OBJ.getRepo(component)
-                            def gitCloneOutput = sh(script: "git ls-remote --exit-code ${repoUrl} ${TARGET_BRANCH}", returnStdout: true, returnStatus: true)
-                            echo "$gitCloneOutput"
-                            if (gitCloneOutput == 0) {
-                                echo "Branch already exists"
-                                continue
+                                downloadBuildManifest(
+                                    url: manifest,
+                                    path: BUILD_MANIFEST
+                                )
+                                MANIFEST_OBJ = lib.jenkins.BuildManifest.new(readYaml(file: BUILD_MANIFEST))
                             }
-                            dir(component) {
-                                checkout([$class: 'GitSCM', branches: [[name: SOURCE_BRANCH]], userRemoteConfigs: [[url: repoUrl]]])
+                            else{
+                                MANIFEST_OBJ = lib.jenkins.InputManifest.new(readYaml(file: "manifests/${manifest}"))
+                            }
+                            componentNames = MANIFEST_OBJ.getNames()
+                            echo "component names: $componentNames"
 
-                                sh "git checkout -b $TARGET_BRANCH"
+                            for (component in componentNames) {
+                                repoUrl = MANIFEST_OBJ.getRepo(component)
+                                def gitCloneOutput = sh(script: """git ls-remote ${repoUrl} ${TARGET_BRANCH}""",
+                                                        returnStdout: true)
+                                echo "$gitCloneOutput"
+                                if (gitCloneOutput == 0) {
+                                    echo "Branch already exists, skipping branch creation for the repo $repoUrl"
+                                    continue
+                                }
+                                def push_url = "https://$GITHUB_TOKEN@" + repoUrl.minus('https://')
+                                dir(component) {
+                                    checkout([$class: 'GitSCM', branches: [[name: SOURCE_BRANCH]], userRemoteConfigs: [[url: repoUrl]]])
+
+                                    sh "git checkout -b $TARGET_BRANCH"
+                                    sh "git push $push_url $TARGET_BRANCH"
+                                }
                             }
                         }
                     }
