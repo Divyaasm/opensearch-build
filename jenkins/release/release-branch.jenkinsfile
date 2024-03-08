@@ -72,15 +72,17 @@ pipeline {
                             repoUrl = MANIFEST_OBJ.getRepo(component)
                             def gitCloneOutput = sh(script: "git ls-remote ${repoUrl} ${TARGET_BRANCH}", returnStdout: true)
                             echo "$gitCloneOutput"
-                            if (gitCloneOutput == 0) {
-                                echo "Branch already exists"
-                                continue
-                            }
-                            dir(component) {
+                            if (gitCloneOutput == "") {
+                                dir(component) {
                                 checkout([$class: 'GitSCM', branches: [[name: SOURCE_BRANCH]], userRemoteConfigs: [[url: repoUrl]]])
 
                                 sh "git checkout -b $TARGET_BRANCH"
+                                }
                             }
+                            else {
+                                echo "Branch already exists, skipping branch creation for the repo $repoUrl"
+                            }
+
                         }
                     }
                 }
