@@ -25,12 +25,10 @@ from test_workflow.benchmark_test.benchmark_args import BenchmarkArgs
 
 class BenchmarkTestCluster:
     manifest: Union[BundleManifest, BuildManifest]
-    work_dir: str
     current_workspace: str
     args: BenchmarkArgs
     output_file: str
     params: str
-    is_endpoint_public: bool
     cluster_endpoint_with_port: str
 
     """
@@ -48,32 +46,35 @@ class BenchmarkTestCluster:
         self.manifest = bundle_manifest
         self.current_workspace = current_workspace
         self.args = args
-        self.output_file = "output.json"
-        """role = config["Constants"]["Role"]
-        params_dict = self.setup_cdk_params(config)
-        params_list = []
-        for key, value in params_dict.items():
-            if value:
-                '''
-                TODO: To send json input to typescript code from command line it needs to be enclosed in
-                single-quotes, this is a temp fix to achieve that since the quoted string passed from command line in
-                tesh.sh wrapper script gets un-quoted and we need to handle it here.
-                '''
-                if key == 'additionalConfig':
-                    params_list.append(f" -c {key}=\'{value}\'")
-                else:
-                    params_list.append(f" -c {key}={value}")
-        role_params = (
-            f" --require-approval=never --plugin cdk-assume-role-credential-plugin"
-            f" -c assume-role-credentials:writeIamRoleName={role} -c assume-role-credentials:readIamRoleName={role} "
-        )
-        self.params = "".join(params_list) + role_params
-        """
-        self.is_endpoint_public = False
-        self.cluster_endpoint_with_port = None
-        self.stack_name = f"opensearch-infra-stack-{self.args.stack_suffix}"
-        if self.manifest:
-            self.stack_name += f"-{self.manifest.build.id}-{self.manifest.build.architecture}"
+
+
+        if self.args.cluster_endpoint is None:
+
+            role = config["Constants"]["Role"]
+            params_dict = self.setup_cdk_params(config)
+            params_list = []
+            for key, value in params_dict.items():
+                if value:
+                    '''
+                    TODO: To send json input to typescript code from command line it needs to be enclosed in
+                    single-quotes, this is a temp fix to achieve that since the quoted string passed from command line in
+                    tesh.sh wrapper script gets un-quoted and we need to handle it here.
+                    '''
+                    if key == 'additionalConfig':
+                        params_list.append(f" -c {key}=\'{value}\'")
+                    else:
+                        params_list.append(f" -c {key}={value}")
+            role_params = (
+                f" --require-approval=never --plugin cdk-assume-role-credential-plugin"
+                f" -c assume-role-credentials:writeIamRoleName={role} -c assume-role-credentials:readIamRoleName={role} "
+            )
+            self.params = "".join(params_list) + role_params
+
+            self.cluster_endpoint_with_port = None
+            self.output_file = "output.json"
+            self.stack_name = f"opensearch-infra-stack-{self.args.stack_suffix}"
+            if self.manifest:
+                self.stack_name += f"-{self.manifest.build.id}-{self.manifest.build.architecture}"
 
     def start(self) -> None:
         if self.args.cluster_endpoint is None:
@@ -164,6 +165,7 @@ class BenchmarkTestCluster:
             "serverAccessType": config["Constants"]["serverAccessType"],
             "restrictServerAccessTo": config["Constants"]["restrictServerAccessTo"],
             "additionalConfig": self.args.additional_config,
+            "additionalConfig": self.args.additional_config,
             "dataInstanceType": self.args.data_instance_type,
             "managerNodeCount": self.args.manager_node_count,
             "dataNodeCount": self.args.data_node_count,
@@ -192,4 +194,5 @@ class BenchmarkTestCluster:
             cluster.start()
             yield cluster
         finally:
-            cluster.terminate()
+            if cls.args.cluster_endpoint is None:
+                cluster.terminate()

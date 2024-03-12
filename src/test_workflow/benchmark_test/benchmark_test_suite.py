@@ -18,7 +18,6 @@ from test_workflow.benchmark_test.benchmark_args import BenchmarkArgs
 class BenchmarkTestSuite:
     endpoint: str
     security: bool
-    current_workspace: str
     args: BenchmarkArgs
     command: str
     distribution_version: str
