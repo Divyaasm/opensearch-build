@@ -157,7 +157,7 @@ class BenchmarkArgs:
         self.logging_level = args.logging_level
 
 
-        if self.bundle_manifest is None and self.distribution_url is None:
+        if self.bundle_manifest is None and self.distribution_url is None and self.cluster_endpoint is None:
             raise Exception('Please provide either --bundle-manifest or --distribution-url to run the performance test.')
         elif (self.distribution_url or self.cluster_endpoint) and self.distribution_version is None:
             raise Exception("--distribution-version is required parameter while using --distribution-url or --cluster-endpoint param.")
