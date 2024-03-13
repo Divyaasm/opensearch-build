@@ -50,6 +50,7 @@ class BenchmarkTestCluster:
         if self.args.cluster_endpoint is None:
 
             role = config["Constants"]["Role"]
+            logging.info(role)
             params_dict = self.setup_cdk_params(config)
             params_list = []
             for key, value in params_dict.items():
@@ -64,8 +65,7 @@ class BenchmarkTestCluster:
                     else:
                         params_list.append(f" -c {key}={value}")
             role_params = (
-                f" --require-approval=never --plugin cdk-assume-role-credential-plugin"
-                f" -c assume-role-credentials:writeIamRoleName={role} -c assume-role-credentials:readIamRoleName={role} "
+                f" --require-approval=never"
             )
             self.params = "".join(params_list) + role_params
 
@@ -110,7 +110,7 @@ class BenchmarkTestCluster:
 
         subprocess.check_call(command, cwd=os.getcwd(), shell=True)
 
-    def wait_for_processing(self, tries: int = 3, delay: int = 15, backoff: int = 2) -> None:
+    def wait_for_processing(self, tries: int = 10, delay: int = 15, backoff: int = 2) -> None:
         # To-do: Make this better
         password = 'admin'
         if self.manifest:
@@ -125,6 +125,7 @@ class BenchmarkTestCluster:
         url = "".join([protocol, self.endpoint, "/_cluster/health"])
         request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", password),  # type: ignore
                                                                 "verify": False}  # type: ignore
+        logging.info(request_args)
         retry_call(requests.get, fkwargs=request_args,
                    tries=tries, delay=delay, backoff=backoff)
 
@@ -192,4 +193,4 @@ class BenchmarkTestCluster:
             cluster.start()
             yield cluster
         finally:
-            cluster.terminate()
+            return
