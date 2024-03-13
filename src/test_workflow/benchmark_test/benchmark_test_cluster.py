@@ -47,7 +47,6 @@ class BenchmarkTestCluster:
         self.current_workspace = current_workspace
         self.args = args
 
-
         if self.args.cluster_endpoint is None:
 
             role = config["Constants"]["Role"]
@@ -165,7 +164,6 @@ class BenchmarkTestCluster:
             "serverAccessType": config["Constants"]["serverAccessType"],
             "restrictServerAccessTo": config["Constants"]["restrictServerAccessTo"],
             "additionalConfig": self.args.additional_config,
-            "additionalConfig": self.args.additional_config,
             "dataInstanceType": self.args.data_instance_type,
             "managerNodeCount": self.args.manager_node_count,
             "dataNodeCount": self.args.data_node_count,
@@ -194,5 +192,5 @@ class BenchmarkTestCluster:
             cluster.start()
             yield cluster
         finally:
-            if args.cluster_endpoint is None:
+            if cls.args.cluster_endpoint is None:
                 cluster.terminate()
