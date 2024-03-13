@@ -65,7 +65,7 @@ class BenchmarkTestCluster:
                     else:
                         params_list.append(f" -c {key}={value}")
             role_params = (
-                f" --require-approval=never"
+                " --require-approval=never"
             )
             self.params = "".join(params_list) + role_params
 
@@ -84,8 +84,10 @@ class BenchmarkTestCluster:
             with open(self.output_file, "r") as read_file:
                 load_output = json.load(read_file)
                 self.create_endpoint(load_output)
-        self.wait_for_processing()
-        self.cluster_endpoint_with_port = "".join([self.args.cluster_endpoint, ":", str(self.port)])
+        else:
+
+            self.wait_for_processing()
+            self.cluster_endpoint_with_port = "".join([self.args.cluster_endpoint, ":", str(self.port)])
 
     def create_endpoint(self, cdk_output: dict) -> None:
         self.args.cluster_endpoint = cdk_output[self.stack_name].get('loadbalancerurl', None)
@@ -125,8 +127,7 @@ class BenchmarkTestCluster:
         url = "".join([protocol, self.endpoint, "/_cluster/health"])
         request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", password),  # type: ignore
                                                                 "verify": False}  # type: ignore
-        output = retry_call(requests.get, fkwargs=request_args,
-                   tries=tries, delay=delay, backoff=backoff)
+        output = retry_call(requests.get, fkwargs=request_args, tries=tries, delay=delay, backoff=backoff)
         logging.info(output)
 
     def setup_cdk_params(self, config: dict) -> dict:
@@ -182,14 +183,16 @@ class BenchmarkTestCluster:
 
     @classmethod
     @contextmanager
-    def create(cls, *args: Any) -> Generator[Any, None, None]:
+    def create(cls, bundle_manifest: Union[BundleManifest, BuildManifest], config: dict, args: BenchmarkArgs, current_workspace: str) -> Generator[Any, None, None]:
         """
         Set up the cluster. When this method returns, the cluster must be available to take requests.
         Throws ClusterCreationException if the cluster could not start for some reason. If this exception is thrown, the caller does not need to call "destroy".
         """
-        cluster = cls(*args)
+        cluster = cls(bundle_manifest, config, args, current_workspace)
         try:
+            destroy_cluster = args.cluster_endpoint
             cluster.start()
             yield cluster
         finally:
-            cluster.terminate()
+            if not destroy_cluster:
+                cluster.terminate()
