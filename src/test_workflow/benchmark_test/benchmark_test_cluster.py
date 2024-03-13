@@ -125,8 +125,9 @@ class BenchmarkTestCluster:
         url = "".join([protocol, self.endpoint, "/_cluster/health"])
         request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", password),  # type: ignore
                                                                 "verify": False}  # type: ignore
-        retry_call(requests.get, fkwargs=request_args,
+        output = retry_call(requests.get, fkwargs=request_args,
                    tries=tries, delay=delay, backoff=backoff)
+        logging.info(output)
 
     def setup_cdk_params(self, config: dict) -> dict:
         suffix = ''
