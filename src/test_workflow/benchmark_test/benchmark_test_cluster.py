@@ -110,7 +110,7 @@ class BenchmarkTestCluster:
 
         subprocess.check_call(command, cwd=os.getcwd(), shell=True)
 
-    def wait_for_processing(self, tries: int = 10, delay: int = 15, backoff: int = 2) -> None:
+    def wait_for_processing(self, tries: int = 3, delay: int = 15, backoff: int = 2) -> None:
         # To-do: Make this better
         password = 'admin'
         if self.manifest:
