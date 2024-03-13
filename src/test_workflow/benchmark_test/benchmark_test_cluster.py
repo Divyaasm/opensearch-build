@@ -84,10 +84,9 @@ class BenchmarkTestCluster:
             with open(self.output_file, "r") as read_file:
                 load_output = json.load(read_file)
                 self.create_endpoint(load_output)
-        else:
 
-            self.wait_for_processing()
-            self.cluster_endpoint_with_port = "".join([self.args.cluster_endpoint, ":", str(self.port)])
+        self.wait_for_processing()
+        self.cluster_endpoint_with_port = "".join([self.args.cluster_endpoint, ":", str(self.port)])
 
     def create_endpoint(self, cdk_output: dict) -> None:
         self.args.cluster_endpoint = cdk_output[self.stack_name].get('loadbalancerurl', None)
