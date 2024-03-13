@@ -125,7 +125,6 @@ class BenchmarkTestCluster:
         url = "".join([protocol, self.endpoint, "/_cluster/health"])
         request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", password),  # type: ignore
                                                                 "verify": False}  # type: ignore
-        logging.info(request_args)
         retry_call(requests.get, fkwargs=request_args,
                    tries=tries, delay=delay, backoff=backoff)
 
@@ -188,9 +187,8 @@ class BenchmarkTestCluster:
         Throws ClusterCreationException if the cluster could not start for some reason. If this exception is thrown, the caller does not need to call "destroy".
         """
         cluster = cls(*args)
-
         try:
             cluster.start()
             yield cluster
         finally:
-            return
+            cluster.terminate()
