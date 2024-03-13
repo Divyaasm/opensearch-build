@@ -193,5 +193,5 @@ class BenchmarkTestCluster:
             yield cluster
         finally:
             logging.info(args)
-            if cls.args.cluster_endpoint is None:
+            if cls.args and cls.args.cluster_endpoint:
                 cluster.terminate()
