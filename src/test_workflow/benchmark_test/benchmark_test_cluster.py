@@ -126,8 +126,7 @@ class BenchmarkTestCluster:
         url = "".join([protocol, self.endpoint, "/_cluster/health"])
         request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", password),  # type: ignore
                                                                 "verify": False}  # type: ignore
-        output = retry_call(requests.get, fkwargs=request_args, tries=tries, delay=delay, backoff=backoff)
-        logging.info(output)
+        retry_call(requests.get, fkwargs=request_args, tries=tries, delay=delay, backoff=backoff)
 
     def setup_cdk_params(self, config: dict) -> dict:
         suffix = ''
@@ -190,8 +189,11 @@ class BenchmarkTestCluster:
         cluster = cls(bundle_manifest, config, args, current_workspace)
         try:
             destroy_cluster = args.cluster_endpoint
+            logging.info(destroy_cluster)
             cluster.start()
             yield cluster
         finally:
+            logging.info("out")
             if not destroy_cluster:
+                logging.info("true")
                 cluster.terminate()
