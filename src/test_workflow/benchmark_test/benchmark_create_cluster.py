@@ -78,6 +78,7 @@ class BenchmarkCreateCluster(BenchmarkTestCluster):
             load_output = json.load(read_file)
             self.create_endpoint(load_output)
         self.wait_for_processing()
+        logging.info("Wait for processing executed")
 
     def create_endpoint(self, cdk_output: dict) -> None:
         load_balancer_url = cdk_output[self.stack_name].get('loadbalancerurl', None)
@@ -85,6 +86,7 @@ class BenchmarkCreateCluster(BenchmarkTestCluster):
             raise RuntimeError("Unable to fetch the cluster endpoint from cdk output")
         self.args.cluster_endpoint = load_balancer_url
         self.cluster_endpoint_with_port = "".join([load_balancer_url, ":", str(self.port)])
+        logging.info(self.cluster_endpoint_with_port)
 
     def terminate(self) -> None:
         command = f"cdk destroy {self.stack_name} {self.params} --force"

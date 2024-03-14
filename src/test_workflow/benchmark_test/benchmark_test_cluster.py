@@ -54,8 +54,10 @@ class BenchmarkTestCluster:
         logging.info(f"Waiting for domain at {self.endpoint} to be up")
         protocol = "http://" if self.args.insecure else "https://"
         url = "".join([protocol, self.endpoint, "/_cluster/health"])
+        logging.info(url)
         request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", get_password(str(self.args.distribution_version))),  # type: ignore
                                                                 "verify": False}  # type: ignore
+        logging.info(request_args)
         retry_call(requests.get, fkwargs=request_args, tries=tries, delay=delay, backoff=backoff)
 
     def set_distribution_version(self, version: str) -> None:
