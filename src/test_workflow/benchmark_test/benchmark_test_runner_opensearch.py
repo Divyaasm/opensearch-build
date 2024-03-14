@@ -41,15 +41,16 @@ class BenchmarkTestRunnerOpenSearch(BenchmarkTestRunner):
         if self.args.cluster_endpoint:
             cluster = BenchmarkTestCluster(self.args)
             cluster.start()
-            benchmark_test_suite = BenchmarkTestSuite(cluster.endpoint_with_port, self.security, self.get_distribution_version(), self.args)
+            benchmark_test_suite = BenchmarkTestSuite(cluster.endpoint_with_port, self.security, cluster.version, self.args)
             retry_call(benchmark_test_suite.execute, tries=3, delay=60, backoff=2)
 
-        config = yaml.safe_load(self.args.config) if self.args.config else None
+        else:
+            config = yaml.safe_load(self.args.config)
 
-        with TemporaryDirectory(keep=self.args.keep, chdir=True) as work_dir:
-            current_workspace = os.path.join(work_dir.name, "opensearch-cluster-cdk")
-            with GitRepository(self.get_cluster_repo_url(), self.get_git_ref(), current_workspace):
-                with WorkingDirectory(current_workspace):
-                    with BenchmarkCreateCluster.create(self.args, self.test_manifest, config, current_workspace) as test_cluster:
-                        benchmark_test_suite = BenchmarkTestSuite(test_cluster.endpoint_with_port, self.security, self.get_distribution_version(), self.args)
-                        retry_call(benchmark_test_suite.execute, tries=3, delay=60, backoff=2)
+            with TemporaryDirectory(keep=self.args.keep, chdir=True) as work_dir:
+                current_workspace = os.path.join(work_dir.name, "opensearch-cluster-cdk")
+                with GitRepository(self.get_cluster_repo_url(), self.get_git_ref(), current_workspace):
+                    with WorkingDirectory(current_workspace):
+                        with BenchmarkCreateCluster.create(self.args, self.test_manifest, config, current_workspace) as test_cluster:
+                            benchmark_test_suite = BenchmarkTestSuite(test_cluster.endpoint_with_port, self.security, cluster.version, self.args)
+                            retry_call(benchmark_test_suite.execute, tries=3, delay=60, backoff=2)

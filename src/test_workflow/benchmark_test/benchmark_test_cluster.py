@@ -29,7 +29,7 @@ class BenchmarkTestCluster:
         self.cluster_endpoint_with_port = None
 
     def start(self) -> None:
-
+        self.set_distribution_version(self.args.distribution_version)  # add curl command changes
         self.wait_for_processing()
         self.cluster_endpoint_with_port = "".join([self.args.cluster_endpoint, ":", str(self.port)])
 
