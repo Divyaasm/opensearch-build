@@ -150,8 +150,5 @@ class BenchmarkCreateCluster(BenchmarkTestCluster):
         """
         cluster = cls(*args)
 
-        try:
-            cluster.start()
-            yield cluster
-        finally:
-            cluster.terminate()
+        cluster.start()
+        yield cluster
