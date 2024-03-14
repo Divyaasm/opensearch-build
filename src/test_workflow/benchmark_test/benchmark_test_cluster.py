@@ -9,6 +9,7 @@
 import logging
 import subprocess
 import requests
+import json
 from requests.auth import HTTPBasicAuth
 from retry.api import retry_call  # type: ignore
 
@@ -29,16 +30,15 @@ class BenchmarkTestCluster:
         self.cluster_endpoint_with_port = None
 
     def start(self) -> None:
-        command = ["curl", self.args.cluster_endpoint]
+        command = f'curl {self.args.cluster_endpoint}'
         # Extract the version from the cluster_endpoint
-        try:
-            output = subprocess.check_output(command, stderr=subprocess.STDOUT, text=True)
-            start_index = output.find('"number": "') + len('"number": "')
-            end_index = output.find('"', start_index)
-            version = output[start_index:end_index]
-            logging.info(version)
-        except subprocess.CalledProcessError as e:
-            logging.info("Error:", e.output)
+
+        result = subprocess.run(command, shell=True, capture_output=True)
+        json_output = result.stdout.strip()
+        json_data = json.loads(json_output)
+        version = json_data.get('version', {}).get('number')
+        logging.info(version)
+
         self.set_distribution_version(version)
         self.wait_for_processing()
         self.cluster_endpoint_with_port = "".join([self.args.cluster_endpoint, ":", str(self.port)])
