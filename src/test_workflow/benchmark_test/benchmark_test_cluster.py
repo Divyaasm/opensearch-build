@@ -9,17 +9,16 @@
 import logging
 import subprocess
 import requests
-import json
 from requests.auth import HTTPBasicAuth
 from retry.api import retry_call  # type: ignore
 
 from test_workflow.benchmark_test.benchmark_args import BenchmarkArgs
-from test_workflow.integ_test.utils import get_password
 
 
 class BenchmarkTestCluster:
     args: BenchmarkArgs
     cluster_endpoint_with_port: str
+    password: str
 
     def __init__(
             self,
@@ -28,18 +27,19 @@ class BenchmarkTestCluster:
     ) -> None:
         self.args = args
         self.cluster_endpoint_with_port = None
+        self.password = None
 
     def start(self) -> None:
-        command = f'curl {self.args.cluster_endpoint}'
-        # Extract the version from the cluster_endpoint
+        for password in ["admin", "myStrongPassword!"]:
+            try:
+                command = f'curl https://{self.args.cluster_endpoint} -u admin:{password} --insecure'
+                result = subprocess.run(command, shell=True, capture_output=True)
+                if result.returncode != 200:
+                    self.password = password
+                    break
+            except Exception as e:
+                logging.error(f'Retrying with strong password {self.args.cluster_endpoint} : {e}')
 
-        result = subprocess.run(command, shell=True, capture_output=True)
-        json_output = result.stdout.strip()
-        json_data = json.loads(json_output)
-        version = json_data.get('version', {}).get('number')
-        logging.info(version)
-
-        self.set_distribution_version(version)
         self.wait_for_processing()
         self.cluster_endpoint_with_port = "".join([self.args.cluster_endpoint, ":", str(self.port)])
 
@@ -56,19 +56,15 @@ class BenchmarkTestCluster:
         return 80 if self.args.insecure else 443
 
     @property
-    def version(self) -> str:
-        return self.args.distribution_version
+    def password(self) -> str:
+        return self.password
 
     def wait_for_processing(self, tries: int = 3, delay: int = 15, backoff: int = 2) -> None:
 
         logging.info(f"Waiting for domain at {self.endpoint} to be up")
         protocol = "http://" if self.args.insecure else "https://"
         url = "".join([protocol, self.endpoint, "/_cluster/health"])
-        logging.info(url)
-        request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", get_password(str(self.args.distribution_version))),  # type: ignore
-                                                                "verify": False}  # type: ignore
-        logging.info(request_args)
-        retry_call(requests.get, fkwargs=request_args, tries=tries, delay=delay, backoff=backoff)
 
-    def set_distribution_version(self, version: str) -> None:
-        self.args.distribution_version = version
+        request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", self.password),  # type: ignore
+                                                                "verify": False}  # type: ignore
+        retry_call(requests.get, fkwargs=request_args, tries=tries, delay=delay, backoff=backoff)

@@ -104,11 +104,12 @@ class BenchmarkCreateCluster(BenchmarkTestCluster):
             suffix = self.args.stack_suffix
 
         if self.manifest:
-            self.set_distribution_version(self.manifest.build.version)
+            self.password = get_password(str(self.manifest.build.version)) if not self.args.insecure else None
             artifact_url = self.manifest.build.location if isinstance(self.manifest, BundleManifest) else \
                 f"https://artifacts.opensearch.org/snapshots/core/opensearch/{self.manifest.build.version}/opensearch-min-" \
                 f"{self.manifest.build.version}-linux-{self.manifest.build.architecture}-latest.tar.gz"
         else:
+            self.password = get_password(str(self.args.distribution_version)) if not self.args.insecure else None
             artifact_url = self.args.distribution_url.strip()
 
         return {
@@ -118,7 +119,7 @@ class BenchmarkCreateCluster(BenchmarkTestCluster):
             "region": config["Constants"]["Region"],
             "suffix": suffix,
             "securityDisabled": str(self.args.insecure).lower(),
-            "adminPassword": get_password(str(self.args.distribution_version)) if not self.args.insecure else None,
+            "adminPassword": self.password,
             "cpuArch": self.manifest.build.architecture if self.manifest else 'x64',
             "singleNodeCluster": str(self.args.single_node).lower(),
             "distVersion": self.manifest.build.version if self.manifest else self.args.distribution_version,
