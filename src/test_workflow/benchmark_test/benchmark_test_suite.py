@@ -30,7 +30,7 @@ class BenchmarkTestSuite:
             endpoint: Any,
             security: bool,
             args: BenchmarkArgs,
-            distribution_version: str = None,
+            distribution_version: str,
             password: str = None
     ) -> None:
         self.endpoint = endpoint

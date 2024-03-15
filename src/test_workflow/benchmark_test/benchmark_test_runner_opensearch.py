@@ -41,7 +41,7 @@ class BenchmarkTestRunnerOpenSearch(BenchmarkTestRunner):
         if self.args.cluster_endpoint:
             cluster = BenchmarkTestCluster(self.args)
             cluster.start()
-            benchmark_test_suite = BenchmarkTestSuite(cluster.endpoint_with_port, self.security, self.args, password=cluster.password)
+            benchmark_test_suite = BenchmarkTestSuite(cluster.endpoint_with_port, self.security, self.args, cluster.get_distribution_version(), password=cluster.passcode)
             retry_call(benchmark_test_suite.execute, tries=3, delay=60, backoff=2)
 
         else:
@@ -52,5 +52,5 @@ class BenchmarkTestRunnerOpenSearch(BenchmarkTestRunner):
                 with GitRepository(self.get_cluster_repo_url(), self.get_git_ref(), current_workspace):
                     with WorkingDirectory(current_workspace):
                         with BenchmarkCreateCluster.create(self.args, self.test_manifest, config, current_workspace) as test_cluster:
-                            benchmark_test_suite = BenchmarkTestSuite(test_cluster.endpoint_with_port, self.security, self.args, password=test_cluster.password)
+                            benchmark_test_suite = BenchmarkTestSuite(test_cluster.endpoint_with_port, self.security, self.args, test_cluster.get_distribution_version(), password=test_cluster.passcode)
                             retry_call(benchmark_test_suite.execute, tries=3, delay=60, backoff=2)

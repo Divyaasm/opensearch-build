@@ -26,8 +26,8 @@ class BenchmarkTestRunner(abc.ABC):
 
         if self.test_manifest:
             self.security = "security" in self.test_manifest.components and not self.args.insecure
-        else:
-            self.security = False
+        else :
+            self.security = not self.args.insecure
 
         self.tests_dir = os.path.join(os.getcwd(), "test-results", "benchmark-test",
                                       f"{'with' if self.security else 'without'}-security")

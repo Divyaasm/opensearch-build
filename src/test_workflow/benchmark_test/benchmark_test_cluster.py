@@ -9,6 +9,7 @@
 import logging
 import subprocess
 import requests
+import json
 from requests.auth import HTTPBasicAuth
 from retry.api import retry_call  # type: ignore
 
@@ -30,11 +31,16 @@ class BenchmarkTestCluster:
         self.password = None
 
     def start(self) -> None:
-        for password in ["admin", "myStrongPassword!"]:
+        for password in ["admin", "myStrongPassword123!"]:
             try:
-                command = f'curl https://{self.args.cluster_endpoint} -u admin:{password} --insecure'
-                result = subprocess.run(command, shell=True, capture_output=True)
-                if result.returncode != 200:
+                command = f"curl -X GET https://{self.args.cluster_endpoint} -u 'admin:{password}' --insecure"
+                result = subprocess.run(command, shell=True, capture_output=True, text=True)
+                logging.info(command)
+                logging.info(result.stdout)
+                if result.stdout:
+                    res_dict = json.loads(result.stdout)
+                    self.args.distribution_version = res_dict['version']['number']
+                    logging.info(self.args.distribution_version)
                     self.password = password
                     break
             except Exception as e:
@@ -56,8 +62,11 @@ class BenchmarkTestCluster:
         return 80 if self.args.insecure else 443
 
     @property
-    def password(self) -> str:
+    def passcode(self) -> int:
         return self.password
+
+    def get_distribution_version(self) -> str:
+        return self.args.distribution_version
 
     def wait_for_processing(self, tries: int = 3, delay: int = 15, backoff: int = 2) -> None:
 
