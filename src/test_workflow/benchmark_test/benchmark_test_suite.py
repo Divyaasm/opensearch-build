@@ -31,13 +31,11 @@ class BenchmarkTestSuite:
             security: bool,
             args: BenchmarkArgs,
             distribution_version: str,
-            password: str = None
     ) -> None:
         self.endpoint = endpoint
         self.security = security
         self.args = args
         self.distribution_version = distribution_version
-        self.password = password
 
         # Pass the cluster endpoints with -t for multi-cluster use cases(e.g. cross-cluster-replication)
         self.command = 'docker run --rm'
@@ -72,7 +70,7 @@ class BenchmarkTestSuite:
 
     def execute(self) -> None:
         if self.security:
-            self.command += f' --client-options="timeout:300,use_ssl:true,verify_certs:false,basic_auth_user:\'admin\',basic_auth_password:\'{self.password}\'"'
+            self.command += f' --client-options="timeout:300,use_ssl:true,verify_certs:false,basic_auth_user:\'admin\',basic_auth_password:\'{self.distribution_version}\'"'
         else:
             self.command += ' --client-options="timeout:300"'
         logging.info(f"Executing {self.command}")

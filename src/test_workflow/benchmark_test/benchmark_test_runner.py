@@ -6,6 +6,7 @@
 # compatible open source license.
 
 import abc
+import logging
 import os
 from typing import Union
 
@@ -26,7 +27,7 @@ class BenchmarkTestRunner(abc.ABC):
 
         if self.test_manifest:
             self.security = "security" in self.test_manifest.components and not self.args.insecure
-        else :
+        else:
             self.security = not self.args.insecure
 
         self.tests_dir = os.path.join(os.getcwd(), "test-results", "benchmark-test",

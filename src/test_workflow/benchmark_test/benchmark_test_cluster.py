@@ -14,12 +14,12 @@ from requests.auth import HTTPBasicAuth
 from retry.api import retry_call  # type: ignore
 
 from test_workflow.benchmark_test.benchmark_args import BenchmarkArgs
+from test_workflow.integ_test.utils import get_password
 
 
 class BenchmarkTestCluster:
     args: BenchmarkArgs
     cluster_endpoint_with_port: str
-    password: str
 
     def __init__(
             self,
@@ -28,12 +28,12 @@ class BenchmarkTestCluster:
     ) -> None:
         self.args = args
         self.cluster_endpoint_with_port = None
-        self.password = None
 
     def start(self) -> None:
+        logging.info("here")
         for password in ["admin", "myStrongPassword123!"]:
             try:
-                command = f"curl -X GET https://{self.args.cluster_endpoint} -u 'admin:{password}' --insecure"
+                command = f"curl -X GET http://{self.args.cluster_endpoint}" if self.args.insecure else f"curl -X GET https://{self.args.cluster_endpoint} -u 'admin:{password}' --insecure"
                 result = subprocess.run(command, shell=True, capture_output=True, text=True)
                 logging.info(command)
                 logging.info(result.stdout)
@@ -41,7 +41,6 @@ class BenchmarkTestCluster:
                     res_dict = json.loads(result.stdout)
                     self.args.distribution_version = res_dict['version']['number']
                     logging.info(self.args.distribution_version)
-                    self.password = password
                     break
             except Exception as e:
                 logging.error(f'Retrying with strong password {self.args.cluster_endpoint} : {e}')
@@ -61,10 +60,6 @@ class BenchmarkTestCluster:
     def port(self) -> int:
         return 80 if self.args.insecure else 443
 
-    @property
-    def passcode(self) -> int:
-        return self.password
-
     def get_distribution_version(self) -> str:
         return self.args.distribution_version
 
@@ -74,6 +69,6 @@ class BenchmarkTestCluster:
         protocol = "http://" if self.args.insecure else "https://"
         url = "".join([protocol, self.endpoint, "/_cluster/health"])
 
-        request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", self.password),  # type: ignore
+        request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", get_password(self.args.distribution_version)),  # type: ignore
                                                                 "verify": False}  # type: ignore
         retry_call(requests.get, fkwargs=request_args, tries=tries, delay=delay, backoff=backoff)
