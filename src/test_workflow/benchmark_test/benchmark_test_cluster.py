@@ -33,12 +33,14 @@ class BenchmarkTestCluster:
 
     def start(self) -> None:
         command = f"curl -X GET http://{self.args.cluster_endpoint}" if self.args.insecure else f"curl -X GET https://{self.args.cluster_endpoint} -u 'admin:{get_password('2.12.0')}' --insecure"
-        result = subprocess.run(command, shell=True, capture_output=True)
+        try:
+            result = subprocess.run(command, shell=True, capture_output=True, timeout=5)
+        except subprocess.TimeoutExpired:
+            raise TimeoutError(f"Time out! Couldn't connect to the cluster {self.args.cluster_endpoint}")
+
         if result.stdout:
             res_dict = json.loads(result.stdout)
             self.args.distribution_version = res_dict['version']['number']
-            logging.info(self.args.distribution_version)
-            logging.info(result.stdout)
         self.wait_for_processing()
         self.cluster_endpoint_with_port = "".join([self.args.cluster_endpoint, ":", str(self.port)])
 

@@ -5,6 +5,7 @@
 # this file be licensed under the Apache-2.0 license or a
 # compatible open source license.
 
+import subprocess
 import unittest
 from unittest.mock import MagicMock, Mock, patch
 
@@ -59,15 +60,27 @@ class TestBenchmarkTestCluster(unittest.TestCase):
                     "cluster_name" : "opensearch-cluster.amazon.com",
                     "version": {
                     "distribution": "opensearch",
-                    "number": “2.9.0”,
+                    "number": "2.9.0",
                     "build_type": "tar",
                     "minimum_index_compatibility_version": "2.0.0"
                     }
                 }
                 '''
         mock_subprocess_run.return_value = mock_result
-        with patch("json.loads", ):
+        with patch("json.loads"):
             self.benchmark_test_cluster.start()
             mock_requests_get.assert_called_with(url=f"https://{self.args.cluster_endpoint}/_cluster/health", auth=mock_http_auth.return_value, verify=False)
         self.assertEqual(self.benchmark_test_cluster.endpoint_with_port, 'opensearch-cluster.amazon.com:443')
         self.assertEqual(self.benchmark_test_cluster.port, 443)
+
+
+    def test_endpoint_with_timeout_error(self) -> None:
+        self.args.insecure = True
+        self.args.cluster_endpoint = "opensearch-cluster.amazon.com"
+        with patch('subprocess.run') as mock_run:
+            mock_run.side_effect = subprocess.TimeoutExpired("Command", 5)
+
+            with self.assertRaises(TimeoutError) as context:
+                self.benchmark_test_cluster.start()
+
+            self.assertIn("Time out! Couldn't connect to the cluster", str(context.exception))
