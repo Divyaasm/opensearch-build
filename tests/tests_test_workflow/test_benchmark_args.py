@@ -84,7 +84,7 @@ class TestBenchmarkArgs(unittest.TestCase):
     def test_benchmark_without_distribution_url_and_without_manifest(self) -> None:
         with self.assertRaises(Exception) as context:
             BenchmarkArgs()
-        self.assertEqual(str(context.exception), "Please provide either --bundle-manifest or --distribution-url to run the performance test.")
+        self.assertEqual(str(context.exception), "Please provide either --bundle-manifest or --distribution-url  or --cluster_endpoint to run the performance test.")
 
     @patch("argparse._sys.argv", [ARGS_PY, "--bundle-manifest", TEST_DIST_MANIFEST_PATH, "--config", TEST_CONFIG_PATH, "--workload", "test",
                                   "--test-procedure", 'test-procedure,another-test-procedure', "--exclude-tasks", "index,type:search,tag:setup",

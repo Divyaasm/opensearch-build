@@ -19,7 +19,7 @@ from test_workflow.integ_test.utils import get_password
 
 class BenchmarkTestCluster:
     args: BenchmarkArgs
-    cluster_endpoint_with_port: str
+
 
     def __init__(
             self,
@@ -28,23 +28,16 @@ class BenchmarkTestCluster:
     ) -> None:
         self.args = args
         self.cluster_endpoint_with_port = None
+        self.password = None
 
     def start(self) -> None:
-        logging.info("here")
-        for password in ["admin", "myStrongPassword123!"]:
-            try:
-                command = f"curl -X GET http://{self.args.cluster_endpoint}" if self.args.insecure else f"curl -X GET https://{self.args.cluster_endpoint} -u 'admin:{password}' --insecure"
-                result = subprocess.run(command, shell=True, capture_output=True, text=True)
-                logging.info(command)
-                logging.info(result.stdout)
-                if result.stdout:
-                    res_dict = json.loads(result.stdout)
-                    self.args.distribution_version = res_dict['version']['number']
-                    logging.info(self.args.distribution_version)
-                    break
-            except Exception as e:
-                logging.error(f'Retrying with strong password {self.args.cluster_endpoint} : {e}')
-
+        command = f"curl -X GET http://{self.args.cluster_endpoint}" if self.args.insecure else f"curl -X GET https://{self.args.cluster_endpoint} -u 'admin:{get_password('2.12.0')}' --insecure"
+        result = subprocess.run(command, shell=True, capture_output=True)
+        if result.stdout:
+            res_dict = json.loads(result.stdout)
+            self.args.distribution_version = res_dict['version']['number']
+            logging.info(self.args.distribution_version)
+            logging.info(result.stdout)
         self.wait_for_processing()
         self.cluster_endpoint_with_port = "".join([self.args.cluster_endpoint, ":", str(self.port)])
 
@@ -63,12 +56,14 @@ class BenchmarkTestCluster:
     def get_distribution_version(self) -> str:
         return self.args.distribution_version
 
-    def wait_for_processing(self, tries: int = 3, delay: int = 15, backoff: int = 2) -> None:
+    def fetch_password(self) -> str:
+        return self.password
 
+    def wait_for_processing(self, tries: int = 3, delay: int = 15, backoff: int = 2) -> None:
         logging.info(f"Waiting for domain at {self.endpoint} to be up")
         protocol = "http://" if self.args.insecure else "https://"
         url = "".join([protocol, self.endpoint, "/_cluster/health"])
-
-        request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", get_password(self.args.distribution_version)),  # type: ignore
+        self.password = None if self.args.insecure else get_password(self.args.distribution_version)
+        request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", self.password),  # type: ignore
                                                                 "verify": False}  # type: ignore
         retry_call(requests.get, fkwargs=request_args, tries=tries, delay=delay, backoff=backoff)

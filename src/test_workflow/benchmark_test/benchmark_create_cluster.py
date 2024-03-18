@@ -118,7 +118,7 @@ class BenchmarkCreateCluster(BenchmarkTestCluster):
             "region": config["Constants"]["Region"],
             "suffix": suffix,
             "securityDisabled": str(self.args.insecure).lower(),
-            "adminPassword": get_password(self.args.distribution_version),
+            "adminPassword": None if self.args.insecure else get_password(self.args.distribution_version),
             "cpuArch": self.manifest.build.architecture if self.manifest else 'x64',
             "singleNodeCluster": str(self.args.single_node).lower(),
             "distVersion": self.args.distribution_version,
