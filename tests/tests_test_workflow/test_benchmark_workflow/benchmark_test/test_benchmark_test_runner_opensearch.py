@@ -16,7 +16,6 @@ from test_workflow.benchmark_test.benchmark_test_runner_opensearch import Benchm
 from test_workflow.benchmark_test.benchmark_test_runners import BenchmarkTestRunners
 
 
-
 class TestBenchmarkTestRunnerOpenSearch(unittest.TestCase):
 
     @patch("argparse._sys.argv", ["run_benchmark_test.py",
@@ -90,6 +89,3 @@ class TestBenchmarkTestRunnerOpenSearch(unittest.TestCase):
         self.assertEqual(mock_suite.call_count, 1)
         self.assertEqual(mock_benchmark_test_cluster.call_count, 1)
         mock_retry_call.assert_called_once_with(mock_suite.return_value.execute, tries=3, delay=60, backoff=2)
-
-
-

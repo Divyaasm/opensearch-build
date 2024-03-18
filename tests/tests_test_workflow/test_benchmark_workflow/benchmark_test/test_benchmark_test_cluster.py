@@ -40,7 +40,7 @@ class TestBenchmarkTestCluster(unittest.TestCase):
         mock_subprocess_run.return_value = mock_result
         with patch("json.loads", ):
             self.benchmark_test_cluster.start()
-            mock_requests_get.assert_called_with(url=f"http://opensearch-cluster.amazon.com/_cluster/health")
+            mock_requests_get.assert_called_with(url="http://opensearch-cluster.amazon.com/_cluster/health")
         self.assertEqual(self.benchmark_test_cluster.endpoint_with_port, 'opensearch-cluster.amazon.com:80')
         self.assertEqual(self.benchmark_test_cluster.port, 80)
 

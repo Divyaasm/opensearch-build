@@ -19,7 +19,8 @@ from test_workflow.integ_test.utils import get_password
 
 class BenchmarkTestCluster:
     args: BenchmarkArgs
-
+    cluster_endpoint_with_port: str
+    password: str
 
     def __init__(
             self,

@@ -13,6 +13,7 @@ from unittest.mock import MagicMock, Mock, patch
 from manifests.build_manifest import BuildManifest
 from test_workflow.benchmark_test.benchmark_create_cluster import BenchmarkCreateCluster
 
+
 class TestBenchmarkCreateClusterMin(unittest.TestCase):
     DATA = os.path.join(os.path.dirname(__file__), "data")
     MIN_MANIFEST = os.path.join(DATA, "min_distribution_manifest.yml")

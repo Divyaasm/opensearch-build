@@ -12,6 +12,7 @@ from unittest.mock import Mock, patch
 from test_workflow.benchmark_test.benchmark_test_suite import BenchmarkTestSuite
 from test_workflow.integ_test.utils import get_password
 
+
 class TestBenchmarkTestSuite(unittest.TestCase):
     def setUp(self, **kwargs: Any) -> None:
         self.args = Mock()
