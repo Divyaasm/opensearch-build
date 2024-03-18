@@ -7,9 +7,8 @@
 import os
 import tempfile
 import unittest
-from typing import Optional
-from typing import Any
-from unittest.mock import Mock, patch, MagicMock
+from typing import Any, Optional
+from unittest.mock import MagicMock, Mock, patch
 
 from manifests.bundle_manifest import BundleManifest
 from test_workflow.benchmark_test.benchmark_args import BenchmarkArgs
@@ -81,8 +80,6 @@ class TestBenchmarkTestRunnerOpenSearch(unittest.TestCase):
     @patch('test_workflow.benchmark_test.benchmark_test_runner_opensearch.retry_call')
     def test_run_with_cluster_endpoint(self, mock_retry_call: Mock, mock_suite: Mock, mock_benchmark_test_cluster: Mock) -> None:
         args = MagicMock(cluster_endpoint=True)
-
-
         mock_cluster = MagicMock()
 
         mock_benchmark_test_cluster.return_value = mock_cluster
@@ -97,7 +94,8 @@ class TestBenchmarkTestRunnerOpenSearch(unittest.TestCase):
     @patch('test_workflow.benchmark_test.benchmark_test_runner_opensearch.retry_call')
     @patch("subprocess.run")
     @patch("requests.get")
-    def test_run_with_cluster_endpoint_with_arguments(self, mock_requests_get: Mock, mock_subprocess_run: Mock, mock_retry_call: Mock, mock_suite: Mock, mock_wait_for_processing: Optional[Mock]) -> None:
+    def test_run_with_cluster_endpoint_with_arguments(self, mock_requests_get: Mock, mock_subprocess_run: Mock,
+                                                      mock_retry_call: Mock, mock_suite: Mock, mock_wait_for_processing: Optional[Mock]) -> None:
         args = MagicMock(cluster_endpoint=True)
         mock_wait_for_processing.return_value = None
         mock_result = MagicMock()
@@ -126,4 +124,3 @@ class TestBenchmarkTestRunnerOpenSearch(unittest.TestCase):
         self.assertEqual(mock_suite.call_count, 1)
         self.assertEqual(MockBenchmarkTestCluster.call_count, 1)
         mock_retry_call.assert_called_once_with(mock_suite.return_value.execute, tries=3, delay=60, backoff=2)
-

@@ -6,10 +6,11 @@
 # compatible open source license.
 
 
+import json
 import logging
 import subprocess
+
 import requests
-import json
 from requests.auth import HTTPBasicAuth
 from retry.api import retry_call  # type: ignore
 

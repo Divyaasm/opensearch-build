@@ -18,8 +18,8 @@ from manifests.bundle_manifest import BundleManifest
 from system.temporary_directory import TemporaryDirectory
 from system.working_directory import WorkingDirectory
 from test_workflow.benchmark_test.benchmark_args import BenchmarkArgs
-from test_workflow.benchmark_test.benchmark_test_cluster import BenchmarkTestCluster
 from test_workflow.benchmark_test.benchmark_create_cluster import BenchmarkCreateCluster
+from test_workflow.benchmark_test.benchmark_test_cluster import BenchmarkTestCluster
 from test_workflow.benchmark_test.benchmark_test_runner import BenchmarkTestRunner
 from test_workflow.benchmark_test.benchmark_test_suite import BenchmarkTestSuite
 

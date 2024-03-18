@@ -15,7 +15,6 @@ from typing import Any, Generator, Union
 
 from manifests.build_manifest import BuildManifest
 from manifests.bundle_manifest import BundleManifest
-
 from test_workflow.benchmark_test.benchmark_args import BenchmarkArgs
 from test_workflow.benchmark_test.benchmark_test_cluster import BenchmarkTestCluster
 from test_workflow.integ_test.utils import get_password
@@ -61,7 +60,8 @@ class BenchmarkCreateCluster(BenchmarkTestCluster):
                 else:
                     params_list.append(f" -c {key}={value}")
         role_params = (
-            " --require-approval=never"
+            f" --require-approval=never --plugin cdk-assume-role-credential-plugin"
+            f" -c assume-role-credentials:writeIamRoleName={role} -c assume-role-credentials:readIamRoleName={role} "
         )
         self.params = "".join(params_list) + role_params
         self.is_endpoint_public = False

@@ -73,7 +73,6 @@ class TestBenchmarkTestCluster(unittest.TestCase):
         self.assertEqual(self.benchmark_test_cluster.endpoint_with_port, 'opensearch-cluster.amazon.com:443')
         self.assertEqual(self.benchmark_test_cluster.port, 443)
 
-
     def test_endpoint_with_timeout_error(self) -> None:
         self.args.insecure = True
         self.args.cluster_endpoint = "opensearch-cluster.amazon.com"
