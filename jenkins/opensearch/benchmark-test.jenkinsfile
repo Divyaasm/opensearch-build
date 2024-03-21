@@ -212,7 +212,7 @@ pipeline {
                 stage('test-with-security') {
                 agent { label AGENT_LABEL }
                     when {
-                        expression { return HAS_SECURITY.toBoolean() && (CLUSTER_ENDPOINT != '' && !SECURITY_DISABLED.toBoolean())}
+                        expression { return HAS_SECURITY.toBoolean() || (CLUSTER_ENDPOINT != '' && !SECURITY_DISABLED.toBoolean())}
                     }
                     steps {
                         script {
