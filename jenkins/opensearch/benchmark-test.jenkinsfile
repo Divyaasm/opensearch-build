@@ -191,7 +191,7 @@ pipeline {
                         lib.jenkins.Messages.new(this).add(JOB_NAME, "Benchmark tests for #${BUILD_ID}")
                         currentBuild.description = "Running benchmark test for build number: ${BUILD_ID} Manifest: ${BUNDLE_MANIFEST_URL}"
                     }
-                    else if (DISTRIBUTION_URL != '') {
+                    else {
                         BUNDLE_MANIFEST = ''
                         env.HAS_SECURITY = "false"
                         env.ARCHITECTURE = "x64"
