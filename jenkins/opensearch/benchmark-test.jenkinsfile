@@ -174,7 +174,7 @@ pipeline {
             agent { label AGENT_LABEL }
             steps {
                 script {
-                    if (BUNDLE_MANIFEST_URL == '' && DISTRIBUTION_URL == '') {
+                    if (BUNDLE_MANIFEST_URL == '' && DISTRIBUTION_URL == '' && CLUSTER_ENDPOINT == '') {
                         currentBuild.result = 'ABORTED'
                         error("Benchmark Tests failed to start. Provide either BUNDLE_MANIFEST_URL or DISTRIBUTION_URL with DISTRIBUTION_VERSION")
                     }
