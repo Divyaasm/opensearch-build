@@ -46,10 +46,6 @@ class BenchmarkTestCluster:
         self.cluster_endpoint_with_port = "".join([self.args.cluster_endpoint, ":", str(self.port)])
 
     @property
-    def endpoint(self) -> str:
-        return self.args.cluster_endpoint
-
-    @property
     def endpoint_with_port(self) -> str:
         return self.cluster_endpoint_with_port
 
@@ -64,9 +60,10 @@ class BenchmarkTestCluster:
         return self.password
 
     def wait_for_processing(self, tries: int = 3, delay: int = 15, backoff: int = 2) -> None:
-        logging.info(f"Waiting for domain at {self.endpoint} to be up")
+        endpoint = self.cluster_endpoint_with_port.split(":")[0]
+        logging.info(f"Waiting for domain at {endpoint} to be up")
         protocol = "http://" if self.args.insecure else "https://"
-        url = "".join([protocol, self.endpoint, "/_cluster/health"])
+        url = "".join([protocol, endpoint, "/_cluster/health"])
         self.password = None if self.args.insecure else get_password(self.args.distribution_version)
         request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", self.password),  # type: ignore
                                                                 "verify": False}  # type: ignore
