@@ -276,7 +276,13 @@ pipeline {
                 stage('test-without-security') {
                 agent { label AGENT_LABEL }
                     when {
-                        expression { return SECURITY_DISABLED.toBoolean() }
+                        expression {
+                            if (CLUSTER_ENDPOINT != '') {
+                                return SECURITY_DISABLED.toBoolean()
+                            } else {
+                                return true
+                            }
+                        }
                     }
                     steps {
                         script {
