@@ -178,6 +178,7 @@ pipeline {
                         currentBuild.result = 'ABORTED'
                         error("Benchmark Tests failed to start. Provide either BUNDLE_MANIFEST_URL or DISTRIBUTION_URL with DISTRIBUTION_VERSION")
                     }
+                    echo " param: ${SECURITY_DISABLED}"
                     if (BUNDLE_MANIFEST_URL != '') {
                         def bundleManifestObj = downloadBuildManifest (
                         url: BUNDLE_MANIFEST_URL,
@@ -275,7 +276,7 @@ pipeline {
                 stage('test-without-security') {
                 agent { label AGENT_LABEL }
                     when {
-                        expression { return SECURITY_DISABLED.toBoolean()}
+                        expression { return SECURITY_DISABLED.toBoolean() }
                     }
                     steps {
                         script {
