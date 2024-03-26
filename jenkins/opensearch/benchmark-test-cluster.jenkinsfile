@@ -122,9 +122,6 @@ parameters {
                         excludeTasks: EXCLUDE_TASKS,
                         includeTasks: INCLUDE_TASKS,
                         additionalConfig: ADDITIONAL_CONFIG,
-                        dataStorageSize: DATA_NODE_STORAGE,
-                        mlStorageSize: ML_NODE_STORAGE,
-                        jvmSysProps: JVM_SYS_PROPS,
                         captureNodeStat: CAPTURE_NODE_STAT,
                         captureSegmentReplicationStat: CAPTURE_SEGMENT_REPLICATION_STAT,
                         telemetryParams: TELEMETRY_PARAMS
