@@ -7,7 +7,7 @@
  * compatible open source license.
  */
 
-lib = library(identifier: 'jenkins@benchmark', retriever: modernSCM([
+lib = library(identifier: 'jenkins@cluster', retriever: modernSCM([
 
     $class: 'GitSCMSource',
     remote: 'https://github.com/Divyaasm/opensearch-build-libraries.git',
@@ -24,7 +24,6 @@ pipeline {
         BUNDLE_MANIFEST = 'bundle-manifest.yml'
         JOB_NAME = 'benchmark-test'
     }
-
     parameters {
         string(
             name: 'BUNDLE_MANIFEST_URL',
@@ -42,20 +41,15 @@ pipeline {
             trim: true
         )
         string(
-            name: 'CLUSTER_ENDPOINT',
-            description: 'Provide an endpoint to a cluster for running benchmark tests against it.',
-            trim: true
-        )
-        booleanParam(
-            name: 'SECURITY_DISABLED',
-            description: 'Mention if the security is enabled in the cluster. Force the security of the cluster to be disabled',
-            defaultValue: true
-        )
-        string(
             defaultValue: 'nyc_taxis',
             name: 'TEST_WORKLOAD',
             description: 'The workload name from OpenSearch Benchmark Workloads.',
             trim: true
+        )
+        booleanParam(
+            defaultValue: false,
+            name: 'SECURITY_DISABLED',
+            description: 'Force the security of the cluster to be disabled'
         )
         booleanParam(
             name: 'SINGLE_NODE_CLUSTER',
@@ -174,11 +168,10 @@ pipeline {
             agent { label AGENT_LABEL }
             steps {
                 script {
-                    if (BUNDLE_MANIFEST_URL == '' && DISTRIBUTION_URL == '' && CLUSTER_ENDPOINT == '') {
+                    if (BUNDLE_MANIFEST_URL == '' && DISTRIBUTION_URL == '') {
                         currentBuild.result = 'ABORTED'
                         error("Benchmark Tests failed to start. Provide either BUNDLE_MANIFEST_URL or DISTRIBUTION_URL with DISTRIBUTION_VERSION")
                     }
-                    echo " param: ${SECURITY_DISABLED}"
                     if (BUNDLE_MANIFEST_URL != '') {
                         def bundleManifestObj = downloadBuildManifest (
                         url: BUNDLE_MANIFEST_URL,
@@ -213,7 +206,7 @@ pipeline {
                 stage('test-with-security') {
                 agent { label AGENT_LABEL }
                     when {
-                        expression { return HAS_SECURITY.toBoolean() || (CLUSTER_ENDPOINT != '' && !SECURITY_DISABLED.toBoolean())}
+                        expression { return HAS_SECURITY.toBoolean() }
                     }
                     steps {
                         script {
@@ -235,9 +228,8 @@ pipeline {
                                 bundleManifest: BUNDLE_MANIFEST,
                                 distributionUrl: DISTRIBUTION_URL,
                                 distributionVersion: DISTRIBUTION_VERSION,
-                                endpoint: CLUSTER_ENDPOINT,
-                                insecure: "false",
                                 workload: TEST_WORKLOAD,
+                                insecure: "false",
                                 singleNode: SINGLE_NODE_CLUSTER,
                                 minDistribution: MIN_DISTRIBUTION,
                                 use50PercentHeap: USE_50_PERCENT_HEAP,
@@ -275,15 +267,6 @@ pipeline {
                 }
                 stage('test-without-security') {
                 agent { label AGENT_LABEL }
-                    when {
-                        expression {
-                            if (CLUSTER_ENDPOINT != '') {
-                                return SECURITY_DISABLED.toBoolean()
-                            } else {
-                                return true
-                            }
-                        }
-                    }
                     steps {
                         script {
                             if (BUNDLE_MANIFEST_URL != '') {
@@ -304,9 +287,8 @@ pipeline {
                                 bundleManifest: BUNDLE_MANIFEST,
                                 distributionUrl: DISTRIBUTION_URL,
                                 distributionVersion: DISTRIBUTION_VERSION,
-                                endpoint: CLUSTER_ENDPOINT,
-                                insecure: "true",
                                 workload: TEST_WORKLOAD,
+                                insecure: "true",
                                 singleNode: SINGLE_NODE_CLUSTER,
                                 minDistribution: MIN_DISTRIBUTION,
                                 use50PercentHeap: USE_50_PERCENT_HEAP,
@@ -377,9 +359,6 @@ pipeline {
         }
         aborted {
             node(AGENT_LABEL) {
-                expression {
-                    CLUSTER_ENDPOINT.isBlank()
-                }
                 script {
                     def stackNames = null
                     if (BUNDLE_MANIFEST_URL != '') {
