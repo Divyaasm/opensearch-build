@@ -52,7 +52,8 @@ class Validation(ABC):
     def check_for_security_plugin(self) -> None:
         if self.args.allow_http:
             prefix1 = '/usr/share'
-            prefix2 = self.tmp_dir.path
+            prefix2 = str(self.tmp_dir.path)
+
             plugin = {
                 'tar': prefix2, 'zip': prefix2
             }
