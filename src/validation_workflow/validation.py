@@ -32,6 +32,8 @@ class Validation(ABC):
         self.base_url_production = "https://artifacts.opensearch.org/releases/bundle/"
         self.base_url_staging = "https://ci.opensearch.org/ci/dbc/distribution-build-"
         self.tmp_dir = TemporaryDirectory()
+        self.http_prefix = "https"
+        self.check_for_security_plugin()
 
     def check_url(self, url: str) -> bool:
         if DownloadUtils().download(url, self.tmp_dir) and DownloadUtils().is_url_valid(url):  # type: ignore
@@ -47,9 +49,15 @@ class Validation(ABC):
         else:
             raise Exception("Provided path for local artifacts does not exist")
 
-    def check_for_security_plugin(self, work_dir: str) -> bool:
-        path = os.path.exists(os.path.join(work_dir, "plugins", "opensearch-security"))
-        return path
+    def check_for_security_plugin(self) -> None:
+        if self.args.allow_http:
+            prefix1 = '/usr/share'
+            prefix2 = self.tmp_dir.path
+            plugin = {
+                'tar': prefix2, 'zip': prefix2
+            }
+            if not os.path.exists(plugin.get(self.args.distribution, prefix1) + '/opensearch/plugins/opensearch-security'):
+                self.http_prefix = 'http'
 
     def get_version(self, project: str) -> str:
         return re.search(r'(\d+\.\d+\.\d+)', os.path.basename(project)).group(1)
@@ -106,7 +114,7 @@ class Validation(ABC):
 
     def check_http_request(self) -> bool:
         self.test_readiness_urls = {
-            'https://localhost:9200': 'opensearch cluster API'
+            f'{self.http_prefix}://localhost:9200': 'opensearch cluster API'
         }
         if 'opensearch-dashboards' in self.args.projects:
             self.test_readiness_urls['http://localhost:5601/api/status'] = 'opensearch-dashboards API'
