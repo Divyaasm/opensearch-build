@@ -8,6 +8,7 @@
 # compatible open source license.
 
 set -e
+set -x
 
 DIR="$(dirname "$0")"
 case $1 in
