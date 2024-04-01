@@ -24,7 +24,7 @@ pipeline {
         JOB_NAME = 'benchmark-test'
     }
 parameters {
-        string(
+        hidden(
             name: 'CLUSTER_ENDPOINT',
             description: 'Provide an endpoint to a cluster for running benchmark tests against it.',
             trim: true
@@ -35,7 +35,6 @@ parameters {
             defaultValue: false,
         )
         string(
-
             name: 'TEST_WORKLOAD',
             description: 'The workload name from OpenSearch Benchmark Workloads.',
             defaultValue: 'nyc_taxis',
