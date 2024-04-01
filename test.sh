@@ -8,7 +8,6 @@
 # compatible open source license.
 
 set -e
-set -x
 
 DIR="$(dirname "$0")"
 case $1 in
@@ -22,8 +21,10 @@ case $1 in
   "$DIR/run.sh" "$DIR/src/run_perf_test.py" "${@:2}"
   ;;
   "benchmark-test")
-  set +x
-  "$DIR/run.sh" "$DIR/src/run_benchmark_test.py" "${@:2}"
+  (
+    set +x
+    "$DIR/run.sh" "$DIR/src/run_benchmark_test.py" "${@:2}"
+  )
   ;;
   *)
   echo "Invalid test suite, run ./test.sh integ-test|bwc-test|perf-test."
