@@ -27,7 +27,6 @@ parameters {
         hidden(
             name: 'CLUSTER_ENDPOINT',
             description: 'Provide an endpoint to a cluster for running benchmark tests against it.',
-            trim: true
         )
         booleanParam(
             name: 'SECURITY_ENABLED',
