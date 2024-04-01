@@ -22,6 +22,7 @@ case $1 in
   ;;
   "benchmark-test")
   echo "the parameters passed are ${@:2}"
+  set -x
   "$DIR/run.sh" "$DIR/src/run_benchmark_test.py" "${@:2}"
   ;;
   *)
