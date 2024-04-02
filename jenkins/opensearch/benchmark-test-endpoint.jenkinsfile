@@ -34,12 +34,6 @@ parameters {
             description: 'Mention if the cluster is secured or insecured.',
             defaultValue: false,
         )
-        credentials(
-            name: 'USERNAME_PASSWORD',
-            description: 'Provide Username and Password for the cluster',
-            defaultValue: '',
-            credentialType: "Secret Text",
-        )
         string(
             name: 'TEST_WORKLOAD',
             description: 'The workload name from OpenSearch Benchmark Workloads.',
@@ -109,8 +103,8 @@ parameters {
             agent { label AGENT_LABEL }
             steps {
                 script {
+                    echo "CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
                     echo "security-enabled: ${SECURITY_ENABLED}"
-                    echo "${USERNAME_PASSWORD}"
 
                     runBenchmarkTestScript(
                         endpoint: CLUSTER_ENDPOINT,
