@@ -38,7 +38,7 @@ parameters {
             name: 'USERNAME_PASSWORD',
             description: 'Provide Username and Password for the cluster',
             defaultValue: '',
-            credentialType: "Username with password",
+            credentialType: "Secret Text",
         )
         string(
             name: 'TEST_WORKLOAD',
