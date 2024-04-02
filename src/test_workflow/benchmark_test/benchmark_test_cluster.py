@@ -40,7 +40,7 @@ class BenchmarkTestCluster:
         try:
             result = subprocess.run(command, shell=True, capture_output=True, timeout=5)
         except subprocess.TimeoutExpired:
-            raise TimeoutError(f"Time out! Couldn't connect to the cluster {self.cluster_endpoint}")
+            raise TimeoutError(f"Time out! Couldn't connect to the cluster")
 
         if result.stdout:
             res_dict = json.loads(result.stdout)
