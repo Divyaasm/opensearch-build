@@ -60,7 +60,8 @@ class BenchmarkCreateCluster(BenchmarkTestCluster):
                 else:
                     params_list.append(f" -c {key}={value}")
         role_params = (
-            " --require-approval=never"
+            f" --require-approval=never --plugin cdk-assume-role-credential-plugin"
+            f" -c assume-role-credentials:writeIamRoleName={role} -c assume-role-credentials:readIamRoleName={role} "
         )
         self.params = "".join(params_list) + role_params
         self.is_endpoint_public = False
