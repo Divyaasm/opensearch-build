@@ -33,15 +33,26 @@ parameters {
             description: 'Mention if the cluster is secured or insecured.',
             defaultValue: false,
         )
-        password(
+        activeChoiceReactiveParam(
             name: 'USERNAME',
             description: 'Enter username for the cluster endpoint',
-             defaultValue: ''
-        )
-        password(
-            name: 'PASSWORD',
-            description: 'Enter password for the cluster endpoint',
-            defaultValue: ''
+            script: [
+                $class: 'GroovyScript',
+                fallbackScript: [
+                    script: [
+                        'return ""'
+                    ]
+                ],
+                script: [
+                    script: '''
+                        if (params.SECURITY_ENABLED == 'true') {
+                            return "Enter username for the cluster endpoint"
+                        } else {
+                            return ""
+                        }
+                    '''
+                ]
+            ]
         )
         string(
             name: 'TEST_WORKLOAD',
