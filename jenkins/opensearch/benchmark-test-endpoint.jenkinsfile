@@ -118,6 +118,8 @@ parameters {
                     runBenchmarkTestScript(
                         endpoint: CLUSTER_ENDPOINT,
                         insecure: true ,
+                        username: USERNAME,
+                        password: PASSWORD,
                         workload: TEST_WORKLOAD,
                         userTag: USER_TAGS.isEmpty() ? "security-enabled:${SECURITY_ENABLED}" : "${USER_TAGS},security-enabled:${SECURITY_ENABLED}",
                         workloadParams: WORKLOAD_PARAMS,
