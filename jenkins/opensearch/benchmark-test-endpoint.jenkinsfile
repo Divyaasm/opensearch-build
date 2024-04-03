@@ -26,8 +26,7 @@ pipeline {
 parameters {
         password(
             name: 'CLUSTER_ENDPOINT',
-            description: 'Provide an endpoint to a cluster for running benchmark tests against it.',
-            trim: true
+            description: 'Provide an endpoint to a cluster for running benchmark tests against it.'
         )
         booleanParam(
             name: 'SECURITY_ENABLED',
@@ -42,7 +41,7 @@ parameters {
         password(
             name: 'PASSWORD',
             description: 'Enter password for the cluster endpoint',
-             defaultValue: ''
+            defaultValue: ''
         )
         string(
             name: 'TEST_WORKLOAD',
