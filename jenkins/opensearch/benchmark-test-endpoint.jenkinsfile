@@ -24,17 +24,25 @@ pipeline {
         JOB_NAME = 'benchmark-test'
     }
 parameters {
-        string(
+        password(
             name: 'CLUSTER_ENDPOINT',
             description: 'Provide an endpoint to a cluster for running benchmark tests against it.',
             trim: true
         )
-        password(name: 'VALUE', description: 'Enter your password', defaultValue: '')
-        choice(name: 'HIDDEN_PARAM', choices: [''], description: 'Hidden parameter')
         booleanParam(
             name: 'SECURITY_ENABLED',
             description: 'Mention if the cluster is secured or insecured.',
             defaultValue: false,
+        )
+        password(
+            name: 'USERNAME',
+            description: 'Enter username for the cluster endpoint',
+             defaultValue: ''
+        )
+        password(
+            name: 'PASSWORD',
+            description: 'Enter password for the cluster endpoint',
+             defaultValue: ''
         )
         string(
             name: 'TEST_WORKLOAD',
