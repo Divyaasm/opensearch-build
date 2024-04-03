@@ -30,7 +30,7 @@ parameters {
             trim: true
         )
         password(name: 'VALUE', description: 'Enter your password', defaultValue: '')
-        string(name: 'USERNAME', description: 'Enter USERNAME', defaultValue: '',  hidden: true)
+        string(name: 'USERNAME', description: 'Enter USERNAME', defaultValue: '', hidden: true)
         booleanParam(
             name: 'SECURITY_ENABLED',
             description: 'Mention if the cluster is secured or insecured.',
