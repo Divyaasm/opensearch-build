@@ -29,6 +29,7 @@ parameters {
             description: 'Provide an endpoint to a cluster for running benchmark tests against it.',
             trim: true
         )
+        password(name: 'PASSWORD', description: 'Enter your password', defaultValue: '', trim: true)
         booleanParam(
             name: 'SECURITY_ENABLED',
             description: 'Mention if the cluster is secured or insecured.',
