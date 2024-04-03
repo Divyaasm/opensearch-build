@@ -30,7 +30,7 @@ parameters {
             trim: true
         )
         password(name: 'VALUE', description: 'Enter your password', defaultValue: '')
-        choice(name: 'HIDDEN_PARAM', choices: [''], description: 'Hidden parameter', defaultValue: '')
+        choice(name: 'HIDDEN_PARAM', choices: [''], description: 'Hidden parameter')
         booleanParam(
             name: 'SECURITY_ENABLED',
             description: 'Mention if the cluster is secured or insecured.',
