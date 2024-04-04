@@ -114,8 +114,11 @@ parameters {
                 script {
                     echo "CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
                     echo "security-enabled: ${SECURITY_ENABLED}"
+                    insecure = !SECURITY_ENABLED
+                    echo "${SECURITY_ENABLED}"
 
-                    runBenchmarkTestScript(
+
+                    /*runBenchmarkTestScript(
                         endpoint: CLUSTER_ENDPOINT,
                         insecure: false ,
                         username: USERNAME,
@@ -129,7 +132,7 @@ parameters {
                         captureNodeStat: CAPTURE_NODE_STAT,
                         captureSegmentReplicationStat: CAPTURE_SEGMENT_REPLICATION_STAT,
                         telemetryParams: TELEMETRY_PARAMS
-                    )
+                    )*/
                 }
             }
             post {
