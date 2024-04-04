@@ -115,7 +115,7 @@ parameters {
                     echo "CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
                     echo "security-enabled: ${SECURITY_ENABLED}"
                     insecure = !SECURITY_ENABLED
-                    echo "${SECURITY_ENABLED}"
+                    echo "${insecure}"
 
 
                     /*runBenchmarkTestScript(
