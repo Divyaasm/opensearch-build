@@ -110,7 +110,7 @@ parameters {
         }
         stage('benchmark-test-with-cluster') {
             agent { label AGENT_LABEL }
-            steps {Ï
+            steps {
                 script {
                     echo "CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
                     echo "security-enabled: ${SECURITY_ENABLED}"
