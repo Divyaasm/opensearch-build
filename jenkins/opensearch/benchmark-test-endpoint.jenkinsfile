@@ -7,10 +7,10 @@
  * compatible open source license.
  */
 
-lib = library(identifier: 'jenkins@6.4.1', retriever: modernSCM([
+lib = library(identifier: 'jenkins@cluster', retriever: modernSCM([
 
     $class: 'GitSCMSource',
-    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
+    remote: 'https://github.com/Divyaasm/opensearch-build-libraries.git',
 ]))
 
 pipeline {
@@ -112,7 +112,6 @@ parameters {
             agent { label AGENT_LABEL }
             steps {
                 script {
-                    echo "CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
                     echo "security-enabled: ${SECURITY_ENABLED}"
 
                     runBenchmarkTestScript(

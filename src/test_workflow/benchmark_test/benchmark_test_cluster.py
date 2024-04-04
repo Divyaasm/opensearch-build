@@ -37,6 +37,7 @@ class BenchmarkTestCluster:
     def start(self) -> None:
 
         command = f"curl http://{self.cluster_endpoint}" if self.args.insecure else f"curl https://{self.cluster_endpoint} -ku f'{self.args.username}:{self.args.password}'"
+        logging.info(command)
         try:
             result = subprocess.run(command, shell=True, capture_output=True, timeout=5)
         except subprocess.TimeoutExpired:
