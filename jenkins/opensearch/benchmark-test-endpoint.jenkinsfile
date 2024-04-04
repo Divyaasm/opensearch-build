@@ -116,7 +116,7 @@ parameters {
 
                     runBenchmarkTestScript(
                         endpoint: CLUSTER_ENDPOINT,
-                        insecure: !(params.SECURITY_ENABLED) ,
+                        insecure: !(params.SECURITY_ENABLED),
                         username: USERNAME,
                         password: PASSWORD,
                         workload: TEST_WORKLOAD,

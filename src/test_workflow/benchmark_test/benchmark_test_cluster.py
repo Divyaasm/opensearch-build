@@ -41,11 +41,12 @@ class BenchmarkTestCluster:
         try:
             result = subprocess.run(command, shell=True, capture_output=True, timeout=5)
         except subprocess.TimeoutExpired:
-            raise TimeoutError(f"Time out! Couldn't connect to the cluster")
+            raise TimeoutError("Time out! Couldn't connect to the cluster")
 
         if result.stdout:
             res_dict = json.loads(result.stdout)
             self.args.distribution_version = res_dict['version']['number']
+            logging.info(self.args.distribution_version)
         self.wait_for_processing()
 
         self.cluster_endpoint_with_port = "".join([self.cluster_endpoint, ":", str(self.port)])
@@ -66,7 +67,7 @@ class BenchmarkTestCluster:
         return self.password
 
     def wait_for_processing(self, tries: int = 3, delay: int = 15, backoff: int = 2) -> None:
-        logging.info(f"Waiting for domain ******* to be up")
+        logging.info("Waiting for domain ******* to be up")
         protocol = "http://" if self.args.insecure else "https://"
         url = "".join([protocol, self.endpoint, "/_cluster/health"])
         # self.password = None if self.args.insecure else get_password(self.args.distribution_version)
