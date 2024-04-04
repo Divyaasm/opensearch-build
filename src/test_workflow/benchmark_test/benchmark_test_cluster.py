@@ -69,6 +69,6 @@ class BenchmarkTestCluster:
         protocol = "http://" if self.args.insecure else "https://"
         url = "".join([protocol, self.endpoint, "/_cluster/health"])
         self.password = None if self.args.insecure else get_password(self.args.distribution_version)
-        request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth("admin", self.password),  # type: ignore
+        request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth(self.args.username, self.args.password),  # type: ignore
                                                                 "verify": False}  # type: ignore
         retry_call(requests.get, fkwargs=request_args, tries=tries, delay=delay, backoff=backoff)
