@@ -32,7 +32,7 @@ class BenchmarkTestCluster:
         self.args = args
         self.cluster_endpoint = self.args.cluster_endpoint
         self.cluster_endpoint_with_port = None
-        self.password = None
+        self.password = self.args.password
 
     def start(self) -> None:
 
@@ -40,7 +40,7 @@ class BenchmarkTestCluster:
         try:
             result = subprocess.run(command, shell=True, capture_output=True, timeout=5)
         except subprocess.TimeoutExpired:
-            raise TimeoutError(f"Time out! Couldn't connect to the cluster {self.cluster_endpoint}")
+            raise TimeoutError(f"Time out! Couldn't connect to the cluster")
 
         if result.stdout:
             res_dict = json.loads(result.stdout)
@@ -65,10 +65,10 @@ class BenchmarkTestCluster:
         return self.password
 
     def wait_for_processing(self, tries: int = 3, delay: int = 15, backoff: int = 2) -> None:
-        logging.info(f"Waiting for domain at {self.endpoint} to be up")
+        logging.info(f"Waiting for domain ******* to be up")
         protocol = "http://" if self.args.insecure else "https://"
         url = "".join([protocol, self.endpoint, "/_cluster/health"])
-        self.password = None if self.args.insecure else get_password(self.args.distribution_version)
+        # self.password = None if self.args.insecure else get_password(self.args.distribution_version)
         request_args = {"url": url} if self.args.insecure else {"url": url, "auth": HTTPBasicAuth(self.args.username, self.args.password),  # type: ignore
                                                                 "verify": False}  # type: ignore
         retry_call(requests.get, fkwargs=request_args, tries=tries, delay=delay, backoff=backoff)
