@@ -72,5 +72,5 @@ class BenchmarkTestSuite:
             self.command += f' --client-options="timeout:300,use_ssl:true,verify_certs:false,basic_auth_user:\'{self.args.username}\',basic_auth_password:\'{self.args.password}\'"'
         else:
             self.command += ' --client-options="timeout:300"'
-        logging.info(f"Executing {self.command}")
+        logging.info(f"Executing {self.command.replace(self.endpoint, len(self.endpoint)*'*')}")
         subprocess.check_call(f"{self.command}", cwd=os.getcwd(), shell=True)
