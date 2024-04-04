@@ -114,7 +114,7 @@ parameters {
                 script {
                     echo "CLUSTER_ENDPOINT: ${CLUSTER_ENDPOINT}"
                     echo "security-enabled: ${SECURITY_ENABLED}"
-                    insecure = !"$SECURITY_ENABLED"
+                    insecure = !(params.SECURITY_ENABLED)
                     echo "${insecure}"
 
 
