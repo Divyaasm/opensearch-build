@@ -53,10 +53,13 @@ class Validation(ABC):
         if self.args.allow_http:
             prefix1 = '/usr/share'
             prefix2 = str(self.tmp_dir.path)
+            logging.info(prefix2)
+            logging.info(type(prefix2))
 
             plugin = {
                 'tar': prefix2, 'zip': prefix2
             }
+            logging.info(plugin.get(self.args.distribution, prefix1) + '/opensearch/plugins/opensearch-security')
             if not os.path.exists(plugin.get(self.args.distribution, prefix1) + '/opensearch/plugins/opensearch-security'):
                 self.http_prefix = 'http'
 
