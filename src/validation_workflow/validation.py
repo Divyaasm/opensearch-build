@@ -51,7 +51,7 @@ class Validation(ABC):
 
     def check_for_security_plugin(self) -> None:
         if self.args.allow_http:
-            prefix1 = 'usr/share'
+            prefix1 = '/usr/share'
             prefix2 = str(self.tmp_dir.path)
             logging.info(prefix2)
             logging.info(type(prefix2))
@@ -60,7 +60,7 @@ class Validation(ABC):
             plugin = {
                 'tar': prefix2, 'zip': prefix2
             }
-            logging.info(plugin.get(self.args.distribution, prefix1) + '/opensearch/plugins/opensearch-security')
+            logging.info(os.path.exists(plugin.get(self.args.distribution, prefix1) + '/opensearch/plugins/opensearch-security'))
             if not os.path.exists(plugin.get(self.args.distribution, prefix1) + '/opensearch/plugins/opensearch-security'):
                 self.http_prefix = 'http'
 
