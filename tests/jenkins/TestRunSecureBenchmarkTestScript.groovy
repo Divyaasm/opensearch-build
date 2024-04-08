@@ -26,11 +26,11 @@ class TestRunSecureBenchmarkTestScript extends BuildPipelineTest{
     void setUp() {
         helper.registerSharedLibrary(
                 library().name('jenkins')
-                        .defaultVersion('5.11.0')
+                        .defaultVersion('cluster')
                         .allowOverride(true)
                         .implicit(true)
                         .targetPath('vars')
-                        .retriever(gitSource('https://github.com/opensearch-project/opensearch-build-libraries.git'))
+                        .retriever(gitSource('https://github.com/Divyaasm/opensearch-build-libraries.git'))
                         .build()
         )
         helper.registerAllowedMethod("s3Download", [Map])
