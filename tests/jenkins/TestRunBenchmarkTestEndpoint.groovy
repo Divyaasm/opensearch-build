@@ -106,7 +106,7 @@ class TestRunBenchmarkTestEndpoint extends BuildPipelineTest{
 
         assertThat(testScriptCommands.size(), equalTo(1))
         assertThat(testScriptCommands, hasItems(
-                "./test.sh benchmark-test    --cluster-endpoint opensearch-ABCxdfdfhyfk.com  --workload nyc-taxis --benchmark-config /tmp/workspace/benchmark.ini --user-tag run-type:test,security-enabled:true                --test-procedure append-no-conflicts       --telemetry-params '{\"telemetry_setting\":\"value\"}'".toString()
+                "set +x && ./test.sh benchmark-test    --cluster-endpoint opensearch-ABCxdfdfhyfk.com  --workload nyc-taxis --benchmark-config /tmp/workspace/benchmark.ini --user-tag run-type:test,security-enabled:true                  --test-procedure append-no-conflicts       --telemetry-params '{\"telemetry_setting\":\"value\"}'".toString()
         ))
     }
     @Test
@@ -127,7 +127,7 @@ class TestRunBenchmarkTestEndpoint extends BuildPipelineTest{
 
         assertThat(testScriptCommands.size(), equalTo(1))
         assertThat(testScriptCommands, hasItems(
-                "./test.sh benchmark-test    --cluster-endpoint opensearch-ABCxdfdfhyfk.com  --workload nyc-taxis --benchmark-config /tmp/workspace/benchmark.ini --user-tag run-type:test,security-enabled:false --without-security               --test-procedure append-no-conflicts       --telemetry-params '{\"telemetry_setting\":\"value\"}'".toString()
+                "set +x && ./test.sh benchmark-test    --cluster-endpoint opensearch-ABCxdfdfhyfk.com  --workload nyc-taxis --benchmark-config /tmp/workspace/benchmark.ini --user-tag run-type:test,security-enabled:false --without-security                 --test-procedure append-no-conflicts       --telemetry-params '{\"telemetry_setting\":\"value\"}'".toString()
         ))
     }
 

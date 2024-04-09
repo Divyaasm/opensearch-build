@@ -60,10 +60,10 @@ class BenchmarkCreateCluster(BenchmarkTestCluster):
                 else:
                     params_list.append(f" -c {key}={value}")
         role_params = (
-            f" --require-approval=never --plugin cdk-assume-role-credential-plugin"
-            f" -c assume-role-credentials:writeIamRoleName={role} -c assume-role-credentials:readIamRoleName={role} "
+            f" --require-approval=never"
         )
         self.params = "".join(params_list) + role_params
+        self.password = None if self.args.insecure else get_password(self.args.distribution_version)
         self.is_endpoint_public = False
         self.stack_name = f"opensearch-infra-stack-{self.args.stack_suffix}"
         if self.manifest:
