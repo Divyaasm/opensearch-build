@@ -10,7 +10,6 @@ import os
 import subprocess
 from typing import Any
 
-from system.temporary_directory import TemporaryDirectory
 from test_workflow.benchmark_test.benchmark_args import BenchmarkArgs
 
 
@@ -80,9 +79,8 @@ class BenchmarkTestSuite:
         subprocess.check_call(f"docker start contain", cwd=os.getcwd(), shell=True)
         path = subprocess.check_output("docker exec contain find /opensearch-benchmark -name test_execution.json", cwd=os.getcwd(), shell=True)
         logging.info(path)
-        tmp_dir = TemporaryDirectory(keep=True)
         subprocess.check_call(f"docker cp contain:{path.decode().strip()} .", cwd=os.getcwd(), shell=True)
-        subprocess.check_call(f"ls", cwd=str(tmp_dir.path), shell=True)
+        subprocess.check_call("pwd", cwd=os.getcwd(), shell=True)
         subprocess.check_call(f"docker stop contain", cwd=os.getcwd(), shell=True)
         subprocess.check_call(f"docker rm contain", cwd=os.getcwd(), shell=True)
 
