@@ -129,11 +129,14 @@ parameters {
                         captureSegmentReplicationStat: CAPTURE_SEGMENT_REPLICATION_STAT,
                         telemetryParams: TELEMETRY_PARAMS
                     )
-                    archiveArtifacts artifacts: 'test_execution.json'
+                    stash includes: 'test_execution.json', name: "benchmark"
+
                 }
             }
             post {
                 always {
+                    unstash "benchmark"
+                    archiveArtifacts artifacts: 'test_execution.json.*'
                     postCleanup()
                 }
             }
