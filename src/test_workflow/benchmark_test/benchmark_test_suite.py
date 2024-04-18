@@ -78,8 +78,8 @@ class BenchmarkTestSuite:
         subprocess.check_call(f"{self.command}", cwd=os.getcwd(), shell=True)
         subprocess.check_call(f"docker start contain", cwd=os.getcwd(), shell=True)
         path = subprocess.check_output("docker exec contain find /opensearch-benchmark -name test_execution.json", cwd=os.getcwd(), shell=True)
-        with TemporaryDirectory(chdir=True) as tmp_dir:
-            subprocess.check_call(f"docker cp contain:{path.decode().strip()} {str(tmp_dir.path)}", cwd=os.getcwd(), shell=True)
-            subprocess.check_call(f"docker stop contain", cwd=os.getcwd(), shell=True)
-            subprocess.check_call(f"docker rm contain", cwd=os.getcwd(), shell=True)
+        tmp_dir = TemporaryDirectory()
+        subprocess.check_call(f"docker cp contain:{path.decode().strip()} {str(tmp_dir.path)}", cwd=os.getcwd(), shell=True)
+        subprocess.check_call(f"docker stop contain", cwd=os.getcwd(), shell=True)
+        subprocess.check_call(f"docker rm contain", cwd=os.getcwd(), shell=True)
 
