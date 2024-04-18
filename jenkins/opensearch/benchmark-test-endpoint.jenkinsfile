@@ -133,6 +133,7 @@ parameters {
             }
             post {
                 always {
+                    archiveArtifacts artifacts: 'test_execution.json'
                     postCleanup()
                 }
             }

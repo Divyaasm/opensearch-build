@@ -10,6 +10,7 @@ import os
 import subprocess
 from typing import Any
 
+from system.temporary_directory import TemporaryDirectory
 from test_workflow.benchmark_test.benchmark_args import BenchmarkArgs
 
 
@@ -37,11 +38,11 @@ class BenchmarkTestSuite:
         self.password = password
 
         # Pass the cluster endpoints with -t for multi-cluster use cases(e.g. cross-cluster-replication)
-        self.command = 'docker run --rm'
+        self.command = 'docker run --name contain'
         if self.args.benchmark_config:
             self.command += f" -v {args.benchmark_config}:/opensearch-benchmark/.benchmark/benchmark.ini"
         self.command += f" opensearchproject/opensearch-benchmark:latest execute-test --workload={self.args.workload} " \
-                        f"--pipeline=benchmark-only --target-hosts={endpoint}"
+                        f"--pipeline=benchmark-only --target-hosts={endpoint} --test-mode"
 
         if self.args.workload_params:
             logging.info(f"Workload Params are {args.workload_params}")
@@ -75,3 +76,10 @@ class BenchmarkTestSuite:
         log_info = f"Executing {self.command.replace(self.endpoint, len(self.endpoint) * '*').replace(self.args.username, len(self.args.username) * '*')}"
         logging.info(log_info.replace(self.password, len(self.password) * '*') if self.password else log_info)
         subprocess.check_call(f"{self.command}", cwd=os.getcwd(), shell=True)
+        subprocess.check_call(f"docker start contain", cwd=os.getcwd(), shell=True)
+        path = subprocess.check_output("docker exec contain find /opensearch-benchmark -name test_execution.json", cwd=os.getcwd(), shell=True)
+        with TemporaryDirectory(chdir=True) as tmp_dir:
+            subprocess.check_call(f"docker cp contain:{path.decode().strip()} {str(tmp_dir.path)}", cwd=os.getcwd(), shell=True)
+            subprocess.check_call(f"docker stop contain", cwd=os.getcwd(), shell=True)
+            subprocess.check_call(f"docker rm contain", cwd=os.getcwd(), shell=True)
+
