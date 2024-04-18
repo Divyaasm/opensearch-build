@@ -129,11 +129,11 @@ parameters {
                         captureSegmentReplicationStat: CAPTURE_SEGMENT_REPLICATION_STAT,
                         telemetryParams: TELEMETRY_PARAMS
                     )
+                    archiveArtifacts artifacts: 'test_execution.json'
                 }
             }
             post {
                 always {
-                    archiveArtifacts artifacts: 'test_execution.json'
                     postCleanup()
                 }
             }
