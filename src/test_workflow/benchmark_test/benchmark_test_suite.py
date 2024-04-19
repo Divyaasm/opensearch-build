@@ -5,6 +5,8 @@
 # this file be licensed under the Apache-2.0 license or a
 # compatible open source license.
 
+import pandas as pd
+import json
 import logging
 import os
 import subprocess
@@ -80,7 +82,21 @@ class BenchmarkTestSuite:
         path = subprocess.check_output("docker exec contain find /opensearch-benchmark -name test_execution.json", cwd=os.getcwd(), shell=True)
         logging.info(path)
         subprocess.check_call(f"docker cp contain:{path.decode().strip()} .", cwd=os.getcwd(), shell=True)
-        subprocess.check_call("pwd", cwd=os.getcwd(), shell=True)
+        subprocess.check_call("pwd", cwd="/tmp", shell=True)
+        file_path = os.path.join(os.getcwd(), "test_execution.json")
+        logging.info(file_path)
+        self.convert(file_path)
         subprocess.check_call(f"docker stop contain", cwd=os.getcwd(), shell=True)
         subprocess.check_call(f"docker rm contain", cwd=os.getcwd(), shell=True)
+
+    def convert(self, results: str) -> None:
+        with open(results) as file:
+            data = json.load(file)
+
+        formatted_data = pd.json_normalize(data["results"]["op_metrics"])
+
+        formatted_data.to_csv(f"{results}-output.csv", index=False)
+        print("Finished converting json to csv.")
+
+
 
