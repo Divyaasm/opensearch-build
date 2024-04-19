@@ -83,7 +83,7 @@ class BenchmarkTestSuite:
         subprocess.check_call(f"docker cp contain:{path.decode().strip()} .", cwd=os.getcwd(), shell=True)
         file_path = os.path.join(os.getcwd(), "test_execution.json")
         self.convert(file_path)
-        subprocess.check_call(f"docker stop contain", cwd=os.getcwd(), shell=True)
+        subprocess.check_call(f"docker stop contain", cwd=os.getcwd(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         subprocess.check_call(f"docker rm contain", cwd=os.getcwd(), shell=True)
 
     def convert(self, results: str) -> None:
@@ -92,7 +92,7 @@ class BenchmarkTestSuite:
 
         formatted_data = pd.json_normalize(data["results"]["op_metrics"])
 
-        formatted_data.to_csv(f"{results}.csv", index=False)
+        formatted_data.to_csv("test_execution.csv", index=False)
         print("Finished converting json to csv.")
 
 
