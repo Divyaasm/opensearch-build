@@ -78,22 +78,19 @@ class BenchmarkTestSuite:
         logging.info(log_info.replace(self.password, len(self.password) * '*') if self.password else log_info)
         subprocess.check_call(f"{self.command}", cwd=os.getcwd(), shell=True)
 
-        subprocess.check_call(f"docker start contain", cwd=os.getcwd(), shell=True)
+        subprocess.check_call("docker start contain", cwd=os.getcwd(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         path = subprocess.check_output("docker exec contain find /opensearch-benchmark -name test_execution.json", cwd=os.getcwd(), shell=True)
         subprocess.check_call(f"docker cp contain:{path.decode().strip()} .", cwd=os.getcwd(), shell=True)
         file_path = os.path.join(os.getcwd(), "test_execution.json")
         self.convert(file_path)
-        subprocess.check_call(f"docker stop contain", cwd=os.getcwd(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        subprocess.check_call(f"docker rm contain", cwd=os.getcwd(), shell=True)
+        subprocess.check_call("docker stop contain", cwd=os.getcwd(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        subprocess.check_call("docker rm contain", cwd=os.getcwd(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def convert(self, results: str) -> None:
         with open(results) as file:
             data = json.load(file)
-
         formatted_data = pd.json_normalize(data["results"]["op_metrics"])
-
         formatted_data.to_csv("test_execution.csv", index=False)
-        print("Finished converting json to csv.")
 
 
 
