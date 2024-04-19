@@ -80,11 +80,8 @@ class BenchmarkTestSuite:
 
         subprocess.check_call(f"docker start contain", cwd=os.getcwd(), shell=True)
         path = subprocess.check_output("docker exec contain find /opensearch-benchmark -name test_execution.json", cwd=os.getcwd(), shell=True)
-        logging.info(path)
         subprocess.check_call(f"docker cp contain:{path.decode().strip()} .", cwd=os.getcwd(), shell=True)
-        subprocess.check_call("pwd", cwd="/tmp", shell=True)
         file_path = os.path.join(os.getcwd(), "test_execution.json")
-        logging.info(file_path)
         self.convert(file_path)
         subprocess.check_call(f"docker stop contain", cwd=os.getcwd(), shell=True)
         subprocess.check_call(f"docker rm contain", cwd=os.getcwd(), shell=True)
@@ -95,7 +92,7 @@ class BenchmarkTestSuite:
 
         formatted_data = pd.json_normalize(data["results"]["op_metrics"])
 
-        formatted_data.to_csv(f"{results}-output.csv", index=False)
+        formatted_data.to_csv(f"{results}.csv", index=False)
         print("Finished converting json to csv.")
 
 
