@@ -27,6 +27,5 @@ class ValidationTestRunner:
     }
 
     @classmethod
-    with
     def dispatch(cls, args: ValidationArgs, dist: str) -> Validation:
         return cls.RUNNERS[dist](args)
