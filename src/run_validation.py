@@ -10,6 +10,8 @@ import sys
 
 from system import console
 from validation_workflow.validation_args import ValidationArgs
+from system.temporary_directory import TemporaryDirectory
+
 from validation_workflow.validation_test_runner import ValidationTestRunner  # type: ignore
 
 
@@ -19,9 +21,10 @@ def main() -> int:
     console.configure(level=args.logging_level)
     logging.getLogger("urllib3").setLevel(logging.WARNING)
 
-    test_result = ValidationTestRunner.dispatch(args, args.distribution).run()
-    logging.info(f'final test_result = {test_result}')
-    return 0 if test_result else 1  # type: ignore
+    with TemporaryDirectory() as work_dir:
+        test_result = ValidationTestRunner.dispatch(args, args.distribution, work_dir).run()
+        logging.info(f'final test_result = {test_result}')
+        return 0 if test_result else 1  # type: ignore
 
 
 if __name__ == "__main__":
