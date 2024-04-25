@@ -30,6 +30,8 @@ class ValidationTestRunner:
 
     @classmethod
     def dispatch(cls, args: ValidationArgs, dist: str) -> Validation:
-        with TemporaryDirectory(keep=False, chdir=True) as work_dir:
+        with TemporaryDirectory(keep=False) as work_dir:
+            print("Temporary directory created:", work_dir)
             obj = cls.RUNNERS[dist](args, work_dir)
+            print("Object created:", obj)
             return obj
