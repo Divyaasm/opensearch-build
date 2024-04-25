@@ -51,6 +51,7 @@ class ValidateTar(Validation, DownloadUtils):
                 logging.info(f'All tests Pass : {counter}')
                 return True
             else:
+                self.cleanup()
                 raise Exception(f'Not all tests Pass : {counter}')
         else:
             raise Exception("Cluster is not ready for API test")
