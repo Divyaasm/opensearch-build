@@ -10,6 +10,8 @@ import os
 
 from system.execute import execute
 from system.process import Process
+from system.temporary_directory import TemporaryDirectory
+
 from test_workflow.integ_test.utils import get_password
 from validation_workflow.api_test_cases import ApiTestCases
 from validation_workflow.download_utils import DownloadUtils
@@ -19,8 +21,8 @@ from validation_workflow.validation_args import ValidationArgs
 
 class ValidateTar(Validation, DownloadUtils):
 
-    def __init__(self, args: ValidationArgs, tmp_dir_path: str) -> None:
-        super().__init__(args, tmp_dir_path)
+    def __init__(self, args: ValidationArgs, tmp_dir: TemporaryDirectory) -> None:
+        super().__init__(args, tmp_dir)
         self.os_process = Process()
         self.osd_process = Process()
 
