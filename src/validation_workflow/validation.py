@@ -16,6 +16,8 @@ from typing import Any
 
 import requests
 
+from system.temporary_directory import TemporaryDirectory
+
 from validation_workflow.api_request import ApiTest
 from validation_workflow.download_utils import DownloadUtils
 from validation_workflow.validation_args import ValidationArgs
@@ -26,14 +28,15 @@ class Validation(ABC):
         Abstract class for all types of artifact validation
     """
 
-    def __init__(self, args: ValidationArgs, tmp_dir_path: str) -> None:
+    def __init__(self, args: ValidationArgs, tmp_dir: TemporaryDirectory) -> None:
         self.args = args
         self.base_url_production = "https://artifacts.opensearch.org/releases/bundle/"
         self.base_url_staging = "https://ci.opensearch.org/ci/dbc/distribution-build-"
-        self.tmp_dir_path = tmp_dir_path
+        self.tmp_dir_path = tmp_dir.path
+        self.tmp_dir = tmp_dir
 
     def check_url(self, url: str) -> bool:
-        if DownloadUtils().download(url, self.tmp_dir_path) and DownloadUtils().is_url_valid(url):  # type: ignore
+        if DownloadUtils().download(url, self.tmp_dir) and DownloadUtils().is_url_valid(url):  # type: ignore
             logging.info(f"Valid URL - {url} and Download Successful !")
             return True
         else:

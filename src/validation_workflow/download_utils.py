@@ -9,6 +9,7 @@
 import os
 
 import requests
+from system.temporary_directory import TemporaryDirectory
 
 
 class DownloadUtils:
@@ -19,9 +20,9 @@ class DownloadUtils:
         return status
 
     @staticmethod
-    def download(url: str, tmp_dir_path: str) -> bool:
+    def download(url: str, tmp_dir: TemporaryDirectory) -> bool:
         # This method writes the contents from the response object into temporary directory file name fetched from the end of the url.
         response = requests.get(url, stream=True)
-        path = os.path.join(tmp_dir_path, os.path.basename(url))
+        path = os.path.join(tmp_dir.name, os.path.basename(url))
         status = bool(open(path, "wb").write(response.content))
         return status
