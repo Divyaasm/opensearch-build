@@ -16,7 +16,6 @@ from typing import Any
 
 import requests
 
-from system.temporary_directory import TemporaryDirectory
 from validation_workflow.api_request import ApiTest
 from validation_workflow.download_utils import DownloadUtils
 from validation_workflow.validation_args import ValidationArgs
@@ -27,17 +26,14 @@ class Validation(ABC):
         Abstract class for all types of artifact validation
     """
 
-    def __exit__(self, exc_type: Any, exc_value: Any, exc_traceback: Any) -> None:
-        self.tmp_dir.__exit__(exc_type, exc_value, exc_traceback)
-
-    def __init__(self, args: ValidationArgs) -> None:
+    def __init__(self, args: ValidationArgs, tmp_dir_path: str) -> None:
         self.args = args
         self.base_url_production = "https://artifacts.opensearch.org/releases/bundle/"
         self.base_url_staging = "https://ci.opensearch.org/ci/dbc/distribution-build-"
-        self.tmp_dir = TemporaryDirectory(keep=True)
+        self.tmp_dir_path = tmp_dir_path
 
     def check_url(self, url: str) -> bool:
-        if DownloadUtils().download(url, self.tmp_dir) and DownloadUtils().is_url_valid(url):  # type: ignore
+        if DownloadUtils().download(url, self.tmp_dir_path) and DownloadUtils().is_url_valid(url):  # type: ignore
             logging.info(f"Valid URL - {url} and Download Successful !")
             return True
         else:
@@ -68,7 +64,7 @@ class Validation(ABC):
         for project in self.args.projects:
             if (isFilePathEmpty):
                 if ("https:" not in self.args.file_path.get(project)):
-                    self.copy_artifact(self.args.file_path.get(project), str(self.tmp_dir.path))
+                    self.copy_artifact(self.args.file_path.get(project), self.tmp_dir_path)
                 else:
                     self.args.version = self.get_version(self.args.file_path.get(project))
                     self.check_url(self.args.file_path.get(project))

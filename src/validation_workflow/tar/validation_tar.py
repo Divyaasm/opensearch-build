@@ -19,8 +19,8 @@ from validation_workflow.validation_args import ValidationArgs
 
 class ValidateTar(Validation, DownloadUtils):
 
-    def __init__(self, args: ValidationArgs) -> None:
-        super().__init__(args)
+    def __init__(self, args: ValidationArgs, tmp_dir_path: str) -> None:
+        super().__init__(args, tmp_dir_path)
         self.os_process = Process()
         self.osd_process = Process()
 
@@ -28,16 +28,16 @@ class ValidateTar(Validation, DownloadUtils):
         try:
             for project in self.args.projects:
                 self.filename = os.path.basename(self.args.file_path.get(project))
-                execute('mkdir ' + os.path.join(self.tmp_dir.path, project) + ' | tar -xzf ' + os.path.join(str(self.tmp_dir.path), self.filename) + ' -C ' + os.path.join(self.tmp_dir.path, project) + ' --strip-components=1', ".", True, False)  # noqa: E501
+                execute('mkdir ' + os.path.join(self.tmp_dir_path, project) + ' | tar -xzf ' + os.path.join(str(self.tmp_dir_path), self.filename) + ' -C ' + os.path.join(self.tmp_dir.path, project) + ' --strip-components=1', ".", True, False)  # noqa: E501
         except:
             raise Exception('Failed to install Opensearch')
         return True
 
     def start_cluster(self) -> bool:
         try:
-            self.os_process.start(f'export OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} && ./opensearch-tar-install.sh', os.path.join(self.tmp_dir.path, "opensearch"))
+            self.os_process.start(f'export OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} && ./opensearch-tar-install.sh', os.path.join(self.tmp_dir_path, "opensearch"))
             if ("opensearch-dashboards" in self.args.projects):
-                self.osd_process.start(os.path.join(str(self.tmp_dir.path), "opensearch-dashboards", "bin", "opensearch-dashboards"), ".")
+                self.osd_process.start(os.path.join(str(self.tmp_dir_path), "opensearch-dashboards", "bin", "opensearch-dashboards"), ".")
             logging.info('Started cluster')
         except:
             raise Exception('Failed to Start Cluster')
@@ -46,7 +46,7 @@ class ValidateTar(Validation, DownloadUtils):
     def validation(self) -> bool:
         if self.check_cluster_readiness():
             test_result, counter = ApiTestCases().test_apis(self.args.version, self.args.projects,
-                                                            self.check_for_security_plugin(os.path.join(self.tmp_dir.path, "opensearch")) if self.args.allow_http else True)
+                                                            self.check_for_security_plugin(os.path.join(self.tmp_dir_path, "opensearch")) if self.args.allow_http else True)
             if (test_result):
                 logging.info(f'All tests Pass : {counter}')
                 return True

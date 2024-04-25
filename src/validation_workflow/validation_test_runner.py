@@ -6,6 +6,8 @@
 # compatible open source license.
 # type: ignore
 
+from system.temporary_directory import TemporaryDirectory
+
 from validation_workflow.deb.validation_deb import ValidateDeb
 from validation_workflow.docker.validation_docker import ValidateDocker
 from validation_workflow.rpm.validation_rpm import ValidateRpm
@@ -28,4 +30,5 @@ class ValidationTestRunner:
 
     @classmethod
     def dispatch(cls, args: ValidationArgs, dist: str) -> Validation:
-        return cls.RUNNERS[dist](args)
+        with TemporaryDirectory() as work_dir:
+            return cls.RUNNERS[dist](args, str(work_dir.path))
