@@ -26,10 +26,8 @@ class Validation(ABC):
     """
         Abstract class for all types of artifact validation
     """
-    def __enter__(self) -> 'Validation':
-        return self
 
-    def __exit__(self, exc_type: Any, exc_value: Any, exc_traceback: Any) -> None:
+    def __del__(self, exc_type: Any, exc_value: Any, exc_traceback: Any) -> None:
         self.tmp_dir.__exit__(exc_type, exc_value, exc_traceback)
 
     def __init__(self, args: ValidationArgs) -> None:
