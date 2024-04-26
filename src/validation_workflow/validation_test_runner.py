@@ -30,4 +30,4 @@ class ValidationTestRunner:
 
     @classmethod
     def dispatch(cls, args: ValidationArgs, dist: str, work_dir: TemporaryDirectory) -> Validation:
-       return cls.RUNNERS[dist](args, work_dir)
+        return cls.RUNNERS[dist](args, work_dir)

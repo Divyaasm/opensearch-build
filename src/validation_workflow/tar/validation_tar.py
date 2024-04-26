@@ -26,8 +26,6 @@ class ValidateTar(Validation, DownloadUtils):
         self.os_process = Process()
         self.osd_process = Process()
 
-
-
     def installation(self) -> bool:
         try:
             for project in self.args.projects:
@@ -58,13 +56,15 @@ class ValidateTar(Validation, DownloadUtils):
                 self.cleanup()
                 raise Exception(f'Not all tests Pass : {counter}')
         else:
+            self.cleanup()
             raise Exception("Cluster is not ready for API test")
 
     def cleanup(self) -> bool:
         try:
-            self.os_process.terminate()
-            if ("opensearch-dashboards" in self.args.projects):
-                self.osd_process.terminate()
+            if self.succesful_checks > 0:
+                self.os_process.terminate()
+                if ("opensearch-dashboards" in self.args.projects):
+                    self.osd_process.terminate()
         except:
             raise Exception('Failed to terminate the processes that started OpenSearch and OpenSearch-Dashboards')
         return True

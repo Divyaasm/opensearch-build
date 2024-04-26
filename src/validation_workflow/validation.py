@@ -107,6 +107,7 @@ class Validation(ABC):
         return False
 
     def check_http_request(self) -> bool:
+        self.succesful_checks = 0
         self.test_readiness_urls = {
             'https://localhost:9200': 'opensearch cluster API'
         }
@@ -118,6 +119,8 @@ class Validation(ABC):
                 if status_code != 200:
                     logging.error(f'Error connecting to {name} ({url}): status code {status_code}')
                     return False
+                if status_code == 200:
+                    self.succesful_checks += 1
             except (requests.exceptions.ConnectionError, requests.exceptions.ConnectTimeout) as e:
                 logging.error(f'Error connecting to {name} ({url}): {e}')
                 return False
