@@ -61,9 +61,10 @@ class ValidateTar(Validation, DownloadUtils):
 
     def cleanup(self) -> bool:
         try:
+            logging.info(self.succesful_checks)
             if self.succesful_checks > 0:
                 self.os_process.terminate()
-                if ("opensearch-dashboards" in self.args.projects):
+                if ("opensearch-dashboards" in self.args.projects) and self.succesful_checks = 2:
                     self.osd_process.terminate()
         except:
             raise Exception('Failed to terminate the processes that started OpenSearch and OpenSearch-Dashboards')
