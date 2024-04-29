@@ -19,9 +19,8 @@ from validation_workflow.validation_args import ValidationArgs
 
 
 class ImplementValidation(Validation):
-    def __init__(self, args: ValidationArgs) -> None:
-        super().__init__(args)
-        self.tmp_dir = TemporaryDirectory()
+    def __init__(self, args: ValidationArgs, tmp_dir: TemporaryDirectory) -> None:
+        super().__init__(args, tmp_dir)
 
     def installation(self) -> None:
         return None

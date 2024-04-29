@@ -41,9 +41,9 @@ class Validation(ABC):
         else:
             raise Exception(f"Invalid url - {url}")
 
-    def copy_artifact(self, filepath: str, tmp_dir: str) -> bool:
+    def copy_artifact(self, filepath: str, tmp_dir_path: str) -> bool:
         if filepath:
-            shutil.copy2(filepath, tmp_dir.path)
+            shutil.copy2(filepath, tmp_dir_path)
             return True
         else:
             raise Exception("Provided path for local artifacts does not exist")
@@ -66,7 +66,7 @@ class Validation(ABC):
         for project in self.args.projects:
             if (isFilePathEmpty):
                 if ("https:" not in self.args.file_path.get(project)):
-                    self.copy_artifact(self.args.file_path.get(project), self.tmp_dir_path)
+                    self.copy_artifact(self.args.file_path.get(project), str(self.tmp_dir.path))
                 else:
                     self.args.version = self.get_version(self.args.file_path.get(project))
                     self.check_url(self.args.file_path.get(project))
