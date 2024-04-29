@@ -8,6 +8,8 @@
 import logging
 import os
 
+from system.temporary_directory import TemporaryDirectory
+
 from system.execute import execute
 from test_workflow.integ_test.utils import get_password
 from validation_workflow.api_test_cases import ApiTestCases
@@ -18,8 +20,8 @@ from validation_workflow.validation_args import ValidationArgs
 
 class ValidateYum(Validation, DownloadUtils):
 
-    def __init__(self, args: ValidationArgs) -> None:
-        super().__init__(args)
+    def __init__(self, args: ValidationArgs, tmp_dir: TemporaryDirectory) -> None:
+        super().__init__(args, tmp_dir)
 
     def installation(self) -> bool:
         try:
@@ -52,6 +54,7 @@ class ValidateYum(Validation, DownloadUtils):
                 logging.info(f'All tests Pass : {counter}')
                 return True
             else:
+                self.cleanup()
                 raise Exception(f'Not all tests Pass : {counter}')
         else:
             raise Exception("Cluster is not ready for API test")

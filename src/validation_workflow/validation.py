@@ -32,7 +32,6 @@ class Validation(ABC):
         self.args = args
         self.base_url_production = "https://artifacts.opensearch.org/releases/bundle/"
         self.base_url_staging = "https://ci.opensearch.org/ci/dbc/distribution-build-"
-        self.tmp_dir_path = tmp_dir.path
         self.tmp_dir = tmp_dir
 
     def check_url(self, url: str) -> bool:
@@ -42,9 +41,9 @@ class Validation(ABC):
         else:
             raise Exception(f"Invalid url - {url}")
 
-    def copy_artifact(self, filepath: str, tempdir_path: str) -> bool:
+    def copy_artifact(self, filepath: str, tmp_dir: str) -> bool:
         if filepath:
-            shutil.copy2(filepath, tempdir_path)
+            shutil.copy2(filepath, tmp_dir.path)
             return True
         else:
             raise Exception("Provided path for local artifacts does not exist")
@@ -116,11 +115,11 @@ class Validation(ABC):
         for url, name in self.test_readiness_urls.items():
             try:
                 status_code, response_text = ApiTest(url, self.args.version).api_get()
-                if status_code != 200:
-                    logging.error(f'Error connecting to {name} ({url}): status code {status_code}')
-                    return False
                 if status_code == 200:
                     self.succesful_checks += 1
+                else:
+                    logging.error(f'Error connecting to {name} ({url}): status code {status_code}')
+                    return False
             except (requests.exceptions.ConnectionError, requests.exceptions.ConnectTimeout) as e:
                 logging.error(f'Error connecting to {name} ({url}): {e}')
                 return False

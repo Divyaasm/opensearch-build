@@ -30,16 +30,16 @@ class ValidateTar(Validation, DownloadUtils):
         try:
             for project in self.args.projects:
                 self.filename = os.path.basename(self.args.file_path.get(project))
-                execute('mkdir ' + os.path.join(self.tmp_dir_path, project) + ' | tar -xzf ' + os.path.join(str(self.tmp_dir_path), self.filename) + ' -C ' + os.path.join(self.tmp_dir.path, project) + ' --strip-components=1', ".", True, False)  # noqa: E501
+                execute('mkdir ' + os.path.join(self.tmp_dir.path, project) + ' | tar -xzf ' + os.path.join(str(self.tmp_dir.path), self.filename) + ' -C ' + os.path.join(self.tmp_dir.path, project) + ' --strip-components=1', ".", True, False)  # noqa: E501
         except:
             raise Exception('Failed to install Opensearch')
         return True
 
     def start_cluster(self) -> bool:
         try:
-            self.os_process.start(f'export OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} && ./opensearch-tar-install.sh', os.path.join(self.tmp_dir_path, "opensearch"))
+            self.os_process.start(f'export OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} && ./opensearch-tar-install.sh', os.path.join(self.tmp_dir.path, "opensearch"))
             if ("opensearch-dashboards" in self.args.projects):
-                self.osd_process.start(os.path.join(str(self.tmp_dir_path), "opensearch-dashboards", "bin", "opensearch-dashboards"), ".")
+                self.osd_process.start(os.path.join(str(self.tmp_dir.path), "opensearch-dashboards", "bin", "opensearch-dashboards"), ".")
             logging.info('Started cluster')
         except:
             raise Exception('Failed to Start Cluster')
@@ -48,7 +48,7 @@ class ValidateTar(Validation, DownloadUtils):
     def validation(self) -> bool:
         if self.check_cluster_readiness():
             test_result, counter = ApiTestCases().test_apis(self.args.version, self.args.projects,
-                                                            self.check_for_security_plugin(os.path.join(self.tmp_dir_path, "opensearch")) if self.args.allow_http else True)
+                                                            self.check_for_security_plugin(os.path.join(self.tmp_dir.path, "opensearch")) if self.args.allow_http else True)
             if (test_result):
                 logging.info(f'All tests Pass : {counter}')
                 return True
@@ -62,10 +62,9 @@ class ValidateTar(Validation, DownloadUtils):
     def cleanup(self) -> bool:
         try:
             logging.info(self.succesful_checks)
-            if self.succesful_checks > 0:
-                self.os_process.terminate()
-                if ("opensearch-dashboards" in self.args.projects) and self.succesful_checks == 2:
-                    self.osd_process.terminate()
+            self.os_process.terminate()
+            if ("opensearch-dashboards" in self.args.projects):
+                self.osd_process.terminate()
         except:
             raise Exception('Failed to terminate the processes that started OpenSearch and OpenSearch-Dashboards')
         return True
