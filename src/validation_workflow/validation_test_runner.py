@@ -7,7 +7,6 @@
 # type: ignore
 
 from system.temporary_directory import TemporaryDirectory
-
 from validation_workflow.deb.validation_deb import ValidateDeb
 from validation_workflow.docker.validation_docker import ValidateDocker
 from validation_workflow.rpm.validation_rpm import ValidateRpm

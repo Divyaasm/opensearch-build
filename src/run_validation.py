@@ -9,9 +9,8 @@ import logging
 import sys
 
 from system import console
-from validation_workflow.validation_args import ValidationArgs
 from system.temporary_directory import TemporaryDirectory
-
+from validation_workflow.validation_args import ValidationArgs
 from validation_workflow.validation_test_runner import ValidationTestRunner  # type: ignore
 
 

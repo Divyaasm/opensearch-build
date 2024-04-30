@@ -17,7 +17,6 @@ from typing import Any
 import requests
 
 from system.temporary_directory import TemporaryDirectory
-
 from validation_workflow.api_request import ApiTest
 from validation_workflow.download_utils import DownloadUtils
 from validation_workflow.validation_args import ValidationArgs

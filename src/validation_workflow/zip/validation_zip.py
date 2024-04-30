@@ -9,9 +9,8 @@ import logging
 import os
 
 from system.process import Process
-from system.zip_file import ZipFile
 from system.temporary_directory import TemporaryDirectory
-
+from system.zip_file import ZipFile
 from test_workflow.integ_test.utils import get_password
 from validation_workflow.api_test_cases import ApiTestCases
 from validation_workflow.download_utils import DownloadUtils
@@ -61,9 +60,8 @@ class ValidateZip(Validation, DownloadUtils):
 
     def cleanup(self) -> bool:
         try:
-            if self.succesful_checks > 0:
-                self.os_process.terminate()
-            if ("opensearch-dashboards" in self.args.projects) and self.succesful_checks == 2:
+            self.os_process.terminate()
+            if ("opensearch-dashboards" in self.args.projects):
                 self.osd_process.terminate()
         except:
             raise Exception('Failed to terminate the processes that started OpenSearch and OpenSearch-Dashboards')

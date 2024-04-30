@@ -10,7 +10,6 @@ import os
 
 from system.execute import execute
 from system.temporary_directory import TemporaryDirectory
-
 from test_workflow.integ_test.utils import get_password
 from validation_workflow.api_test_cases import ApiTestCases
 from validation_workflow.download_utils import DownloadUtils

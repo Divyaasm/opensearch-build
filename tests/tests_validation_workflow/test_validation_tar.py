@@ -144,7 +144,8 @@ class TestValidateTar(unittest.TestCase):
     @patch('validation_workflow.tar.validation_tar.execute')
     @patch('validation_workflow.validation.Validation.check_for_security_plugin')
     @patch('validation_workflow.validation.Validation.check_cluster_readiness')
-    def test_validation_with_allow_http(self, mock_check_cluster: Mock, mock_security: Mock, mock_system: Mock, mock_basename: Mock, mock_test_apis: Mock, mock_temporary_directory: Mock, mock_validation_args: Mock) -> None:
+    def test_validation_with_allow_http(self, mock_check_cluster: Mock, mock_security: Mock, mock_system: Mock, mock_basename: Mock,
+                                        mock_test_apis: Mock, mock_temporary_directory: Mock, mock_validation_args: Mock) -> None:
         mock_validation_args.return_value.version = '2.3.0'
         mock_validation_args.return_value.allow_http = True
         validate_tar = ValidateTar(mock_validation_args.return_value, mock_temporary_directory.return_value)
