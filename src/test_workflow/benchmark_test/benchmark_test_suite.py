@@ -41,7 +41,7 @@ class BenchmarkTestSuite:
         self.security = security
         self.args = args
         self.password = password
-        self.tmp_dir = TemporaryDirectory(keep=keep)
+        self.tmp_dir = TemporaryDirectory(keep=True)
 
         # Pass the cluster endpoints with -t for multi-cluster use cases(e.g. cross-cluster-replication)
         self.container_name = f'docker-container-{args.stack_suffix}'  # container name
@@ -87,7 +87,7 @@ class BenchmarkTestSuite:
         subprocess.check_call(f"docker start {self.container_name}", cwd=os.getcwd(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         path = subprocess.check_output(f"docker exec {self.container_name} find /opensearch-benchmark -name test_execution.json", cwd=os.getcwd(), shell=True)
         subprocess.check_call(f"docker cp {self.container_name}:{path.decode().strip()} .", cwd=os.getcwd(), shell=True)
-        file_path = os.path.join(os.getcwd(), "test_execution.json")
+        file_path = os.path.join(str(self.tmp_dir.path), "test_execution.json")
         self.convert(file_path)
         subprocess.check_call(f"docker stop {self.container_name}", cwd=os.getcwd(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         subprocess.check_call(f"docker rm {self.container_name}", cwd=os.getcwd(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
@@ -97,5 +97,5 @@ class BenchmarkTestSuite:
             data = json.load(file)
         formatted_data = pd.json_normalize(data["results"]["op_metrics"])
         formatted_data.to_csv("test_execution.csv", index=False)
-        df = pd.read_csv(os.path.join(os.getcwd(), "test_execution.csv"))
+        df = pd.read_csv(os.path.join(str(self.tmp_dir.path), "test_execution.csv"))
         logging.info(df)
