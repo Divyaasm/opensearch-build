@@ -44,7 +44,8 @@ class BenchmarkTestSuite:
         self.tmp_dir = TemporaryDirectory(keep=True)
 
         # Pass the cluster endpoints with -t for multi-cluster use cases(e.g. cross-cluster-replication)
-        self.command = f'docker run --name contain'
+        self.container_name = "contain"  # container name
+        self.command = f'docker run --name {self.container_name}'
         if self.args.benchmark_config:
             self.command += f" -v {args.benchmark_config}:/opensearch-benchmark/.benchmark/benchmark.ini"
         self.command += f" opensearchproject/opensearch-benchmark:latest execute-test --workload={self.args.workload} " \
