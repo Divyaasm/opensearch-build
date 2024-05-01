@@ -88,7 +88,7 @@ class BenchmarkTestSuite:
         subprocess.check_call(f"docker cp {self.container_name}:opensearch-benchmark/. .", cwd=os.getcwd(), shell=True)
         file_path = glob.glob(os.path.join(os.getcwd(), "test_executions", "*", "test_execution.json"))
         logging.info(file_path)
-        # self.convert(file_path)
+        self.convert(file_path)
         subprocess.check_call(f"docker rm {self.container_name}", cwd=os.getcwd(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 
     def convert(self, results: str) -> None:
