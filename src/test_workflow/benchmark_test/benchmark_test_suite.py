@@ -6,6 +6,7 @@
 # compatible open source license.
 
 import pandas as pd
+import shutil
 import json
 import logging
 import os
@@ -97,6 +98,10 @@ class BenchmarkTestSuite:
         formatted_data = pd.json_normalize(data["results"]["op_metrics"])
         formatted_data.to_csv(os.path.join(os.getcwd(), "test_execution.csv"), index=False)
         df = pd.read_csv(os.path.join(os.getcwd(), "test_execution.csv"))
+        terminal_width = shutil.get_terminal_size().columns
+        width_95_percent = int(1 * terminal_width)
+        pd.set_option('display.width', width_95_percent)
+
         pd.set_option('display.max_rows', None)
         pd.set_option('display.max_columns', None)
-        logging.info(df)
+        logging.info(f"\n{df}")
