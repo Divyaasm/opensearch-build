@@ -121,6 +121,7 @@ parameters {
                         password: PASSWORD,
                         workload: TEST_WORKLOAD,
                         userTag: USER_TAGS.isEmpty() ? "security-enabled:${SECURITY_ENABLED}" : "${USER_TAGS},security-enabled:${SECURITY_ENABLED}",
+                        suffix: "${BUILD_NUMBER}",
                         workloadParams: WORKLOAD_PARAMS,
                         testProcedure: TEST_PROCEDURE,
                         excludeTasks: EXCLUDE_TASKS,

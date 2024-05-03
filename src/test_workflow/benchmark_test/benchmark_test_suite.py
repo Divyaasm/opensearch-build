@@ -29,9 +29,6 @@ class BenchmarkTestSuite:
     Represents a performance test suite. This class runs rally test on the deployed cluster with the provided IP.
     """
 
-    def __exit__(self, exc_type: Any, exc_value: Any, exc_traceback: Any) -> None:
-        self.tmp_dir.__exit__(exc_type, exc_value, exc_traceback)
-
     def __init__(
             self,
             endpoint: Any,
@@ -43,11 +40,9 @@ class BenchmarkTestSuite:
         self.security = security
         self.args = args
         self.password = password
-        self.tmp_dir = TemporaryDirectory(keep=True)
 
         # Pass the cluster endpoints with -t for multi-cluster use cases(e.g. cross-cluster-replication)
-        self.container_name = "test_container"  # container name
-        self.command = f'docker run --name {self.container_name}'
+        self.command = f'docker run --name docker-container-{self.args.stack_suffix}'
         if self.args.benchmark_config:
             self.command += f" -v {args.benchmark_config}:/opensearch-benchmark/.benchmark/benchmark.ini"
         self.command += f" opensearchproject/opensearch-benchmark:latest execute-test --workload={self.args.workload} " \
@@ -85,12 +80,10 @@ class BenchmarkTestSuite:
         log_info = f"Executing {self.command.replace(self.endpoint, len(self.endpoint) * '*').replace(self.args.username, len(self.args.username) * '*')}"
         logging.info(log_info.replace(self.password, len(self.password) * '*') if self.password else log_info)
         subprocess.check_call(f"{self.command}", cwd=os.getcwd(), shell=True)
-
-        subprocess.check_call(f"docker cp {self.container_name}:opensearch-benchmark/. .", cwd=os.getcwd(), shell=True)
-        file_path = glob.glob(os.path.join(os.getcwd(), "test_executions", "*", "test_execution.json"))
-        logging.info(file_path)
-        self.convert(file_path[0])
-        subprocess.check_call(f"docker rm {self.container_name}", cwd=os.getcwd(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        with TemporaryDirectory() as work_dir:
+            subprocess.check_call(f"docker cp docker-container-{self.args.stack_suffix}:opensearch-benchmark/. {str(work_dir.path)}", cwd=os.getcwd(), shell=True)
+            file_path = glob.glob(os.path.join(str(work_dir.path), "test_executions", "*", "test_execution.json"))
+            self.convert(file_path[0])
 
     def convert(self, results: str) -> None:
         with open(results) as file:
@@ -98,10 +91,7 @@ class BenchmarkTestSuite:
         formatted_data = pd.json_normalize(data["results"]["op_metrics"])
         formatted_data.to_csv(os.path.join(os.getcwd(), "test_execution.csv"), index=False)
         df = pd.read_csv(os.path.join(os.getcwd(), "test_execution.csv"))
-        terminal_width = shutil.get_terminal_size().columns
-        width_95_percent = int(1 * terminal_width)
-        pd.set_option('display.width', width_95_percent)
-
+        pd.set_option('display.width', int(1 * shutil.get_terminal_size().columns))
         pd.set_option('display.max_rows', None)
         pd.set_option('display.max_columns', None)
         logging.info(f"\n{df}")
