@@ -46,7 +46,7 @@ class BenchmarkTestSuite:
         if self.args.benchmark_config:
             self.command += f" -v {args.benchmark_config}:/opensearch-benchmark/.benchmark/benchmark.ini"
         self.command += f" opensearchproject/opensearch-benchmark:latest execute-test --workload={self.args.workload} " \
-                        f"--pipeline=benchmark-only --target-hosts={endpoint} --test-mode"
+                        f"--pipeline=benchmark-only --target-hosts={endpoint}"
 
         if self.args.workload_params:
             logging.info(f"Workload Params are {args.workload_params}")
@@ -72,11 +72,12 @@ class BenchmarkTestSuite:
             if self.args.telemetry_params:
                 self.command += f" --telemetry-params '{self.args.telemetry_params}'"
 
-    def execute(self) -> None:
         if self.security:
             self.command += f' --client-options="timeout:300,use_ssl:true,verify_certs:false,basic_auth_user:\'{self.args.username}\',basic_auth_password:\'{self.password}\'"'
         else:
             self.command += ' --client-options="timeout:300"'
+
+    def execute(self) -> None:
         log_info = f"Executing {self.command.replace(self.endpoint, len(self.endpoint) * '*').replace(self.args.username, len(self.args.username) * '*')}"
         logging.info(log_info.replace(self.password, len(self.password) * '*') if self.password else log_info)
         subprocess.check_call(f"{self.command}", cwd=os.getcwd(), shell=True)
