@@ -68,7 +68,7 @@ class BenchmarkArgs:
         parser.add_argument("--without-security", dest="insecure", action="store_true",
                             help="Force the security of the cluster to be disabled.", default=False)
         parser.add_argument("--keep", dest="keep", action="store_true",
-                            help="Do not delete the working temporary directory.", default=True)
+                            help="Do not delete the working temporary directory.")
         parser.add_argument("--single-node", dest="single_node", action="store_true",
                             help="Is this a single node cluster")
         parser.add_argument("--min-distribution", dest="min_distribution", action="store_true",
