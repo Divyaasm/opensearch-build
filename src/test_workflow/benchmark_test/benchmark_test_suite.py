@@ -46,7 +46,7 @@ class BenchmarkTestSuite:
         if self.args.benchmark_config:
             self.command += f" -v {args.benchmark_config}:/opensearch-benchmark/.benchmark/benchmark.ini"
         self.command += f" opensearchproject/opensearch-benchmark:latest execute-test --workload={self.args.workload} " \
-                        f"--pipeline=benchmark-only --target-hosts={endpoint}"
+                        f"--pipeline=benchmark-only --target-hosts={endpoint} --test-mode"
 
         if self.args.workload_params:
             logging.info(f"Workload Params are {args.workload_params}")
@@ -92,7 +92,6 @@ class BenchmarkTestSuite:
         formatted_data = pd.json_normalize(data["results"]["op_metrics"])
         formatted_data.to_csv(os.path.join(os.getcwd(), f"test_execution_{self.args.stack_suffix}.csv"), index=False)
         df = pd.read_csv(os.path.join(os.getcwd(), f"test_execution_{self.args.stack_suffix}.csv"))
-        logging.info(shutil.get_terminal_size())
         pd.set_option('display.width', int(2 * shutil.get_terminal_size().columns))
         pd.set_option('display.max_rows', None)
         pd.set_option('display.max_columns', None)
