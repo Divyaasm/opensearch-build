@@ -137,7 +137,7 @@ parameters {
             post {
                 always {
                     unstash "benchmark"
-                    archiveArtifacts artifacts: 'test_execution.*'
+                    archiveArtifacts artifacts: 'test_execution*.csv'
                     postCleanup()
                 }
             }
