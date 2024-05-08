@@ -77,21 +77,22 @@ class BenchmarkTestSuite:
         else:
             self.command += ' --client-options="timeout:300"'
 
-    def execute(self) -> None:
+    def execute(self, path: str) -> None:
         log_info = f"Executing {self.command.replace(self.endpoint, len(self.endpoint) * '*').replace(self.args.username, len(self.args.username) * '*')}"
         logging.info(log_info.replace(self.password, len(self.password) * '*') if self.password else log_info)
         subprocess.check_call(f"{self.command}", cwd=os.getcwd(), shell=True)
         with TemporaryDirectory() as work_dir:
             subprocess.check_call(f"docker cp docker-container-{self.args.stack_suffix}:opensearch-benchmark/. {str(work_dir.path)}", cwd=os.getcwd(), shell=True)
             file_path = glob.glob(os.path.join(str(work_dir.path), "test_executions", "*", "test_execution.json"))
-            self.convert(file_path[0])
+            self.convert(file_path[0], path)
 
-    def convert(self, results: str) -> None:
+    def convert(self, results: str, path: str) -> None:
         with open(results) as file:
             data = json.load(file)
         formatted_data = pd.json_normalize(data["results"]["op_metrics"])
-        formatted_data.to_csv(os.path.join(os.getcwd(), f"test_execution_{self.args.stack_suffix}.csv"), index=False)
-        df = pd.read_csv(os.path.join(os.getcwd(), f"test_execution_{self.args.stack_suffix}.csv"))
+        formatted_data.to_csv(os.path.join(path, f"test_execution_{self.args.stack_suffix}.csv"), index=False)
+        logging.info(os.getcwd())
+        df = pd.read_csv(os.path.join(path, f"test_execution_{self.args.stack_suffix}.csv"))
         pd.set_option('display.width', int(2 * shutil.get_terminal_size().columns))
         pd.set_option('display.max_rows', None)
         pd.set_option('display.max_columns', None)

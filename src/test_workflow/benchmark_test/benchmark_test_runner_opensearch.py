@@ -11,6 +11,7 @@ from typing import Union
 import subprocess
 import yaml
 
+from functools import partial
 from retry.api import retry_call  # type: ignore
 
 from git.git_repository import GitRepository
@@ -39,24 +40,30 @@ class BenchmarkTestRunnerOpenSearch(BenchmarkTestRunner):
         return "https://github.com/opensearch-project/opensearch-cluster-cdk.git"
 
     def run_tests(self) -> None:
+        local_path = os.getcwd()
         if self.args.cluster_endpoint:
             cluster = BenchmarkTestCluster(self.args)
             cluster.start()
             benchmark_test_suite = BenchmarkTestSuite(cluster.endpoint_with_port, self.security, self.args, cluster.fetch_password())
             try:
-                retry_call(benchmark_test_suite.execute, tries=3, delay=60, backoff=2)
+                execute_with_params = partial(benchmark_test_suite.execute, local_path)
+
+                retry_call(execute_with_params, tries=3, delay=60, backoff=2)
             finally:
                 subprocess.check_call(f"docker rm docker-container-{self.args.stack_suffix}", cwd=os.getcwd(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         else:
             config = yaml.safe_load(self.args.config)
 
             with TemporaryDirectory(keep=self.args.keep, chdir=True) as work_dir:
+
                 current_workspace = os.path.join(work_dir.name, "opensearch-cluster-cdk")
                 with GitRepository(self.get_cluster_repo_url(), self.get_git_ref(), current_workspace):
                     with WorkingDirectory(current_workspace):
                         with BenchmarkCreateCluster.create(self.args, self.test_manifest, config, current_workspace) as test_cluster:
                             benchmark_test_suite = BenchmarkTestSuite(test_cluster.endpoint_with_port, self.security, self.args, test_cluster.fetch_password())
                             try:
-                                retry_call(benchmark_test_suite.execute, tries=3, delay=60, backoff=2)
+                                execute_with_params = partial(benchmark_test_suite.execute, local_path)
+
+                                retry_call(execute_with_params, tries=3, delay=60, backoff=2)
                             finally:
                                 subprocess.check_call(f"docker rm docker-container-{self.args.stack_suffix}", cwd=os.getcwd(), shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
