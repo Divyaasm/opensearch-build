@@ -37,6 +37,7 @@ pipeline {
                         bat "dir"
                         bat 'powershell Write-Output "Hello, World!"'
                         bat 'powershell Get-Command "bash.exe"'
+                        bat 'powershell (Get-Command bash.exe).Source'
                         sh "ls -a"
                         sh "pwd"
                         echo "shell script executed"
