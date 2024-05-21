@@ -35,6 +35,8 @@ pipeline {
                 script {
                     if (TEST) {
                         bat "dir"
+                        bat 'powershell Write-Output "Hello, World!"'
+                        bat 'powershell Get-Command "bash.exe"'
                         sh "ls -a"
                         sh "pwd"
                         echo "shell script executed"
