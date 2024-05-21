@@ -34,10 +34,10 @@ pipeline {
             steps {
                 script {
                     if (TEST) {
+                        bat "dir"
                         sh "ls -a"
                         sh "pwd"
                         echo "shell script executed"
-                        error('Required parameters are missing. Please provide the mandatory arguments MANIFEST_FILE, SOURCE_BRANCH and TARGET_BRANCH')
                     }
 
                 }
