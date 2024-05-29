@@ -1,0 +1,13 @@
+Description: Configuration file to store contants required to run rally for performance test
+Constants:
+  Repository: https://github.com/opensearch-project/opensearch-cluster-cdk
+  cidr: '172.31.0.0/16'
+  VpcId: 'vpc-0c413a9df7ca84d06'
+  AccountId: 724293578735
+  dataNodeStorage: 200
+  serverAccessType: prefixList
+  restrictServerAccessTo: pl-60b85b09
+  Region: us-east-1
+  Role: cfn-set-up
+  isInternal: 'false'
+  IamRoleArn: 'arn:aws:iam::724293578735:role/custom-benchmark-ec2-instance-role'
