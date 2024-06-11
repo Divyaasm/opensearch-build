@@ -203,7 +203,7 @@ pipeline {
                                 echo "Skipping the stage for zip distribution and arm64 architecture"
                                     continue
                             }
-                            validateDistributions["${local_distribution}-${local_architecture}"] = {
+                            validateDistributions["container-${local_architecture}"] = {
                                 // Using scripted pipelines to trigger dynamic parallel stages
                                 timeout(time: 30) {
                                     if ("${local_distribution}" == "docker"){
