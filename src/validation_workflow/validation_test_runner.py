@@ -29,4 +29,13 @@ class ValidationTestRunner:
 
     @classmethod
     def dispatch(cls, args: ValidationArgs, dist: str, work_dir: TemporaryDirectory) -> Validation:
-        return cls.RUNNERS[dist](args, work_dir)
+        if dist == "docker":
+            results = []
+            docker_source = args.docker_source
+            for source in docker_source:
+                new_args = args
+                new_args.docker_source = source
+                results.append(cls.RUNNERS[dist](new_args, work_dir))
+            return results
+        else:
+            return cls.RUNNERS[dist](args, work_dir)
