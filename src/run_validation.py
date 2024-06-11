@@ -24,6 +24,7 @@ def main() -> int:
         if args.distribution == "docker":
             test_results = ValidationTestRunner.dispatch(args, args.distribution, work_dir)
             for result in test_results:
+                logging.info(result)
                 test_result = result.run()
         else:
             test_result = ValidationTestRunner.dispatch(args, args.distribution, work_dir).run()

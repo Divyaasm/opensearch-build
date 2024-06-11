@@ -6,6 +6,8 @@
 # compatible open source license.
 # type: ignore
 
+import logging
+
 from system.temporary_directory import TemporaryDirectory
 from validation_workflow.deb.validation_deb import ValidateDeb
 from validation_workflow.docker.validation_docker import ValidateDocker
@@ -32,6 +34,7 @@ class ValidationTestRunner:
         if dist == "docker":
             results = []
             docker_source = args.docker_source
+            logging.info(docker_source)
             for source in docker_source:
                 new_args = args
                 new_args.docker_source = source
