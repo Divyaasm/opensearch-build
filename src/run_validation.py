@@ -26,9 +26,9 @@ def main() -> int:
             for source in docker_source:
                 new_args = args
                 new_args.docker_source = source
-                logging.info(f'Validating ${source}\n')
+                logging.info(f'Validating {source}')
                 test_result = ValidationTestRunner.dispatch(new_args, args.distribution, work_dir).run()
-                logging.info(f'final test_result = {test_result}')
+                logging.info(f'final test_result = {test_result}\n\n')
             return 0 if test_result else 1
 
         else:

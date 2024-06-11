@@ -110,7 +110,7 @@ class ValidateDocker(Validation):
             logging.error(f'An error occurred during cleanup: {e}')
             return False
         finally:
-            logging.info('Docker validation cleanup is complete\n\n')
+            logging.info('Docker validation cleanup is complete\n')
 
     def cleanup_process(self) -> bool:
         # stop the containers
