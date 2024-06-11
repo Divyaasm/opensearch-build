@@ -97,7 +97,7 @@ pipeline {
         )
         choice(
             name: 'DOCKER_SOURCE',
-            description: 'Enter the docker-source to pull the docker image, either DockerHub or ECR.',
+            description: 'Enter the docker-source to pull the docker image, either DockerHub or ECR or Both.',
             choices: ["dockerhub", "ecr"]
         )
         choice(
