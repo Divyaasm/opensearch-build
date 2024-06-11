@@ -23,6 +23,7 @@ def main() -> int:
     with TemporaryDirectory() as work_dir:
         if args.distribution == "docker":
             test_results = ValidationTestRunner.dispatch(args, args.distribution, work_dir)
+            logging.info(f'Number of "docker" test results: {len(test_results)}')
             for result in test_results:
                 logging.info(result)
                 test_result = result.run()
