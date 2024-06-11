@@ -61,7 +61,7 @@ class ValidateDocker(Validation):
             self.image_names_list = ['opensearchproject/' + project for project in self.args.projects]
             self.image_digests = list(map(lambda x: self.inspect_docker_image(x[0], x[1]), zip(self.image_ids.values(), self.image_names_list)))  # type: ignore
             if all(self.image_digests):
-                logging.info('Image digest is validated.\n\n')
+                logging.info('Image digest is validated.\n')
                 if self.args.validate_digest_only:
                     return True
             else:
@@ -110,7 +110,7 @@ class ValidateDocker(Validation):
             logging.error(f'An error occurred during cleanup: {e}')
             return False
         finally:
-            logging.info('Docker validation cleanup is complete')
+            logging.info('Docker validation cleanup is complete\n\n')
 
     def cleanup_process(self) -> bool:
         # stop the containers
