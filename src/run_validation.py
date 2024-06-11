@@ -21,7 +21,12 @@ def main() -> int:
     logging.getLogger("urllib3").setLevel(logging.WARNING)
 
     with TemporaryDirectory() as work_dir:
-        test_result = ValidationTestRunner.dispatch(args, args.distribution, work_dir).run()
+        if args.distribution == "docker":
+            test_result = ValidationTestRunner.dispatch(args, args.distribution, work_dir)
+            for result in test_result:
+                test_result = test_result.run()
+        else:
+            test_result = ValidationTestRunner.dispatch(args, args.distribution, work_dir).run()
         logging.info(f'final test_result = {test_result}')
         return 0 if test_result else 1  # type: ignore
 
