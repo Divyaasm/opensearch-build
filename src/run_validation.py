@@ -22,9 +22,9 @@ def main() -> int:
 
     with TemporaryDirectory() as work_dir:
         if args.distribution == "docker":
-            test_result = ValidationTestRunner.dispatch(args, args.distribution, work_dir)
-            for result in test_result:
-                test_result = test_result.run()
+            test_results = ValidationTestRunner.dispatch(args, args.distribution, work_dir)
+            for result in test_results:
+                test_result = result.run()
         else:
             test_result = ValidationTestRunner.dispatch(args, args.distribution, work_dir).run()
         logging.info(f'final test_result = {test_result}')
