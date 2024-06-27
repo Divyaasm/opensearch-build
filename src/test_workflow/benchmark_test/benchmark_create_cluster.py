@@ -60,7 +60,7 @@ class BenchmarkCreateCluster(BenchmarkTestCluster):
                 else:
                     params_list.append(f" -c {key}={value}")
         role_params = (
-            f" --require-approval=never"
+            " --require-approval=never"
         )
         self.params = "".join(params_list) + role_params
         self.password = None if self.args.insecure else get_password(self.args.distribution_version)
