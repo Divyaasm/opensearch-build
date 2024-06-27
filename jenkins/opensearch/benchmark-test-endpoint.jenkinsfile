@@ -137,6 +137,10 @@ parameters {
             post {
                 always {
                     unstash "benchmark"
+                    script {
+                        def fileContent = readFile('test_execution_${BUILD_NUMBER}.json')
+                        echo "${fileContent}"
+                    }
                     archiveArtifacts artifacts: 'test_execution*.*'
                     postCleanup()
                 }
