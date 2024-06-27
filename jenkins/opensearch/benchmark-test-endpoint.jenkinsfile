@@ -138,7 +138,8 @@ parameters {
                 always {
                     unstash "benchmark"
                     script {
-                        def fileContent = readFile('test_execution_${BUILD_NUMBER}.json')
+                        def fileName = "test_execution_${BUILD_NUMBER}.json"
+                        def fileContent = readFile(fileName)
                         echo "${fileContent}"
                     }
                     archiveArtifacts artifacts: 'test_execution*.*'
