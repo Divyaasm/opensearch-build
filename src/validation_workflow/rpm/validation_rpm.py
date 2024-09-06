@@ -26,9 +26,9 @@ class ValidateRpm(Validation, DownloadUtils):
         try:
             execute('sudo rpm --import https://artifacts.opensearch.org/publickeys/opensearch.pgp', str(self.tmp_dir.path), True, False)
             for project in self.args.projects:
+                self.filename = os.path.basename(self.args.file_path.get(project))
                 self.validate_metadata(project)
                 self.validate_signature()
-                self.filename = os.path.basename(self.args.file_path.get(project))
                 execute(f'sudo yum remove {project} -y', ".")
                 execute(f'sudo env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} rpm -ivh {os.path.join(self.tmp_dir.path, self.filename)}', str(self.tmp_dir.path), True, False)  # noqa: 501
         except:
