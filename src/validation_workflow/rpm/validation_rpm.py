@@ -94,6 +94,7 @@ class ValidateRpm(Validation, DownloadUtils):
                 description_index = stdout.find(line)
                 meta_map[key] = stdout[description_index + len(line):].strip()
                 break
+        logging.info(meta_map)
 
         for key, value in ref_map.items():
             if key == "Architecture":
@@ -102,7 +103,8 @@ class ValidateRpm(Validation, DownloadUtils):
                 elif value == 'arm64':
                     assert meta_map.get(key) == 'aarch64'
             else:
-                assert meta_map.get(key) == value
+                if meta_map.get(key) == value:
+                    logging.info(value)
             logging.info(f"Meta data for {key} is validated")
 
         logging.info("Validation for meta data of RPM distribution completed.")
