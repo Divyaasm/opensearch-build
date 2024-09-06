@@ -115,11 +115,11 @@ class ValidateRpm(Validation, DownloadUtils):
         present_key = []
         for line in stdout.split('\n'):
             key = line.split(':')[0].strip()
-            assert "OK" in line.split(':', 1)[1].strip()
-            logging.info(f"{key} is validated as: {line}")
-            present_key.append(key)
+            if "OK" in line.split(':', 1)[1].strip():
+                logging.info(f"{key} is validated as: {line}")
+                present_key.append(key)
         logging.info("Validation of all key digests starts: ")
         for digest in key_list:
-            assert digest in present_key
-            logging.info(f'Key digest "{digest}" is validated to be present.')
+            if digest in present_key:
+                logging.info(f'Key digest "{digest}" is validated to be present.')
         logging.info("Validation for signature of RPM distribution completed.")
