@@ -112,6 +112,7 @@ class ValidateRpm(Validation, DownloadUtils):
     def validate_signature(self) -> None:
         (_, stdout, _) = execute(f'rpm -K -v {os.path.join(self.tmp_dir.path, self.filename)}', ".")
         logging.info(stdout)
+        stdout.rstrip('\n')
         key_list = ["Header V4 RSA/SHA512 Signature, key ID 9310d3fc", "Header SHA256 digest", "Header SHA1 digest", "Payload SHA256 digest", "V4 RSA/SHA512 Signature, key ID 9310d3fc", "MD5 digest"]
         present_key = []
         x = 0
