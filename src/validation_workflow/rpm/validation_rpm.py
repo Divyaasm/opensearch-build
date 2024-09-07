@@ -111,13 +111,17 @@ class ValidateRpm(Validation, DownloadUtils):
 
     def validate_signature(self) -> None:
         (_, stdout, _) = execute(f'rpm -K -v {os.path.join(self.tmp_dir.path, self.filename)}', ".")
+        logging.info(stdout)
         key_list = ["Header V4 RSA/SHA512 Signature, key ID 9310d3fc", "Header SHA256 digest", "Header SHA1 digest", "Payload SHA256 digest", "V4 RSA/SHA512 Signature, key ID 9310d3fc", "MD5 digest"]
         present_key = []
         for line in stdout.split('\n'):
             key = line.split(':')[0].strip()
-            if "OK" in line.split(':', 1)[1].strip():
+            print(key)
+#            #if (key == os.path.join(self.tmp_dir.path, self.filename)):
+#            #     continue
+            if "OK" == line.split(':', 1)[1].strip():
                 logging.info(f"{key} is validated as: {line}")
-                present_key.append(key)
+            present_key.append(key)
         logging.info("Validation of all key digests starts: ")
         for digest in key_list:
             if digest in present_key:
