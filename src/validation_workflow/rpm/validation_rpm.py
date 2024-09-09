@@ -111,6 +111,7 @@ class ValidateRpm(Validation, DownloadUtils):
     def validate_signature(self) -> None:
         (_, stdout, _) = execute(f'rpm -K -v {os.path.join(self.tmp_dir.path, self.filename)}', ".")
         logging.info(stdout)
+        stdout.rstrip('\n')
         print(type(stdout))
         newline_count = stdout.count('\n')
         print(newline_count)
