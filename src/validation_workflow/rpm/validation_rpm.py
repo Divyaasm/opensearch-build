@@ -106,7 +106,7 @@ class ValidateRpm(Validation, DownloadUtils):
                     logging.info(value)
             logging.info(f"Meta data for {key} is validated")
 
-        logging.info("Validation for meta data of RPM distribution completed.")
+        logging.info(f"Validation for {product_type} meta data of RPM distribution completed.")
 
     def validate_signature(self) -> None:
         (_, stdout, _) = execute(f'rpm -K -v {os.path.join(self.tmp_dir.path, self.filename)}', ".")
