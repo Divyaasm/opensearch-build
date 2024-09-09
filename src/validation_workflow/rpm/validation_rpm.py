@@ -112,6 +112,8 @@ class ValidateRpm(Validation, DownloadUtils):
         (_, stdout, _) = execute(f'rpm -K -v {os.path.join(self.tmp_dir.path, self.filename)}', ".")
         logging.info(stdout)
         print(type(stdout))
+        newline_count = stdout.count('\n')
+        print(newline_count)
         key_list = ["Header V4 RSA/SHA512 Signature, key ID 9310d3fc", "Header SHA256 digest", "Header SHA1 digest", "Payload SHA256 digest", "V4 RSA/SHA512 Signature, key ID 9310d3fc", "MD5 digest"]
         present_key = []
         for line in stdout.split('\n'):
