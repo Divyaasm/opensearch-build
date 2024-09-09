@@ -68,7 +68,6 @@ class ValidateRpm(Validation, DownloadUtils):
 
     def validate_metadata(self, product_type: str) -> None:
         (_, stdout, _) = execute(f'rpm -qip {os.path.join(self.tmp_dir.path, self.filename)}', ".")
-        logging.info("Meta data for the RPM distribution is: \n" + stdout)
         ref_map = {}
         ref_map['Name'] = product_type
         ref_map['Version'] = self.args.version
@@ -112,11 +111,10 @@ class ValidateRpm(Validation, DownloadUtils):
     def validate_signature(self) -> None:
         (_, stdout, _) = execute(f'rpm -K -v {os.path.join(self.tmp_dir.path, self.filename)}', ".")
         logging.info(stdout)
+        print(type(stdout))
         key_list = ["Header V4 RSA/SHA512 Signature, key ID 9310d3fc", "Header SHA256 digest", "Header SHA1 digest", "Payload SHA256 digest", "V4 RSA/SHA512 Signature, key ID 9310d3fc", "MD5 digest"]
         present_key = []
-        x = 0
         for line in stdout.split('\n'):
-            x=x+1
             key = line.split(':')[0].strip()
             if key != os.path.join(self.tmp_dir.path, self.filename):
                 if len(line.split(':', 1)) > 1 and "OK" == line.split(':')[1].strip():
