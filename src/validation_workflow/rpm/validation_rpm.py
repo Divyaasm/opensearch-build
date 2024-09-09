@@ -27,7 +27,7 @@ class ValidateRpm(Validation, DownloadUtils):
             execute('sudo rpm --import https://artifacts.opensearch.org/publickeys/opensearch.pgp', str(self.tmp_dir.path), True, False)
             for project in self.args.projects:
                 self.filename = os.path.basename(self.args.file_path.get(project))
-                # self.validate_metadata(project)
+                self.validate_metadata(project)
                 self.validate_signature()
                 execute(f'sudo yum remove {project} -y', ".")
                 execute(f'sudo env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} rpm -ivh {os.path.join(self.tmp_dir.path, self.filename)}', str(self.tmp_dir.path), True, False)  # noqa: 501
@@ -112,16 +112,12 @@ class ValidateRpm(Validation, DownloadUtils):
     def validate_signature(self) -> None:
         (_, stdout, _) = execute(f'rpm -K -v {os.path.join(self.tmp_dir.path, self.filename)}', ".")
         logging.info(stdout)
-        stdout.rstrip('\n')
-        logging.info(stdout)
         key_list = ["Header V4 RSA/SHA512 Signature, key ID 9310d3fc", "Header SHA256 digest", "Header SHA1 digest", "Payload SHA256 digest", "V4 RSA/SHA512 Signature, key ID 9310d3fc", "MD5 digest"]
         present_key = []
         x = 0
         for line in stdout.split('\n'):
-            print(x)
             x=x+1
             key = line.split(':')[0].strip()
-            print(key)
             if key != os.path.join(self.tmp_dir.path, self.filename):
                 if len(line.split(':', 1)) > 1 and "OK" == line.split(':')[1].strip():
                     logging.info(f"{key} is validated as: {line}")
