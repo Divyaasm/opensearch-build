@@ -91,25 +91,20 @@ class ValidateRpm(Validation, DownloadUtils):
         for line in stdout.split('\n'):
             key = line.split(':')[0].strip()
             if key != 'Description':
-                print(line)
                 meta_map[key] = line.split(':', 1)[1].strip()
-                print(line.split(':', 2))
-                print(line.split(':', 2)[1].strip())
-                logging.info(meta_map[key])
-                print(meta_map)
             else:
                 description_index = stdout.find(line)
                 meta_map[key] = stdout[description_index + len(line):].strip()
                 break
 
         for key, value in ref_map.items():
-            logging.info(key, value)
             if key == "Architecture":
                 if value == 'x64':
                     assert meta_map.get(key) == 'x86_64'
                 elif value == 'arm64':
                     assert meta_map.get(key) == 'aarch64'
             else:
+                assert meta_map.get(key) == value
                 logging.info(meta_map.get(key), value)
                 logging.info(f"Meta data for {key} is validated")
         logging.info(f"Validation for {product_type} meta data of RPM distribution completed.")
