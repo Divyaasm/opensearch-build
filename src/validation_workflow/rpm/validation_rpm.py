@@ -90,7 +90,7 @@ class ValidateRpm(Validation, DownloadUtils):
         meta_map = {}
         for line in stdout.split('\n'):
             key = line.split(':')[0].strip()
-            if key != 'Description' && 'URL':
+            if key != 'Description' and key != 'URL':
                 meta_map[key] = line.split(':', 2)[1].strip()
                 print(line.split(':', 2)[1].strip())
                 logging.info(meta_map[key])
