@@ -94,10 +94,14 @@ class ValidateRpm(Validation, DownloadUtils):
                 meta_map[key] = line.split(':', 2)[1].strip()
             else:
                 description_index = stdout.find(line)
+                print(stdout[description_index + len(line):].strip())
                 meta_map[key] = stdout[description_index + len(line):].strip()
+                logging.info(meta_map[key])
+                print(meta_map)
                 break
 
         for key, value in ref_map.items():
+            logging.info(key, value)
             if key == "Architecture":
                 if value == 'x64':
                     assert meta_map.get(key) == 'x86_64'
