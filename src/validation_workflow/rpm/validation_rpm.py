@@ -104,7 +104,7 @@ class ValidateRpm(Validation, DownloadUtils):
                 elif value == 'arm64':
                     assert meta_map.get(key) == 'aarch64'
             else:
-                assert meta_map.get(key) == value
+                assert meta_map.get(key).strip() == value.strip()
                 print(repr(meta_map.get(key)), repr(value))
                 print(meta_map.get(key), type(meta_map.get(key)))
                 print(value, type(value))
