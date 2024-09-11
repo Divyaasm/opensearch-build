@@ -104,11 +104,10 @@ class ValidateRpm(Validation, DownloadUtils):
                 elif value == 'arm64':
                     assert meta_map.get(key) == 'aarch64'
             else:
-                assert ' '.join(meta_map.get(key).split()) == ' '.join(value.split())
-                print(repr(meta_map.get(key)), repr(value))
-                print(meta_map.get(key), type(meta_map.get(key)))
-                print(value, type(value))
-                print(f"Meta data for {key} is validated")
+                if meta_map.get(key) == value:
+                    logging.info(f"Meta data for {key} is validated")
+                else:
+                    raise AssertionError(f'Meta data for {key} is not validated')
 
         logging.info(f"Validation for {product_type} meta data of RPM distribution completed.")
 
