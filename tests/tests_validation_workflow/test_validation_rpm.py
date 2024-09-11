@@ -215,7 +215,8 @@ class TestValidationRpm(unittest.TestCase):
     @patch('validation_workflow.rpm.validation_rpm.ValidationArgs')
     @patch('system.temporary_directory.TemporaryDirectory')
     def test_validate_metadata(self, mock_temporary_directory: Mock, mock_validation_args: Mock, mock_logging_info: Mock, mock_execute: Mock) -> None:
-        mock_execute.return_value = (None, 'Name: opensearch\nVersion: 1.2.3\nArchitecture: x86_64\nDescription: This is a test application\n "OpenSearch makes it easy to ingest, search, visualize, and analyze your data\nFor more information, see: https://opensearch.org/', None)
+        mock_execute.return_value = (None, 'Name: opensearch\nVersion: 1.2.3\nArchitecture: x86_64\nDescription: This is a test application\n'
+                                           ' "OpenSearch makes it easy to ingest, search, visualize, and analyze your data\nFor more information, see: https://opensearch.org/', None)
 
         validate_rpm = ValidateRpm(mock_validation_args.return_value, mock_temporary_directory.return_value)
         mock_temporary_directory.return_value.path = "/tmp/trytytyuit/"
@@ -232,7 +233,7 @@ class TestValidationRpm(unittest.TestCase):
         mock_logging_info.assert_any_call('Validation for opensearch meta data of RPM distribution completed.')
 
         mock_execute.assert_called_once_with(
-            f'rpm -qip /tmp/trytytyuit/example.rpm', '.'
+            'rpm -qip /tmp/trytytyuit/example.rpm', '.'
         )
 
     @patch('validation_workflow.rpm.validation_rpm.execute')
@@ -253,6 +254,5 @@ class TestValidationRpm(unittest.TestCase):
         mock_logging_info.assert_any_call('Validation of all key digests starts: ')
         mock_logging_info.assert_any_call('Validation for signature of RPM distribution completed.')
         mock_execute.assert_called_once_with(
-            f'rpm -K -v /tmp/trytytyuit/example.rpm', '.'
+            'rpm -K -v /tmp/trytytyuit/example.rpm', '.'
         )
-
