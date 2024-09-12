@@ -39,7 +39,12 @@ class ValidateRpm(Validation, DownloadUtils):
         try:
             for project in self.args.projects:
                 execute(f'sudo systemctl start {project}', ".")
-                (status, _, _) = execute(f'sudo systemctl status {project}', ".")
+                (stdout, stderr, status) = execute(f'sudo systemctl status {project}', ".")
+                if(status == 0):
+                    logging.info(stdout)
+                else:
+                    logging.info(stderr)
+
         except:
             raise Exception('Failed to Start Cluster')
         return True
