@@ -212,10 +212,13 @@ class TestValidationRpm(unittest.TestCase):
 
     @patch('validation_workflow.rpm.validation_rpm.execute')
     @patch('validation_workflow.rpm.validation_rpm.logging.info')
-    def test_validate_metadata_opensearch(self, mock_logging_info: Mock, mock_execute: Mock) -> None:
+    @patch('validation_workflow.rpm.validation_rpm.ValidationArgs')
+    @patch('system.temporary_directory.TemporaryDirectory')
+    def test_validate_metadata(self, mock_temporary_directory: Mock, mock_validation_args: Mock,
+                               mock_logging_info: Mock, mock_execute: Mock) -> None:
         mock_execute.return_value = (None,
                                      'Name        : opensearch\n'
-                                     'Version     : 1.2.0\n'
+                                     'Version     : 1.3.0\n'
                                      'Architecture : x86_64\n'
                                      'Group       : Application/Internet\n'
                                      'License     : Apache-2.0\n'
@@ -226,44 +229,42 @@ class TestValidationRpm(unittest.TestCase):
                                      'For more information, see: https://opensearch.org/',
                                      None)
 
-        mock_validation_args = Mock()
-        mock_validation_args.version = '1.2.0'
-        mock_validation_args.arch = 'x64'
-
-        mock_temporary_directory = Mock()
-        mock_temporary_directory.path = "/tmp/fakepath"
-
-        validate_rpm = ValidateRpm(mock_validation_args, mock_temporary_directory)
-        validate_rpm.filename = 'opensearch.rpm'
+        validate_rpm = ValidateRpm(mock_validation_args.return_value, mock_temporary_directory.return_value)
+        mock_temporary_directory.return_value.path = "/tmp/trytytyuit/"
+        validate_rpm.filename = 'example.rpm'
+        validate_rpm.args.version = '1.3.0'
+        validate_rpm.args.arch = "x64"
 
         validate_rpm.validate_metadata('opensearch')
 
         mock_logging_info.assert_any_call("Meta data for Name -> opensearch is validated")
-        mock_logging_info.assert_any_call("Meta data for Version -> 1.2.0 is validated")
+        mock_logging_info.assert_any_call("Meta data for Version -> 1.3.0 is validated")
         mock_logging_info.assert_any_call(
             "Meta data for Description -> OpenSearch makes it easy to ingest, search, visualize, and analyze your data\nFor more information, see: https://opensearch.org/ is validated")
         mock_logging_info.assert_any_call("Validation for opensearch meta data of RPM distribution completed.")
-        mock_execute.assert_called_once_with('rpm -qip /tmp/fakepath/opensearch.rpm', '.')
 
+        mock_execute.assert_called_once_with(
+            'rpm -qip /tmp/trytytyuit/example.rpm', '.'
+        )
 
     @patch('validation_workflow.rpm.validation_rpm.execute')
     @patch('validation_workflow.rpm.validation_rpm.logging.info')
     @patch('validation_workflow.rpm.validation_rpm.ValidationArgs')
     @patch('system.temporary_directory.TemporaryDirectory')
     def test_validate_metadata_exception(self, mock_temporary_directory: Mock, mock_validation_args: Mock,
-                               mock_logging_info: Mock, mock_execute: Mock) -> None:
-        mock_execute.return_value = (
-        None, 'Name: opensearch\nVersion: 1.2.3\nArchitecture: x86_64\nURL: https://opensearch.org/Summary: '
-              'An open source distributed and RESTful search engine\nDescription: This is a test application\n'
-              ' "OpenSearch makes it easy to ingest, search, visualize, and analyze your data\nFor more information, see: https://opensearch.org/',None)
+                                         mock_logging_info: Mock, mock_execute: Mock) -> None:
+        mock_execute.return_value = (None, 'Name: opensearch\nVersion: 1.2.3\nArchitecture: x86_64\nURL: https://opensearch.org/Summary: '
+                                           'An open source distributed and RESTful search engine\nDescription: This is a test application\n'
+                                           ' "OpenSearch makes it easy to ingest, search, visualize, and analyze your data\nFor more information, see: https://opensearch.org/', None)
 
         validate_rpm = ValidateRpm(mock_validation_args.return_value, mock_temporary_directory.return_value)
         mock_temporary_directory.return_value.path = "/tmp/trytytyuit/"
         validate_rpm.filename = 'example.rpm'
         validate_rpm.args.version = '1.3.0'
         validate_rpm.args.arch = "x64"
-        with self.assertRaises(Exception) as context:
+        with self.assertRaises(AssertionError) as context:
             validate_rpm.validate_metadata('opensearch')
+        self.assertIsInstance(context.exception, AssertionError)
 
         mock_execute.assert_called_once_with(
             'rpm -qip /tmp/trytytyuit/example.rpm', '.'
@@ -303,8 +304,9 @@ class TestValidationRpm(unittest.TestCase):
         mock_temporary_directory.return_value.path = "/tmp/trytytyuit/"
         validate_rpm.filename = 'example.rpm'
 
-        with self.assertRaises(Exception) as context:
+        with self.assertRaises(AssertionError) as context:
             validate_rpm.validate_signature()
+        self.assertIsInstance(context.exception, AssertionError)
 
         mock_execute.assert_called_once_with(
             'rpm -K -v /tmp/trytytyuit/example.rpm', '.'
@@ -334,8 +336,3 @@ class TestValidationRpm(unittest.TestCase):
         mock_execute.assert_called_once_with(
             'rpm -K -v /tmp/trytytyuit/example.rpm', '.'
         )
-
-
-
-
-
