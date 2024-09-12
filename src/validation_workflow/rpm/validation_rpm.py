@@ -121,10 +121,9 @@ class ValidateRpm(Validation, DownloadUtils):
         present_key = []
         for line in stdout.rstrip('\n').split('\n')[1:]:
             key = line.split(':')[0].strip()
-            if key != os.path.join(self.tmp_dir.path, self.filename):
-                assert "OK" == line.split(':')[1].strip()
-                logging.info(f"{key} is validated as: {line}")
-                present_key.append(key)
+            assert "OK" == line.split(':')[1].strip()
+            logging.info(f"{key} is validated as: {line}")
+            present_key.append(key)
         logging.info("Validation of all key digests starts: ")
         for digest in key_list:
             assert digest in present_key
