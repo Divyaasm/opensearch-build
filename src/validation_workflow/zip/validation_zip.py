@@ -11,6 +11,7 @@ import os
 from system.process import Process
 from system.temporary_directory import TemporaryDirectory
 from system.zip_file import ZipFile
+import subprocess
 from test_workflow.integ_test.utils import get_password
 from validation_workflow.api_test_cases import ApiTestCases
 from validation_workflow.download_utils import DownloadUtils
@@ -37,9 +38,6 @@ class ValidateZip(Validation, DownloadUtils):
         try:
             self.os_process.start(f"env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} .\\opensearch-windows-install.bat",
                                   os.path.join(self.tmp_dir.path, f"opensearch-{self.args.version}"), False)
-            print(self.os_process.stdout_data())
-            print(self.os_process.stdout.read())
-            print(self.os_process.stderr.read())
             if "opensearch-dashboards" in self.args.projects:
                 self.osd_process.start(".\\bin\\opensearch-dashboards.bat", os.path.join(self.tmp_dir.path, f"opensearch-dashboards-{self.args.version}"), False)
             logging.info("Starting cluster")
