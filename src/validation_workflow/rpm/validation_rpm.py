@@ -122,7 +122,7 @@ class ValidateRpm(Validation, DownloadUtils):
                 present_key.append(key)
         logging.info("Validation of all key digests starts: ")
         for digest in key_list:
-            assert present_key.contains(digest)
+            assert digest in present_key
             logging.info(f'Key digest "{digest}" is validated to be present.')
 
         logging.info("Validation for signature of RPM distribution completed.")
