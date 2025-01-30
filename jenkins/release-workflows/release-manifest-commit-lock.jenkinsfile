@@ -191,7 +191,7 @@ pipeline {
                             def existingComponent = existingManifest.components.find { it.name == componentName.name }
                             if (existingComponent) {
                                 def branchRef = RELEASE_VERSION.split('\\.')[0..1].join('.')
-                                existingComponent.ref = "'" + releaseTag + "'"
+                                existingComponent.ref = "'" + branchRef + "'"
                             }
                         }
                         writeYaml file:  "manifests/${params.RELEASE_VERSION}/${productName}-${params.RELEASE_VERSION}.yml", data: existingManifest, overwrite: true
