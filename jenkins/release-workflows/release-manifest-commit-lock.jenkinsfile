@@ -211,7 +211,7 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
                         try {
                             sh """
-                                git remote set-url origin "https://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@github.com/Divyaasm/opensearch-build.git
+                                git remote set-url origin "https://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@github.com/Divyaasm/opensearch-build.git"
                                 git config user.email "divyaasm@amazon.com"
                                 git config user.name "Divyaasm"
                                 git checkout -b manifest-lock
