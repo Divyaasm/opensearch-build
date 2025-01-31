@@ -191,6 +191,7 @@ pipeline {
                             def existingComponent = existingManifest.components.find { it.name == componentName.name }
                             if (existingComponent) {
                                 def branchRef = RELEASE_VERSION.split('\\.')[0..1].join('.')
+
                                 existingComponent.ref = "'" + branchRef + "'"
                             }
                         }
@@ -211,9 +212,9 @@ pipeline {
                     withCredentials([usernamePassword(credentialsId: 'jenkins-github-bot-token', passwordVariable: 'GITHUB_TOKEN', usernameVariable: 'GITHUB_USER')]) {
                         try {
                             sh """
-                                git remote set-url origin "https://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@github.com/Divyaasm/opensearch-build.git"
-                                git config user.email "divyaasm@amazon.com"
-                                git config user.name "Divyaasm"
+                                git remote set-url origin "https://opensearch-ci:${GITHUB_TOKEN}@github.com/opensearch-project/opensearch-build"
+                                git config user.email "opensearch-infra@amazon.com"
+                                git config user.name "opensearch-ci"
                                 git checkout -b manifest-lock
                             """
                             def status = sh(returnStdout: true, script: 'git status --porcelain')
