@@ -191,7 +191,6 @@ pipeline {
                             def existingComponent = existingManifest.components.find { it.name == componentName.name }
                             if (existingComponent) {
                                 def branchRef = RELEASE_VERSION.split('\\.')[0..1].join('.')
-
                                 existingComponent.ref = "'" + branchRef + "'"
                             }
                         }
@@ -220,6 +219,7 @@ pipeline {
                             def status = sh(returnStdout: true, script: 'git status --porcelain')
                             if (status) {
                                 sh """
+                                    git diff manifests/2.19.0/opensearch-2.19.0.yml
                                     git status --porcelain | grep '^ M' | cut -d " " -f3 | xargs git add
                                     git commit -sm "Manifest Commit Lock for Release ${params.RELEASE_VERSION}"
                                     git push origin manifest-lock --force
