@@ -190,7 +190,7 @@ pipeline {
                         selectedComponents.each { componentName ->
                             def existingComponent = existingManifest.components.find { it.name == componentName.name }
                             if (existingComponent) {
-                                def branchRef = params.RELEASE_VERSION.split('\\.')[0..1].join('.').trim()
+                                def branchRef = "${params.RELEASE_VERSION}".split('\\.')[0..1].join('.')
                                 existingComponent.ref = "'${branchRef}'"
                             }
                         }
