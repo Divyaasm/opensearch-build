@@ -191,7 +191,7 @@ pipeline {
                             def existingComponent = existingManifest.components.find { it.name == componentName.name }
                             if (existingComponent) {
                                 def branchRef = params.RELEASE_VERSION.toString().split('\\.')[0..1].join('.')
-                                echo "${switch_user_non_root}"
+                                echo "${branchRef}"
                                 existingComponent.ref = branchRef
                             }
                         }
