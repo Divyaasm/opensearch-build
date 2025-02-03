@@ -190,8 +190,9 @@ pipeline {
                         selectedComponents.each { componentName ->
                             def existingComponent = existingManifest.components.find { it.name == componentName.name }
                             if (existingComponent) {
-                                def branchRef = params.RELEASE_VERSION.toString()
-                                existingComponent.ref = "'${branchRef}'"
+                                def branchRef = params.RELEASE_VERSION.toString().split('\\.')[0..1].join('.')
+                                echo "${switch_user_non_root}"
+                                existingComponent.ref = branchRef
                             }
                         }
                         writeYaml file:  "manifests/${params.RELEASE_VERSION}/${productName}-${params.RELEASE_VERSION}.yml", data: existingManifest, overwrite: true
