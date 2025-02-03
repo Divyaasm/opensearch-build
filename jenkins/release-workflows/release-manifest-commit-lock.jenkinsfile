@@ -219,8 +219,6 @@ pipeline {
                             def status = sh(returnStdout: true, script: 'git status --porcelain')
                             if (status) {
                                 sh """
-                                    git diff manifests/2.18.0/opensearch-2.18.0.yml
-                                    git diff manifests/2.18.0/opensearch-dashboards-2.18.0.yml
                                     git status --porcelain | grep '^ M' | cut -d " " -f3 | xargs git add
                                     git commit -sm "Manifest Commit Lock for Release ${params.RELEASE_VERSION}"
                                     git push origin manifest-lock --force
