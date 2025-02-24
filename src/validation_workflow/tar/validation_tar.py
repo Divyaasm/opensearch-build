@@ -30,7 +30,7 @@ class ValidateTar(Validation, DownloadUtils):
             for project in self.args.projects:
                 self.filename = os.path.basename(self.args.file_path.get(project))
                 execute('mkdir ' + os.path.join(self.tmp_dir.path, project) + ' | tar -xzf ' + os.path.join(str(self.tmp_dir.path), self.filename) + ' -C ' + os.path.join(self.tmp_dir.path, project) + ' --strip-components=1', ".", True, False)  # noqa: E501
-                execute('./opensearch-2.19.1/bin/opensearch-plugin install repository-s3', "/tmp/tmped4egkp1/opensearch", True, False)
+                execute('./bin/opensearch-plugin install repository-s3', "/tmp/tmped4egkp1/opensearch", True, False)
         except:
             raise Exception('Failed to install Opensearch')
         return True
