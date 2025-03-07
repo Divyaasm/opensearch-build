@@ -167,6 +167,8 @@ pipeline {
                         currentBuild.result = 'ABORTED'
                         error("Both VERSION and OPENSEARCH_ARTIFACT_URL cannot be empty. Please provide either value")
                     }
+
+                    env version_number = inputManifestObj.build.version + (inputManifestObj.build?.qualifier ? "-${inputManifestObj.build.qualifier}" : "")
                 }
             }
             post {
@@ -239,6 +241,8 @@ pipeline {
                                                         stage("${local_distribution}") {
 
                                                             unstash "validate-artifacts-$BUILD_NUMBER"
+
+                                                            echo "version: ${env.version_number}"
 
                                                             retry(2) {
                                                                 if (VERSION) {

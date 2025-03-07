@@ -7,6 +7,9 @@
 
 import logging
 import os
+import subprocess
+import tempfile
+
 
 from system.process import Process
 from system.temporary_directory import TemporaryDirectory
@@ -21,7 +24,7 @@ from validation_workflow.validation_args import ValidationArgs
 class ValidateZip(Validation, DownloadUtils):
     def __init__(self, args: ValidationArgs, tmp_dir: TemporaryDirectory) -> None:
         super().__init__(args, tmp_dir)
-        self.os_process = Process()
+        # self.os_process = Process()
         self.osd_process = Process()
 
     def installation(self) -> bool:
@@ -35,10 +38,20 @@ class ValidateZip(Validation, DownloadUtils):
 
     def start_cluster(self) -> bool:
         try:
-            self.os_process.start(f"env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} .\\opensearch-windows-install.bat",
-                                  os.path.join(self.tmp_dir.path, f"opensearch-{self.args.version}"), False)
-            logging.info(self.os_process.started)
-            logging.info(self.os_process.pid)
+            # self.os_process.start(f"env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} .\\opensearch-windows-install.bat",
+            #                       os.path.join(self.tmp_dir.path, f"opensearch-{self.args.version}"), False)
+
+            stdout = tempfile.NamedTemporaryFile(mode="r+", delete=False, encoding='utf-8')
+            stderr = tempfile.NamedTemporaryFile(mode="r+", delete=False, encoding='utf-8')
+
+            process_test = subprocess.Popen(
+                f"env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} .\\opensearch-windows-install.bat",
+                cwd=os.path.join(self.tmp_dir.path, f"opensearch-{self.args.version}"),
+                shell=True,
+                stdout=stdout,
+                stderr=stderr,
+            )
+            logging.info(process_test.wait())
             if "opensearch-dashboards" in self.args.projects:
                 self.osd_process.start(".\\bin\\opensearch-dashboards.bat", os.path.join(self.tmp_dir.path, f"opensearch-dashboards-{self.args.version}"), False)
             logging.info("Starting cluster")
@@ -62,7 +75,7 @@ class ValidateZip(Validation, DownloadUtils):
 
     def cleanup(self) -> bool:
         try:
-            self.os_process.terminate()
+            # self.os_process.terminate()
             if ("opensearch-dashboards" in self.args.projects):
                 self.osd_process.terminate()
         except:
