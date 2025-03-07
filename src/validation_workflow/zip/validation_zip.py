@@ -41,9 +41,9 @@ class ValidateZip(Validation, DownloadUtils):
             # self.os_process.start(f"set OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} .\\opensearch-windows-install.bat",
             #                       os.path.join(self.tmp_dir.path, f"opensearch-{self.args.version}"), False)
 
-            os.environ["OPENSEARCH_INITIAL_ADMIN_PASSWORD"] = get_password(str(self.args.version))
+
             process_test = subprocess.Popen(
-                ".\\opensearch-windows-install.bat",
+                f"env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} .\\opensearch-windows-install.bat",
                 cwd=os.path.join(self.tmp_dir.path, f"opensearch-{self.args.version}"),
                 shell=True,
                 stdout=subprocess.PIPE,
