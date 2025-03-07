@@ -252,7 +252,7 @@ pipeline {
                                                             retry(2) {
                                                                 if (VERSION) {
                                                                     validateArtifacts(
-                                                                        version: "$VERSION",
+                                                                        version: "${env.version_number}",
                                                                         distribution: "${local_distribution}",
                                                                         arch: "${local_architecture}",
                                                                         platform: "${local_platform}",
