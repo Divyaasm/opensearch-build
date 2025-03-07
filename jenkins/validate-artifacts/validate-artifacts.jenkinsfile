@@ -249,7 +249,7 @@ pipeline {
 
                                                             echo "version: ${env.version_number}"
 
-                                                            retry(2) {
+                                                            retry() {
                                                                 if (VERSION) {
                                                                     validateArtifacts(
                                                                         version: "${env.version_number}",

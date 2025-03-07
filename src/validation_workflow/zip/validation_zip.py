@@ -41,9 +41,6 @@ class ValidateZip(Validation, DownloadUtils):
             # self.os_process.start(f"env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} .\\opensearch-windows-install.bat",
             #                       os.path.join(self.tmp_dir.path, f"opensearch-{self.args.version}"), False)
 
-            stdout = tempfile.NamedTemporaryFile(mode="r+", delete=False, encoding='utf-8')
-            stderr = tempfile.NamedTemporaryFile(mode="r+", delete=False, encoding='utf-8')
-
             process_test = subprocess.Popen(
                 f"env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} .\\opensearch-windows-install.bat",
                 cwd=os.path.join(self.tmp_dir.path, f"opensearch-{self.args.version}"),
@@ -51,6 +48,7 @@ class ValidateZip(Validation, DownloadUtils):
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
             )
+            stdout, stderr = process_test.communicate()
             logging.info(stdout.decode())
             logging.info(process_test.wait())
             logging.info(stdout.decode())
