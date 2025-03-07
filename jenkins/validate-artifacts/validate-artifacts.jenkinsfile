@@ -173,7 +173,7 @@ pipeline {
                         error("Both VERSION and OPENSEARCH_ARTIFACT_URL cannot be empty. Please provide either value")
                     }
                     def inputManifestObj = lib.jenkins.InputManifest.new(readYaml(file: "manifests/${INPUT_MANIFEST}"))
-                    env version_number = inputManifestObj.build.version + (inputManifestObj.build?.qualifier ? "-${inputManifestObj.build.qualifier}" : "")
+                    env.version_number = inputManifestObj.build.version + (inputManifestObj.build?.qualifier ? "-${inputManifestObj.build.qualifier}" : "")
                 }
             }
             post {
