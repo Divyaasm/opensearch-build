@@ -24,7 +24,7 @@ from validation_workflow.validation_args import ValidationArgs
 class ValidateZip(Validation, DownloadUtils):
     def __init__(self, args: ValidationArgs, tmp_dir: TemporaryDirectory) -> None:
         super().__init__(args, tmp_dir)
-        self.os_process = Process()
+        # self.os_process = Process()
         self.osd_process = Process()
 
     def installation(self) -> bool:
@@ -38,20 +38,21 @@ class ValidateZip(Validation, DownloadUtils):
 
     def start_cluster(self) -> bool:
         try:
-            self.os_process.start(f"env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} .\\opensearch-windows-install.bat",
-                                  os.path.join(self.tmp_dir.path, f"opensearch-{self.args.version}"), False)
+            # self.os_process.start(f"set OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} .\\opensearch-windows-install.bat",
+            #                       os.path.join(self.tmp_dir.path, f"opensearch-{self.args.version}"), False)
 
-            # process_test = subprocess.Popen(
-            #     f"set OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} .\\opensearch-windows-install.bat",
-            #     cwd=os.path.join(self.tmp_dir.path, f"opensearch-{self.args.version}"),
-            #     shell=True,
-            #     stdout=subprocess.PIPE,
-            #     stderr=subprocess.PIPE,
-            # )
-            # stdout, stderr = process_test.communicate()
-            # logging.info(stdout.decode())
-            # logging.info(process_test.wait())
-            # logging.info(stdout.decode())
+            os.environ["OPENSEARCH_INITIAL_ADMIN_PASSWORD"] = get_password(str(self.args.version))
+            process_test = subprocess.Popen(
+                ".\\opensearch-windows-install.bat",
+                cwd=os.path.join(self.tmp_dir.path, f"opensearch-{self.args.version}"),
+                shell=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+            )
+            stdout, stderr = process_test.communicate()
+            logging.info(stdout.decode())
+            logging.info(process_test.wait())
+            logging.info(stdout.decode())
 
             if "opensearch-dashboards" in self.args.projects:
                 self.osd_process.start(".\\bin\\opensearch-dashboards.bat", os.path.join(self.tmp_dir.path, f"opensearch-dashboards-{self.args.version}"), False)
@@ -76,7 +77,7 @@ class ValidateZip(Validation, DownloadUtils):
 
     def cleanup(self) -> bool:
         try:
-            self.os_process.terminate()
+            # self.os_process.terminate()
             if ("opensearch-dashboards" in self.args.projects):
                 self.osd_process.terminate()
         except:
