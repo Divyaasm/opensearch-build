@@ -38,7 +38,7 @@ class ValidateZip(Validation, DownloadUtils):
 
     def start_cluster(self) -> bool:
         try:
-            self.os_process.start(f"set OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} .\\opensearch-windows-install.bat",
+            self.os_process.start(f"env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} .\\opensearch-windows-install.bat",
                                   os.path.join(self.tmp_dir.path, f"opensearch-{self.args.version}"), False)
 
             # process_test = subprocess.Popen(
