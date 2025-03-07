@@ -46,6 +46,11 @@ pipeline {
     agent none
     parameters {
         string(
+            name: 'INPUT_MANIFEST',
+            description: 'Required: Input manifest under the manifests folder, e.g. 2.0.0/opensearch-2.0.0.yml.',
+            trim: true
+        )
+        string(
             name: 'OPENSEARCH_ARTIFACT_URL',
             description: 'Enter OpenSearch artifact URL',
             trim: true
@@ -167,7 +172,7 @@ pipeline {
                         currentBuild.result = 'ABORTED'
                         error("Both VERSION and OPENSEARCH_ARTIFACT_URL cannot be empty. Please provide either value")
                     }
-
+                    def inputManifestObj = lib.jenkins.InputManifest.new(readYaml(file: "manifests/${INPUT_MANIFEST}"))
                     env version_number = inputManifestObj.build.version + (inputManifestObj.build?.qualifier ? "-${inputManifestObj.build.qualifier}" : "")
                 }
             }
