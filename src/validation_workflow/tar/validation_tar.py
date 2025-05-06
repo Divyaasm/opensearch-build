@@ -7,7 +7,7 @@
 
 import logging
 import os
-import time
+import subprocess
 from system.execute import execute
 from system.process import Process
 from system.temporary_directory import TemporaryDirectory
@@ -32,8 +32,9 @@ class ValidateTar(Validation, DownloadUtils):
                     self.filename = os.path.basename(self.args.file_path.get(project))
                     native_plugin = Process()
                     execute('mkdir ' + os.path.join(self.tmp_dir.path, project) + ' | tar -xzf ' + os.path.join(str(self.tmp_dir.path), self.filename) + ' -C ' + os.path.join(self.tmp_dir.path, project) + ' --strip-components=1', ".", True, False)  # noqa: E501
-                    (returncode, stdout, stderr) = execute('./bin/opensearch-plugin install analysis-icu', os.path.join(str(self.tmp_dir.path), project))
+                    (returncode, stdout, stderr) = execute('yes | ./bin/opensearch-plugin install repository-s3', os.path.join(str(self.tmp_dir.path), project))
                     logging.info(stderr)
+
 
                     # native_plugin.start('./bin/opensearch-plugin install analysis-icu', os.path.join(str(self.tmp_dir.path), project))
                     # native_plugin.terminate()
