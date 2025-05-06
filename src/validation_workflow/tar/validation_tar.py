@@ -32,14 +32,12 @@ class ValidateTar(Validation, DownloadUtils):
                     self.filename = os.path.basename(self.args.file_path.get(project))
                     native_plugin = Process()
                     execute('mkdir ' + os.path.join(self.tmp_dir.path, project) + ' | tar -xzf ' + os.path.join(str(self.tmp_dir.path), self.filename) + ' -C ' + os.path.join(self.tmp_dir.path, project) + ' --strip-components=1', ".", True, False)  # noqa: E501
-
-                    (returncode, stdout, stderr) = execute('ls', os.path.join(str(self.tmp_dir.path), project))
-                    logging.info(stdout)
-                    native_plugin.start('./bin/opensearch-plugin install analysis-icu', os.path.join(str(self.tmp_dir.path), project))
-                    execute('ls', ".")
+                    execute('./bin/opensearch-plugin install analysis-icu', os.path.join(str(self.tmp_dir.path), project))
                     time.sleep(100)
-                    native_plugin.terminate()
-                    logging.info(native_plugin.stderr_data)
+
+                    # native_plugin.start('./bin/opensearch-plugin install analysis-icu', os.path.join(str(self.tmp_dir.path), project))
+                    # native_plugin.terminate()
+                    # logging.info(native_plugin.stdout_data)
                 except:
                     return False
         except:
