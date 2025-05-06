@@ -33,7 +33,6 @@ class ValidateTar(Validation, DownloadUtils):
                     native_plugin = Process()
                     execute('mkdir ' + os.path.join(self.tmp_dir.path, project) + ' | tar -xzf ' + os.path.join(str(self.tmp_dir.path), self.filename) + ' -C ' + os.path.join(self.tmp_dir.path, project) + ' --strip-components=1', ".", True, False)  # noqa: E501
                     (returncode, stdout, stderr) = execute('y | ./bin/opensearch-plugin install repository-s3', os.path.join(str(self.tmp_dir.path), project))
-                    time.sleep(100)
                     logging.info(stderr)
 
                     # native_plugin.start('./bin/opensearch-plugin install analysis-icu', os.path.join(str(self.tmp_dir.path), project))
