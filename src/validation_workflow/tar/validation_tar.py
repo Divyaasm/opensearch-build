@@ -33,6 +33,8 @@ class ValidateTar(Validation, DownloadUtils):
                     execute('mkdir ' + os.path.join(self.tmp_dir.path, project) + ' | tar -xzf ' + os.path.join(str(self.tmp_dir.path), self.filename) + ' -C ' + os.path.join(self.tmp_dir.path, project) + ' --strip-components=1', ".", True, False)  # noqa: E501
                     native_plugin = Process()
                     native_plugin.start('./opensearch-plugin install discovery-ec2', os.path.join(self.tmp_dir.path, project, "bin"))
+                    logging.info(native_plugin.stdout_data)
+
                     native_plugin.terminate()
                 except:
                     return False
