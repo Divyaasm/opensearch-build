@@ -7,7 +7,7 @@
 
 import logging
 import os
-import subprocess
+
 from system.execute import execute
 from system.process import Process
 from system.temporary_directory import TemporaryDirectory
@@ -30,9 +30,11 @@ class ValidateTar(Validation, DownloadUtils):
             for project in self.args.projects:
                 try:
                     self.filename = os.path.basename(self.args.file_path.get(project))
-                    native_plugin = Process()
                     execute('mkdir ' + os.path.join(self.tmp_dir.path, project) + ' | tar -xzf ' + os.path.join(str(self.tmp_dir.path), self.filename) + ' -C ' + os.path.join(self.tmp_dir.path, project) + ' --strip-components=1', ".", True, False)  # noqa: E501
-                    execute('yes | ./bin/opensearch-plugin install repository-s3', os.path.join(str(self.tmp_dir.path), project), capture=False, check=True)
+                    if self.args.native_plugin:
+                        native_plugins = ["analysis-icu", "analysis-kuromoji", "analysis-nori", "analysis-phonenumber"]
+                        for i in native_plugins:
+                            execute(f'yes | ./bin/opensearch-plugin install {i}', os.path.join(str(self.tmp_dir.path), project), check=True)
 
                 except:
                     return False
