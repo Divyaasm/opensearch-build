@@ -32,7 +32,7 @@ class ValidateTar(Validation, DownloadUtils):
                     self.filename = os.path.basename(self.args.file_path.get(project))
                     native_plugin = Process()
                     execute('mkdir ' + os.path.join(self.tmp_dir.path, project) + ' | tar -xzf ' + os.path.join(str(self.tmp_dir.path), self.filename) + ' -C ' + os.path.join(self.tmp_dir.path, project) + ' --strip-components=1', ".", True, False)  # noqa: E501
-                    (returncode, stdout, stderr) = execute('./bin/opensearch-plugin install repository-s3 --yes', os.path.join(str(self.tmp_dir.path), project))
+                    (returncode, stdout, stderr) = execute('y' | './bin/opensearch-plugin install repository-s3', os.path.join(str(self.tmp_dir.path), project))
                     time.sleep(100)
                     logging.info(stderr)
 
