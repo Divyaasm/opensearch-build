@@ -35,7 +35,7 @@ class ValidateTar(Validation, DownloadUtils):
 
                     (returncode, stdout, stderr) = execute('ls', os.path.join(str(self.tmp_dir.path), project))
                     logging.info(stdout)
-                    native_plugin.start('./bin/opensearch-plugin install discovery-ec2', os.path.join(str(self.tmp_dir.path), project), True)
+                    native_plugin.start('./bin/opensearch-plugin install repository-s3', os.path.join(str(self.tmp_dir.path), project))
                     execute('ls', ".")
                     time.sleep(100)
                     native_plugin.terminate()
