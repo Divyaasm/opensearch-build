@@ -7,7 +7,7 @@
 
 import logging
 import os
-
+import time
 from system.execute import execute
 from system.process import Process
 from system.temporary_directory import TemporaryDirectory
@@ -35,11 +35,10 @@ class ValidateTar(Validation, DownloadUtils):
 
                     (returncode, stdout, stderr) = execute('ls', os.path.join(str(self.tmp_dir.path), project))
                     logging.info(stdout)
-                    native_plugin.start('./bin/opensearch-plugin install discovery-ec2', ".")
+                    native_plugin.start('./bin/opensearch-plugin install discovery-ec2', os.path.join(str(self.tmp_dir.path), project))
                     execute('ls', ".")
+                    time.sleep(1000)
                     logging.info(native_plugin.stderr_data)
-
-                    native_plugin.terminate()
                 except:
                     return False
         except:
