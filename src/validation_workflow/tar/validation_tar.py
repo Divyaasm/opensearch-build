@@ -37,7 +37,8 @@ class ValidateTar(Validation, DownloadUtils):
                     logging.info(stdout)
                     native_plugin.start('./bin/opensearch-plugin install discovery-ec2', os.path.join(str(self.tmp_dir.path), project))
                     execute('ls', ".")
-                    time.sleep(1000)
+                    time.sleep(100)
+                    native_plugin.terminate()
                     logging.info(native_plugin.stderr_data)
                 except:
                     return False
