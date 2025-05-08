@@ -34,7 +34,7 @@ class ValidateTar(Validation, DownloadUtils):
                     if self.args.native_plugin:
                         native_plugins = ["analysis-icu", "analysis-kuromoji", "analysis-nori", "analysis-phonenumber"]
                         for i in native_plugins:
-                            execute(f'yes | ./bin/opensearch-plugin install {i}', os.path.join(str(self.tmp_dir.path), project), check=True)
+                            execute(f'yes | ./bin/opensearch-plugin install {i}', os.path.join(str(self.tmp_dir.path), "opensearch"), check=True)
 
                 except:
                     return False
