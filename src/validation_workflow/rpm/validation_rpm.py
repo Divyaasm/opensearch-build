@@ -33,7 +33,7 @@ class ValidateRpm(Validation, DownloadUtils):
                 execute(f'sudo yum remove {project} -y', ".")
                 execute(f'sudo env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} rpm -ivh {os.path.join(self.tmp_dir.path, self.filename)}', str(self.tmp_dir.path), True, False)  # noqa: 501
                 (_, _, stderr) = execute(f'yes | "/usr/share/opensearch/bin/opensearch-plugin install analysis-icu', ".")
-                logging.info(stdout)
+                logging.info(stderr)
         except:
             raise Exception('Failed to install Opensearch')
         return True
