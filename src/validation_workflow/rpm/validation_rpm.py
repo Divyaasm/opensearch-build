@@ -28,12 +28,12 @@ class ValidateRpm(Validation, DownloadUtils):
             execute('sudo rpm --import https://artifacts.opensearch.org/publickeys/opensearch-release.pgp', str(self.tmp_dir.path), True, False)
             for project in self.args.projects:
                 self.filename = os.path.basename(self.args.file_path.get(project))
-                #self.validate_metadata(project)
-                #self.validate_signature()
+                self.validate_metadata(project)
+                self.validate_signature()
                 execute(f'sudo yum remove {project} -y', ".")
                 execute(f'sudo env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} rpm -ivh {os.path.join(self.tmp_dir.path, self.filename)}', str(self.tmp_dir.path), True, False)  # noqa: 501
-                (_, _, stderr) = execute(f'yes | /usr/share/opensearch/bin/opensearch-plugin install analysis-icu', ".")
-                logging.info(stderr)
+                execute(f'yes | /usr/share/opensearch/bin/opensearch-plugin install analysis-icu', ".")
+
         except:
             raise Exception('Failed to install Opensearch')
         return True

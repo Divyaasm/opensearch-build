@@ -32,6 +32,7 @@ class ValidateYum(Validation, DownloadUtils):
                 urllink = f"{self.args.file_path.get(project)} -o /etc/yum.repos.d/{os.path.basename(self.args.file_path.get(project))}"
                 execute(f'sudo curl -SL {urllink}', ".")
                 execute(f"sudo env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} yum install '{project}-{self.args.version.replace('-', '.')}' -y", ".")
+                execute(f'yes | /usr/share/opensearch/bin/opensearch-plugin install analysis-icu', ".")
 
         except:
             raise Exception('Failed to install Opensearch')
