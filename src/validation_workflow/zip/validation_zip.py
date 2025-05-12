@@ -8,7 +8,6 @@
 import logging
 import os
 
-from system.execute import execute
 from system.process import Process
 from system.temporary_directory import TemporaryDirectory
 from system.zip_file import ZipFile
@@ -30,8 +29,7 @@ class ValidateZip(Validation, DownloadUtils):
             for project in self.args.projects:
                 with ZipFile(os.path.join(self.tmp_dir.path, os.path.basename(self.args.file_path.get(project))), "r") as zip:
                     zip.extractall(self.tmp_dir.path)
-            (_, stdout, stderr) = execute(f'yes | opensearch-plugin install discovery-ec2', os.path.join(str(self.tmp_dir.path), f"opensearch-{self.args.version}", "bin"), check=True)
-            logging.info(stdout)
+            # (_, stdout, _) = execute(f'yes | opensearch-plugin install discovery-ec2', os.path.join(str(self.tmp_dir.path), f"opensearch-{self.args.version}", "bin"), check=True)
         except:
             raise Exception("Failed to install OpenSearch/OpenSearch-Dashboards")
         return True

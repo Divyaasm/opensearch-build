@@ -31,10 +31,9 @@ class ValidateTar(Validation, DownloadUtils):
                 try:
                     self.filename = os.path.basename(self.args.file_path.get(project))
                     execute('mkdir ' + os.path.join(self.tmp_dir.path, project) + ' | tar -xzf ' + os.path.join(str(self.tmp_dir.path), self.filename) + ' -C ' + os.path.join(self.tmp_dir.path, project) + ' --strip-components=1', ".", True, False)  # noqa: E501
-                    if self.args.native_plugin:
-                        native_plugins = ["analysis-icu", "analysis-kuromoji", "analysis-nori", "analysis-phonenumber"]
-                        for i in native_plugins:
-                            execute(f'yes | ./bin/opensearch-plugin install {i}', os.path.join(str(self.tmp_dir.path), "opensearch"), check=True)
+                    if self.args.validate_native_plugin:
+                        self.install_native_plugin(os.path.join(str(self.tmp_dir.path), "opensearch"))
+                    # execute(f'yes | ./bin/opensearch-plugin install {i}', os.path.join(str(self.tmp_dir.path), "opensearch"), check=True)
 
                 except:
                     return False
@@ -74,3 +73,25 @@ class ValidateTar(Validation, DownloadUtils):
         except:
             raise Exception('Failed to terminate the processes that started OpenSearch and OpenSearch-Dashboards')
         return True
+
+    # Manifest Usage:
+    # The format for schema version 1.1 is:
+    #         schema-version: "1.1"
+    #         build:
+    #           name: string
+    #           version: string
+    #           platform: linux, darwin or windows
+    #           architecture: x64 or arm64
+    #           distribution: tar, zip, deb and rpm
+    #           id: build id
+    #           location: /relative/path/to/tarball
+    #         components:
+    #           - name: string
+    #             repository: URL of git repository
+    #             ref: git ref that was built (sha, branch, or tag)
+    #             commit_id: The actual git commit ID that was built (i.e. the resolved "ref")
+    #             location: /relative/path/to/artifact
+    # self.bundle_manifest = BundleManifest.from_path(self.BUNDLE_MANIFEST)
+    # component = self.bundle_manifest.components[OpenSearch].commit_id
+
+    # api request https://api.github.com/repos/opensearch-project/OpenSearch/contents/plugins?ref=59043524466b9d3354bd43bb21b7d32ce4c7c311

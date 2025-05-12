@@ -119,7 +119,7 @@ class ValidationArgs:
         )
         parser.add_argument(
             "-np",
-            "--native-plugin",
+            "--validate-native-plugin",
             action="store_true",
             default=True,
             help="Set the option to True if native plugins for OS need to be installed before starting the cluster, defaults to False"
@@ -160,7 +160,7 @@ class ValidationArgs:
         self.file_path = args.file_path
         self.artifact_type = args.artifact_type
         self.allow_http = args.allow_http
-        self.native_plugin = args.native_plugin
+        self.validate_native_plugin = args.validate_native_plugin
         self.logging_level = args.logging_level
         self.distribution = args.distribution
         self.platform = args.platform

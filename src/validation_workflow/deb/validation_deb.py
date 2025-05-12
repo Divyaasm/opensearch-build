@@ -27,7 +27,7 @@ class ValidateDeb(Validation, DownloadUtils):
                 set_password = f' env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))}' if project == "opensearch" else ""
                 execute(f'sudo dpkg --purge {project}', ".")
                 execute(f'sudo {set_password} dpkg -i {os.path.basename(self.args.file_path.get(project))}', str(self.tmp_dir.path))
-                execute(f'yes | /usr/share/opensearch/bin/opensearch-plugin install analysis-icu', ".")
+                execute('yes | /usr/share/opensearch/bin/opensearch-plugin install analysis-icu', ".")
         except:
             raise Exception("Failed to install OpenSearch/OpenSearch-Dashboards")
         return True
