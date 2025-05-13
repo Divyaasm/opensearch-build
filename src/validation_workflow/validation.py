@@ -53,10 +53,10 @@ class Validation(ABC):
         path = os.path.exists(os.path.join(work_dir, "plugins", "opensearch-security"))
         return path
 
-    def install_native_plugin(self, workdir: str) -> None:
-        self.native_plugins_list = self.get_native_plugin_list(os.path.join(workdir, "manifest.yml"))
+    def install_native_plugin(self, path: str) -> None:
+        self.native_plugins_list = self.get_native_plugin_list(os.path.join(str(self.tmp_dir.path), path, "manifest.yml"))
         for native_plugin in self.native_plugins_list:
-            execute(f'yes | ./bin/opensearch-plugin install {native_plugin}', os.path.join(str(self.tmp_dir.path), "opensearch"), check=True)
+            execute(f'yes | opensearch-plugin --batch install {native_plugin}', os.path.join(str(self.tmp_dir.path), path, "bin"), check=True)
             # execute(f'opensearch-plugin --batch install {native_plugin}', os.path.join(workdir, "bin"))
 
     def get_native_plugin_list(self, workdir: str) -> list:
@@ -72,10 +72,9 @@ class Validation(ABC):
             plugin_list = [i["name"] for i in response]
             logging.info("Json stored")
             logging.info(type(plugin_list))
-            logging.info(plugin_list)
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
-            logging.info(type(plugin_list))
+            logging.info(plugin_list)
             return plugin_list
         else:
             raise ValueError("Github Api returned error code while retrieving the list of native plugins")
