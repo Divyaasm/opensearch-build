@@ -56,8 +56,7 @@ class Validation(ABC):
     def install_native_plugin(self, workdir: str) -> None:
         self.native_plugins_list = self.get_native_plugin_list(os.path.join(workdir, "manifest.yml"))
         for native_plugin in self.native_plugins_list:
-            execute(f'yes | ./bin/opensearch-plugin install {native_plugin}', os.path.join(workdir, "bin"),
-                    check=True)
+            execute(f'./bin/opensearch-plugin --batch install {native_plugin}', os.path.join(workdir, "bin"))
 
     def get_native_plugin_list(self, workdir: str) -> list:
         bundle_manifest = BundleManifest.from_path(workdir)
@@ -68,7 +67,8 @@ class Validation(ABC):
         api_response = requests.get(plugin_url)
         logging.info("Request made")
         if api_response.status_code == 200:
-            plugin_list = api_response.json()
+            response = api_response.json()
+            plugin_list = [i["name"] for i in response]
             logging.info("Json stored")
             logging.info(type(plugin_list))
             logging.info(plugin_list)
