@@ -56,26 +56,20 @@ class Validation(ABC):
     def install_native_plugin(self, path: str) -> None:
         self.native_plugins_list = self.get_native_plugin_list(os.path.join(str(self.tmp_dir.path), path, "manifest.yml"))
         for native_plugin in self.native_plugins_list:
-            # execute(f'yes | ./bin/opensearch-plugin install {native_plugin}', os.path.join(str(self.tmp_dir.path), path), check=True)
-            (_, stdout, stderr) = execute(f'./opensearch-plugin install --batch {native_plugin}', os.path.join(str(self.tmp_dir.path), path, "bin"), check=True)
+            (_, stdout, stderr) = execute(f'opensearch-plugin install --batch {native_plugin}', os.path.join(str(self.tmp_dir.path), path, "bin"), check=True)
+            logging.info(stderr)
 
     def get_native_plugin_list(self, workdir: str) -> list:
         bundle_manifest = BundleManifest.from_path(workdir)
-        logging.info("Manifest retrieved")
         commit_id = bundle_manifest.components["OpenSearch"].commit_id
-        logging.info(commit_id)
         plugin_url = f"https://api.github.com/repos/opensearch-project/OpenSearch/contents/plugins?ref={commit_id}"
         api_response = requests.get(plugin_url)
-        logging.info("Request made")
         if api_response.status_code == 200:
             response = api_response.json()
             plugin_list = [i["name"] for i in response]
-            logging.info("Json stored")
-            logging.info(type(plugin_list))
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
-            plugin_list.remove("identity-shiro")
-            logging.info(plugin_list)
+            plugin_list.remove("identity-shiro") #Assuming security plugin enabled in the artifacts
             return plugin_list
         else:
             raise ValueError("Github Api returned error code while retrieving the list of native plugins")
