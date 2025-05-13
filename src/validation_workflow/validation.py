@@ -71,7 +71,8 @@ class Validation(ABC):
             logging.info(installed_plugins_list)
             plugin_list = [i["name"] for i in response]
             plugin_list = [i for i in plugin_list if i not in installed_plugins_list]
-            plugin_list.remove("query-insights")
+            logging.info(plugin_list)
+            # plugin_list.remove("query-insights")
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
             plugin_list.remove("identity-shiro") #Assuming security plugin enabled in the artifacts
