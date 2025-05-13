@@ -63,14 +63,16 @@ class Validation(ABC):
         bundle_manifest = BundleManifest.from_path(workdir)
         logging.info("Manifest retrieved")
         commit_id = bundle_manifest.components["OpenSearch"].commit_id
+        logging.info(commit_id)
         plugin_url = f"https://api.github.com/repos/opensearch-project/OpenSearch/contents/plugins?ref={commit_id}"
         api_response = requests.get(plugin_url)
         logging.info("Request made")
         if api_response.status_code == 200:
             plugin_list = api_response.json()
             logging.info("Json stored")
-            plugin_list.remove("examples")
-            plugin_list.remove("build.gradle")
+            logging.info(type(plugin_list))
+            # plugin_list.remove("examples")
+            # plugin_list.remove("build.gradle")
             logging.info(type(plugin_list))
             return [1]
         else:
