@@ -57,7 +57,7 @@ class Validation(ABC):
         self.native_plugins_list = self.get_native_plugin_list(os.path.join(str(self.tmp_dir.path), path, "manifest.yml"))
         for native_plugin in self.native_plugins_list:
             # execute(f'yes | ./bin/opensearch-plugin install {native_plugin}', os.path.join(str(self.tmp_dir.path), path), check=True)
-            execute(f'./bin/opensearch-plugin --batch install {native_plugin}', os.path.join(str(self.tmp_dir.path), path), check=True)
+            (_, stdout, stderr) = execute(f'./bin/opensearch-plugin install --batch {native_plugin}', os.path.join(str(self.tmp_dir.path), path), check=True)
 
     def get_native_plugin_list(self, workdir: str) -> list:
         bundle_manifest = BundleManifest.from_path(workdir)
