@@ -66,7 +66,7 @@ class Validation(ABC):
         api_response = requests.get(plugin_url)
         if api_response.status_code == 200:
             response = api_response.json()
-            installed_plugins_list = os.listdir(workdir, "plugins")
+            installed_plugins_list = os.listdir(workdir)
             logging.info(installed_plugins_list)
             plugin_list = [i["name"] for i in response]
             plugin_list = [i for i in plugin_list if i not in installed_plugins_list]
