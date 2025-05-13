@@ -56,7 +56,7 @@ class Validation(ABC):
     def install_native_plugin(self, path: str) -> None:
         self.native_plugins_list = self.get_native_plugin_list(os.path.join(str(self.tmp_dir.path), path, "manifest.yml"))
         for native_plugin in self.native_plugins_list:
-            (_, stdout, stderr) = execute(f'opensearch-plugin install --batch {native_plugin}', os.path.join(str(self.tmp_dir.path), path, "bin"), check=True)
+            (_, stdout, stderr) = execute(f'./opensearch-plugin install --batch {native_plugin}', os.path.join(str(self.tmp_dir.path), path, "bin"), check=True)
             logging.info(stderr)
 
     def get_native_plugin_list(self, workdir: str) -> list:
@@ -66,7 +66,11 @@ class Validation(ABC):
         api_response = requests.get(plugin_url)
         if api_response.status_code == 200:
             response = api_response.json()
+            installed_plugins_list = os.listdir(workdir, "plugins")
+            logging.info(installed_plugins_list)
             plugin_list = [i["name"] for i in response]
+            plugin_list = [i for i in plugin_list if i not in installed_plugins_list]
+            plugin_list.remove("query-insights")
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
             plugin_list.remove("identity-shiro") #Assuming security plugin enabled in the artifacts
