@@ -71,6 +71,7 @@ class Validation(ABC):
             plugin_list = api_response.json()
             logging.info("Json stored")
             logging.info(type(plugin_list))
+            logging.info(plugin_list)
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
             logging.info(type(plugin_list))
