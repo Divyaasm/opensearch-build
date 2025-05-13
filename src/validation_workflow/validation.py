@@ -71,10 +71,10 @@ class Validation(ABC):
             plugin_list = api_response.json()
             logging.info("Json stored")
             logging.info(type(plugin_list))
-            # plugin_list.remove("examples")
-            # plugin_list.remove("build.gradle")
+            plugin_list.remove("examples")
+            plugin_list.remove("build.gradle")
             logging.info(type(plugin_list))
-            return [1]
+            return plugin_list
         else:
             raise ValueError("Github Api returned error code while retrieving the list of native plugins")
 
