@@ -29,7 +29,8 @@ class ValidateZip(Validation, DownloadUtils):
             for project in self.args.projects:
                 with ZipFile(os.path.join(self.tmp_dir.path, os.path.basename(self.args.file_path.get(project))), "r") as zip:
                     zip.extractall(self.tmp_dir.path)
-            # (_, stdout, _) = execute(f'yes | opensearch-plugin install discovery-ec2', os.path.join(str(self.tmp_dir.path), f"opensearch-{self.args.version}", "bin"), check=True)
+                if self.args.validate_native_plugin:
+                    self.install_native_plugin("opensearch")
         except:
             raise Exception("Failed to install OpenSearch/OpenSearch-Dashboards")
         return True
