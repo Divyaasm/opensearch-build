@@ -56,8 +56,8 @@ class Validation(ABC):
     def install_native_plugin(self, path: str) -> None:
         self.native_plugins_list = self.get_native_plugin_list(os.path.join(str(self.tmp_dir.path), path, "manifest.yml"))
         for native_plugin in self.native_plugins_list:
-            execute(f'yes | ./bin/opensearch-plugin install {native_plugin}', os.path.join(str(self.tmp_dir.path), path), check=True)
-            # execute(f'opensearch-plugin --batch install {native_plugin}', os.path.join(workdir, "bin"))
+            # execute(f'yes | ./bin/opensearch-plugin install {native_plugin}', os.path.join(str(self.tmp_dir.path), path), check=True)
+            execute(f'./bin/opensearch-plugin --batch install {native_plugin}', os.path.join(str(self.tmp_dir.path), path))
 
     def get_native_plugin_list(self, workdir: str) -> list:
         bundle_manifest = BundleManifest.from_path(workdir)
@@ -74,6 +74,7 @@ class Validation(ABC):
             logging.info(type(plugin_list))
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
+            plugin_list.remove("identity-shiro")
             logging.info(plugin_list)
             return plugin_list
         else:
