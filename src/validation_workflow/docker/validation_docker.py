@@ -51,9 +51,9 @@ class ValidateDocker(Validation):
     # Pass this method for docker as no installation required in docker
     def installation(self) -> bool:
         # Install native Plugins
-        (_, _, stderr) = execute('.' + os.sep + 'opensearch-plugin install --batch discovery-azure-classic',
-                                 os.path.join("usr", "share", "opensearch", "bin"), check=True)
-        logging.info(stderr)
+        # (_, _, stderr) = execute('.' + os.sep + 'opensearch-plugin install --batch discovery-azure-classic',
+        #                          os.path.join("usr", "share", "opensearch", "bin"), check=True)
+        # logging.info(stderr)
         return True
 
     # Pass this method for docker and combine it with the following method because we want to Pass the digest validation in docker first before spinning up the docker container
