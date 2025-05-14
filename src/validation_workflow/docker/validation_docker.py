@@ -79,10 +79,13 @@ class ValidateDocker(Validation):
                 self.image_ids,
                 self.args.version
             )
+
             if return_code:
                 logging.info('Checking if cluster is ready for API test in every 5 seconds\n\n')
 
                 if self.check_cluster_readiness():
+                    (_, stdout, _) = execute("docker container ls")
+                    logging.info(stdout)
                     # STEP 4 . OS, OSD API validation
                     _test_result, _counter = ApiTestCases().test_apis(self.args.version, self.args.projects, True)
 
