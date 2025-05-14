@@ -84,8 +84,11 @@ class ValidateDocker(Validation):
                 logging.info('Checking if cluster is ready for API test in every 5 seconds\n\n')
 
                 if self.check_cluster_readiness():
-                    (_, stdout, _) = execute("docker container ls")
+                    (_, stdout, _) = execute("docker container ls", ".")
                     logging.info(stdout)
+                    (_, _, stderr) = execute(f'docker exec {stdout}' + '.' + os.sep + 'opensearch-plugin install --batch discovery-azure-classic',
+                                             os.path.join("usr", "share", "opensearch", "bin"), check=True)
+                    logging.info(stderr)
                     # STEP 4 . OS, OSD API validation
                     _test_result, _counter = ApiTestCases().test_apis(self.args.version, self.args.projects, True)
 
