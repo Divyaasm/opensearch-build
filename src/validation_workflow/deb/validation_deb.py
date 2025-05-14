@@ -28,7 +28,7 @@ class ValidateDeb(Validation, DownloadUtils):
                 execute(f'sudo dpkg --purge {project}', ".")
                 execute(f'sudo {set_password} dpkg -i {os.path.basename(self.args.file_path.get(project))}', str(self.tmp_dir.path))
                 if self.args.validate_native_plugin:
-                    self.install_native_plugin(os.path.join("usr", "share", "opensearch"))
+                    self.install_native_plugin(os.path.join(os.sep, "usr", "share", "opensearch"))
                 # execute('yes | /usr/share/opensearch/bin/opensearch-plugin install analysis-icu', ".")
         except:
             raise Exception("Failed to install OpenSearch/OpenSearch-Dashboards")

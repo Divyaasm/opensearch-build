@@ -33,7 +33,7 @@ class ValidateYum(Validation, DownloadUtils):
                 execute(f'sudo curl -SL {urllink}', ".")
                 execute(f"sudo env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} yum install '{project}-{self.args.version.replace('-', '.')}' -y", ".")
                 if self.args.validate_native_plugin:
-                    self.install_native_plugin(os.path.join("usr", "share", "opensearch"))
+                    self.install_native_plugin(os.path.join(os.sep, "usr", "share", "opensearch"))
                 # execute(f'yes | /usr/share/opensearch/bin/opensearch-plugin install analysis-icu', ".")
 
         except:
