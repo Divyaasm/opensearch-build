@@ -38,6 +38,7 @@ class ValidateDocker(Validation):
                 self.args.version if not self.args.using_staging_artifact_only else ValidationArgs().stg_tag(product).replace(" ", ""))
             self.image_ids = {key: value for key, value in zip(product_names, list(map(get_image_id, product_names)))}
             self.image_ids = {key: value.strip() for key, value in self.image_ids.items()}
+            logging.info(self.image_ids)
 
             return True
 
@@ -84,9 +85,13 @@ class ValidateDocker(Validation):
                 logging.info('Checking if cluster is ready for API test in every 5 seconds\n\n')
 
                 if self.check_cluster_readiness():
-                    (_, stdout, _) = execute("docker container ls", ".")
-                    logging.info(stdout)
-                    (_, _, stderr) = execute(f'docker exec {stdout}' + '.' + os.sep + 'opensearch-plugin install --batch discovery-azure-classic',
+                    services = "opensearch-node1 opensearch-node2" if "opensearch-dashboards" not in self.args.projects else ""
+
+                    docker_compose = f'docker-compose -f {self.target_yml_file} ps -q {services}'
+                    result = subprocess.run(docker_compose, shell=True, stdout=PIPE, stderr=PIPE,
+                                            universal_newlines=True)
+                    logging.info(result)
+                    (_, _, stderr) = execute(f'docker exec {result}' + '.' + os.sep + 'opensearch-plugin install --batch discovery-azure-classic',
                                              os.path.join("usr", "share", "opensearch", "bin"), check=True)
                     logging.info(stderr)
                     # STEP 4 . OS, OSD API validation
