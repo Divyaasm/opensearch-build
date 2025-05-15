@@ -13,7 +13,6 @@ from subprocess import PIPE
 from typing import Any
 
 from system.temporary_directory import TemporaryDirectory
-from system.execute import execute
 from test_workflow.integ_test.utils import get_password
 from validation_workflow.api_test_cases import ApiTestCases
 from validation_workflow.docker.inspect_docker_image import InspectDockerImage
@@ -38,7 +37,6 @@ class ValidateDocker(Validation):
                 self.args.version if not self.args.using_staging_artifact_only else ValidationArgs().stg_tag(product).replace(" ", ""))
             self.image_ids = {key: value for key, value in zip(product_names, list(map(get_image_id, product_names)))}
             self.image_ids = {key: value.strip() for key, value in self.image_ids.items()}
-            logging.info(self.image_ids)
 
             return True
 
@@ -51,10 +49,6 @@ class ValidateDocker(Validation):
 
     # Pass this method for docker as no installation required in docker
     def installation(self) -> bool:
-        # Install native Plugins
-        # (_, _, stderr) = execute('.' + os.sep + 'opensearch-plugin install --batch discovery-azure-classic',
-        #                          os.path.join("usr", "share", "opensearch", "bin"), check=True)
-        # logging.info(stderr)
         return True
 
     # Pass this method for docker and combine it with the following method because we want to Pass the digest validation in docker first before spinning up the docker container
@@ -80,20 +74,10 @@ class ValidateDocker(Validation):
                 self.image_ids,
                 self.args.version
             )
-
             if return_code:
                 logging.info('Checking if cluster is ready for API test in every 5 seconds\n\n')
 
                 if self.check_cluster_readiness():
-                    services = "opensearch-node1 opensearch-node2" if "opensearch-dashboards" not in self.args.projects else ""
-
-                    docker_compose = f'docker-compose -f {self.target_yml_file} ps -q {services}'
-                    result = subprocess.run(docker_compose, shell=True, stdout=PIPE, stderr=PIPE,
-                                            universal_newlines=True)
-                    logging.info(result)
-                    (_, _, stderr) = execute(f'docker exec {result}' + '.' + os.sep + 'opensearch-plugin install --batch discovery-azure-classic',
-                                             os.path.join("usr", "share", "opensearch", "bin"), check=True)
-                    logging.info(stderr)
                     # STEP 4 . OS, OSD API validation
                     _test_result, _counter = ApiTestCases().test_apis(self.args.version, self.args.projects, True)
 
