@@ -79,6 +79,17 @@ class ValidateDocker(Validation):
 
                 if self.check_cluster_readiness():
                     # STEP 4 . OS, OSD API validation
+
+                    services = "opensearch-node1 opensearch-node2" if "opensearch-dashboards" not in self.args.projects else ""
+
+                    docker_compose = f'docker-compose -f {self.target_yml_file} ps -q {services}'
+                    result = subprocess.run(docker_compose, shell=True, stdout=PIPE, stderr=PIPE,
+                                            universal_newlines=True)
+                    logging.info(result)
+                    # (_, _, stderr) = execute(
+                    #     f'docker exec {result}' + '.' + os.sep + 'opensearch-plugin install --batch discovery-azure-classic',
+                    #     os.path.join("usr", "share", "opensearch", "bin"), check=True)
+                    # logging.info(stderr)
                     _test_result, _counter = ApiTestCases().test_apis(self.args.version, self.args.projects, True)
 
                     if _test_result:
