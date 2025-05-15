@@ -96,9 +96,11 @@ class ValidateDocker(Validation):
                         ".", check=True)
                     (_, stdout, _) = execute("ls", ".", check=True)
                     logging.info(stdout)
-                    (_, _, stderr) = execute("docker-compose restart", ".", check=True)
-                    logging.info(stderr)
-
+                    try:
+                        (_, _, stderr) = execute("docker-compose restart", ".", check=True)
+                    except subprocess.CalledProcessError as e:
+                        logging.infoprint("Exit Code:", e.returncode)
+                        logging.info(stderr)
 
                     self.check_cluster_readiness()
                     _test_result, _counter = ApiTestCases().test_apis(self.args.version, self.args.projects, True)
