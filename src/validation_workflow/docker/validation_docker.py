@@ -86,13 +86,19 @@ class ValidateDocker(Validation):
                     docker_compose = f'docker-compose -f {self.target_yml_file} ps -q {services}'
                     result = subprocess.run(docker_compose, shell=True, stdout=PIPE, stderr=PIPE,
                                             universal_newlines=True)
+                    subprocess.run("docker_compose restart", shell=True, stdout=PIPE, stderr=PIPE,
+                                   universal_newlines=True)
                     logging.info(result.stdout.strip().split('\n'))
                     for i in result.stdout.strip().split('\n'):
-                        (_, _, stderr) = execute(
-                        f'docker exec {i}' + 'ls', ".", check=True)
-                        # f'docker exec {i}' + ' .' + os.sep + 'opensearch-plugin install --batch discovery-azure-classic',
-                        # os.path.join(os.sep, "usr", "share", "opensearch", "bin"), check=True)
-                    logging.info(stderr)
+                        execute(
+                        # f'docker exec {i}' + ' ls bin', ".")
+                        f'docker exec {i}' + ' .' + os.sep + 'bin/opensearch-plugin install --batch discovery-azure-classic',
+                        ".", check=True)
+                    (_, stdout, _) = execute("ls", ".", check=True)
+                    (_, _, stderr) = execute("docker compose restart", ".", check=True)
+                    logging.info(stdout)
+
+                    self.check_cluster_readiness()
                     _test_result, _counter = ApiTestCases().test_apis(self.args.version, self.args.projects, True)
 
                     if _test_result:
