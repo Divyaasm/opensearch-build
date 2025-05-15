@@ -95,8 +95,8 @@ class ValidateDocker(Validation):
                         f'docker exec {i}' + ' .' + os.sep + 'bin/opensearch-plugin install --batch discovery-azure-classic',
                         ".", check=True)
                     (_, stdout, _) = execute("ls", ".", check=True)
-                    (_, _, stderr) = execute("docker compose restart", ".", check=True)
                     logging.info(stdout)
+                    (_, _, stderr) = execute("docker compose restart", ".", check=True)
 
                     self.check_cluster_readiness()
                     _test_result, _counter = ApiTestCases().test_apis(self.args.version, self.args.projects, True)
