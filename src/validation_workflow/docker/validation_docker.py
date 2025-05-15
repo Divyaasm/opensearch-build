@@ -87,7 +87,7 @@ class ValidateDocker(Validation):
                     result = subprocess.run(docker_compose, shell=True, stdout=PIPE, stderr=PIPE,
                                             universal_newlines=True)
                     logging.info(result.stdout)
-                    for i in result.stdout:
+                    for i in result.stdout.strip().splitlines():
                         (_, _, stderr) = execute(
                         f'docker exec {result.stdout}' + '.' + os.sep + 'opensearch-plugin install --batch discovery-azure-classic',
                         os.path.join("usr", "share", "opensearch", "bin"), check=True)
