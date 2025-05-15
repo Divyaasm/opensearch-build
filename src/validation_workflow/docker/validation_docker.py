@@ -90,7 +90,7 @@ class ValidateDocker(Validation):
                     for i in result.stdout.strip().splitlines():
                         (_, _, stderr) = execute(
                         f'docker exec {result.stdout}' + '.' + os.sep + 'opensearch-plugin install --batch discovery-azure-classic',
-                        os.path.join("usr", "share", "opensearch", "bin"), check=True)
+                        os.path.join(os.sep, "usr", "share", "opensearch", "bin"), check=True)
                     logging.info(stderr)
                     _test_result, _counter = ApiTestCases().test_apis(self.args.version, self.args.projects, True)
 
