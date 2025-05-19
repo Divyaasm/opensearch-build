@@ -56,8 +56,7 @@ class Validation(ABC):
     def install_native_plugin(self, path: str) -> None:
         self.native_plugins_list = self.get_native_plugin_list(path)
         for native_plugin in self.native_plugins_list:
-            (_, _, stderr) = execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
-            logging.info(stderr)
+            execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
 
     def get_native_plugin_list(self, workdir: str) -> list:
         bundle_manifest = BundleManifest.from_path(os.path.join(workdir, "manifest.yml"))
@@ -70,7 +69,7 @@ class Validation(ABC):
             plugin_list = [i["name"] for i in response if i["name"] not in installed_plugins_list]
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
-            plugin_list.remove("identity-shiro") #Assuming security plugin enabled in the artifacts
+            plugin_list.remove("identity-shiro")  # Assuming security plugin enabled in the artifacts
             return plugin_list
         else:
             raise ValueError("Github Api returned error code while retrieving the list of native plugins")

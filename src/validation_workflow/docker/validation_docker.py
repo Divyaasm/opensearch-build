@@ -12,7 +12,6 @@ import subprocess
 from subprocess import PIPE
 from typing import Any
 
-from system.execute import execute
 from system.temporary_directory import TemporaryDirectory
 from test_workflow.integ_test.utils import get_password
 from validation_workflow.api_test_cases import ApiTestCases
@@ -80,21 +79,6 @@ class ValidateDocker(Validation):
 
                 if self.check_cluster_readiness():
                     # STEP 4 . OS, OSD API validation
-
-                    services = "opensearch-node1 opensearch-node2" if "opensearch-dashboards" not in self.args.projects else ""
-
-                    docker_compose = f'docker-compose -f {self._target_yml_file} ps -q {services}'
-                    result = subprocess.run(docker_compose, shell=True, stdout=PIPE, stderr=PIPE,
-                                            universal_newlines=True)
-                    for i in result.stdout.strip().split('\n'):
-                        self.native_plugins_list = self.get_native_plugin_list("")
-                        subprocess.run(f'docker exec -it {i} sh', shell=True, stdout=PIPE, stderr=PIPE,
-                        universal_newlines=True)
-                        for native_plugin in self.native_plugins_list:
-                            subprocess.run(' .' + os.sep + 'bin' + os.sep + f'opensearch-plugin install --batch {native_plugin}', shell=True, stdout=PIPE, stderr=PIPE,
-                                                    universal_newlines=True)
-                            execute(f"docker-compose -f {self._target_yml_file} restart", ".")
-                    self.check_cluster_readiness()
                     _test_result, _counter = ApiTestCases().test_apis(self.args.version, self.args.projects, True)
 
                     if _test_result:
