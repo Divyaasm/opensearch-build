@@ -56,7 +56,7 @@ class Validation(ABC):
     def install_native_plugin(self, path: str) -> None:
         self.native_plugins_list = self.get_native_plugin_list(path)
         for native_plugin in self.native_plugins_list:
-            (_, _, stderr) = execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"), check=True)
+            (_, _, stderr) = execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
             logging.info(stderr)
 
     def get_native_plugin_list(self, workdir: str) -> list:
