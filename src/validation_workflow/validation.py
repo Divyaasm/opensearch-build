@@ -67,8 +67,7 @@ class Validation(ABC):
         if api_response.status_code == 200:
             response = api_response.json()
             installed_plugins_list = os.listdir(os.path.join(workdir, "plugins"))
-            plugin_list = [i["name"] for i in response]
-            plugin_list = [i for i in plugin_list if i not in installed_plugins_list]
+            plugin_list = [i["name"] for i in response if i["name"] not in installed_plugins_list]
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
             plugin_list.remove("identity-shiro") #Assuming security plugin enabled in the artifacts
