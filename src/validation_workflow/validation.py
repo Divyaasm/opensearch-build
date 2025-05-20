@@ -72,7 +72,7 @@ class Validation(ABC):
             plugin_list.remove("identity-shiro")  # Assuming security plugin enabled in the artifacts
             return plugin_list
         else:
-            raise ValueError("Github Api returned error code while retrieving the list of native plugins")
+            raise Exception("Github Api returned error code while retrieving the list of native plugins")
 
     def get_version(self, project: str) -> str:
         return re.search(r'(\d+\.\d+\.\d+)', os.path.basename(project)).group(1)

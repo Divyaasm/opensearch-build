@@ -96,7 +96,8 @@ class TestValidationRpm(unittest.TestCase):
     @patch("validation_workflow.rpm.validation_rpm.ValidateRpm.validate_metadata")
     @patch("validation_workflow.rpm.validation_rpm.ValidateRpm.validate_signature")
     @patch('validation_workflow.validation.Validation.install_native_plugin')
-    def test_installation(self, mock_native_plugin: Mock, mock_validate_signature: Mock, mock_validate_metadata: Mock, mock_temporary_directory: Mock, mock_system: Mock, mock_validation_args: Mock) -> None:
+    def test_installation(self, mock_native_plugin: Mock, mock_validate_signature: Mock, mock_validate_metadata: Mock,
+                          mock_temporary_directory: Mock, mock_system: Mock, mock_validation_args: Mock) -> None:
         mock_validation_args.return_value.version = '2.3.0'
         mock_validation_args.return_value.arch = 'x64'
         mock_validation_args.return_value.platform = 'linux'
