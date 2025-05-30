@@ -91,8 +91,10 @@ class ValidateDocker(Validation):
                                 for native_plugin in native_plugins_list:
                                     command = f'docker exec -it {container} sh .' + os.sep + 'bin' + os.sep + f'opensearch-plugin install --batch {native_plugin}'
                                     logging.info(f"Executing {command}")
-                                    subprocess.run(command,
+                                    result = subprocess.run(command,
                                                    shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+                                    logging.info(result.stderr)
+                                    logging.info(result.stdout)
 
                                 subprocess.run(f"docker-compose -f {self._target_yml_file} restart", shell=True, stdout=PIPE, stderr=PIPE,
                                                universal_newlines=True)
