@@ -71,43 +71,18 @@ pipeline {
                             exit 1
                         fi
                     """
-
                     def agent_name_array = params.AGENT_LABEL.tokenize('-')
                     def agent_name = agent_name_array[2] + " " + agent_name_array[4]
 
-                    echo("Build Cause: ${BUILD_CAUSE}")
-                    def bwc_checkout_align = "false"
+                    println("Triggered by User or Triggered by Timer")
+                    def repo_url = "${GIT_REPO_URL}".replace(".git", "/commit")
+                    currentBuild.description = """runner: ${agent_name}<br>git: <a href="${GIT_REPO_URL}">${GIT_REPO_URL}</a><br>ref: <a href="${repo_url}/${GIT_REFERENCE}">${GIT_REFERENCE}</a>"""
 
-                    def dockerLogin = sh(returnStdout: true, script: "set +x && (echo $DOCKER_PASSWORD | docker login --username $DOCKER_USERNAME --password-stdin) || echo docker error").trim()
-
-                    if (!env.BUILD_CAUSE.contains('Started by user') && !env.BUILD_CAUSE.contains('Started by timer')) {
-                       def pr_url = "${pr_to_clone_url}".replace(".git", "/pull/${pr_number}")
-                       println("Triggered by GitHub: ${pr_to_clone_url}")
-                       if ("$post_merge_action" == "true") {
-                            currentBuild.description = """runner: ${agent_name}<br><a href="${pr_to_clone_url}">Others</a>: ${pr_title}"""
-                       }
-                        else {
-                            currentBuild.description = """runner: ${agent_name}<br><a href="${pr_url}">PR #${pr_number}</a>: ${pr_title} with bwc.checkout.align=true"""
-                            bwc_checkout_align = "true"
-                        }
-
-                        runGradleCheck(
-                            gitRepoUrl: "${pr_from_clone_url}",
-                            gitReference: "${pr_from_sha}",
-                            bwcCheckoutAlign: "${bwc_checkout_align}"
-                        )
-                    }
-                    else {
-                        println("Triggered by User or Triggered by Timer")
-                        def repo_url = "${GIT_REPO_URL}".replace(".git", "/commit")
-                        currentBuild.description = """runner: ${agent_name}<br>git: <a href="${GIT_REPO_URL}">${GIT_REPO_URL}</a><br>ref: <a href="${repo_url}/${GIT_REFERENCE}">${GIT_REFERENCE}</a>"""
-
-                        runGradleCheck(
-                            gitRepoUrl: "${GIT_REPO_URL}",
-                            gitReference: "${GIT_REFERENCE}",
-                            bwcCheckoutAlign: "${bwc_checkout_align}"
-                        )
-                    }
+                    runGradleCheck(
+                       gitRepoUrl: "${GIT_REPO_URL}",
+                       gitReference: "${GIT_REFERENCE}",
+                       bwcCheckoutAlign: "false"
+                    )
                 }
             }
             post() {
