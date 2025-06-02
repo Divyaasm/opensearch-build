@@ -91,7 +91,7 @@ pipeline {
                     junit allowEmptyResults: true, testResults: '**/build/test-results/**/*.xml'
                     archiveArtifacts artifacts: 'codeCoverage.xml', onlyIfSuccessful: true
                     script {
-//                         publishGradleCheckTestResults(prNumber: "null" , prTitle: "null", prOwner: "null", invokeType: "Timer", gitReference: "${GIT_REFERENCE}")
+                        publishGradleCheckTestResults(prNumber: "null" , prTitle: "null", prOwner: "null", invokeType: "Timer", gitReference: "${GIT_REFERENCE}")
                         sh("rm -rf *")
                         postCleanup()
                     }
