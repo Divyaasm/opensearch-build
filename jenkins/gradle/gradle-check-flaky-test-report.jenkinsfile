@@ -87,11 +87,13 @@ pipeline {
             }
             post() {
                 always {
-                    sh ("cp -v `find search/build/reports/jacoco/ -name '*.xml' | head -n 1` codeCoverage.xml || echo")
+
                     junit allowEmptyResults: true, testResults: '**/build/test-results/**/*.xml'
-//                     archiveArtifacts artifacts: 'codeCoverage.xml', onlyIfSuccessful: true
                     script {
                         publishGradleCheckTestResults(prNumber: "null" , prTitle: "null", prOwner: "null", invokeType: "Timer", gitReference: "${GIT_REFERENCE}")
+                        sh ("cp -v `find failed-test-records.json' || echo")
+                        junit allowEmptyResults: true, testResults: 'failed-test-records.json'
+                        archiveArtifacts artifacts: 'failed-test-records.json', onlyIfFailed: true
                         sh("rm -rf *")
                         postCleanup()
                     }
