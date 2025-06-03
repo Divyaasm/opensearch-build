@@ -91,7 +91,6 @@ pipeline {
                     junit allowEmptyResults: true, testResults: '**/build/test-results/**/*.xml'
                     script {
                         publishGradleCheckTestResults(prNumber: "null" , prTitle: "null", prOwner: "null", invokeType: "Timer", gitReference: "${GIT_REFERENCE}")
-                        sh ("cp -v `find . -name 'failed-test-records.json' | head -n 1` . || echo")
                         junit allowEmptyResults: true, testResults: 'failed-test-records.json'
                         archiveArtifacts artifacts: 'failed-test-records.json', onlyIfFailed: true
                         sh("rm -rf *")
