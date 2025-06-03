@@ -16,7 +16,7 @@ pipeline {
     agent { label AGENT_LABEL }
     options {
         timeout(time: 2, unit: 'HOURS')
-        buildDiscarder(logRotator(daysToKeepStr: '60'))
+        buildDiscarder(logRotator(daysToKeepStr: '30'))
     }
     parameters {
         string(
@@ -87,10 +87,8 @@ pipeline {
             }
             post() {
                 always {
-
-                    junit allowEmptyResults: true, testResults: '**/build/test-results/**/*.xml'
                     script {
-                        publishGradleCheckTestResults(prNumber: "null" , prTitle: "null", prOwner: "null", invokeType: "Timer", gitReference: "${GIT_REFERENCE}")
+                        publishGradleFlakyTestDetails.groovy(gitReference: "${GIT_REFERENCE}")
                         archiveArtifacts artifacts: 'failed-test-records.json', onlyIfFailed: true
                         sh("rm -rf *")
                         postCleanup()
