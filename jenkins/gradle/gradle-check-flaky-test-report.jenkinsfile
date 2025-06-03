@@ -44,11 +44,11 @@ pipeline {
             choices: ['Jenkins-Agent-Ubuntu2404-X64-M58xlarge-Single-Host', 'Jenkins-Agent-Windows2019-X64-C524xlarge-Single-Host'],
         )
     }
-    triggers {
-        parameterizedCron '''
-            H * * * * %GIT_REFERENCE=main;AGENT_LABEL=Jenkins-Agent-Ubuntu2404-X64-M58xlarge-Single-Host
-        '''
-    }
+//     triggers {
+//         parameterizedCron '''
+//             H 12 * * * %GIT_REFERENCE=main;AGENT_LABEL=Jenkins-Agent-Ubuntu2404-X64-M58xlarge-Single-Host
+//         '''
+//     }
     stages {
         stage('Run Gradle Check') {
             steps {
