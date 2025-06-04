@@ -87,7 +87,7 @@ pipeline {
             post() {
                 always {
                     script {
-                        junit allowEmptyResults: true, testResults: '**/test-results/*.xml'
+                        junit allowEmptyResults: true, testResults: '**/build/test-results/**/*.xml'
                         publishGradleCheckTestResults(prNumber: "null" , prTitle: "null", prOwner: "null", invokeType: "Timer", gitReference: "${GIT_REFERENCE}")
                         archiveArtifacts artifacts: 'failed-test-records.json', onlyIfFailed: true
                         sh("rm -rf *")
