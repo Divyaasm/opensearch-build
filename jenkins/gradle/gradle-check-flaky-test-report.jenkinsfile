@@ -46,7 +46,7 @@ pipeline {
     }
 //     triggers {
 //         parameterizedCron '''
-//             H 12 * * * %GIT_REFERENCE=main;AGENT_LABEL=Jenkins-Agent-Ubuntu2404-X64-M58xlarge-Single-Host
+//             H * * * * %GIT_REFERENCE=main;AGENT_LABEL=Jenkins-Agent-Ubuntu2404-X64-M58xlarge-Single-Host
 //         '''
 //     }
     stages {
@@ -87,6 +87,7 @@ pipeline {
             post() {
                 always {
                     script {
+                        junit allowEmptyResults: true, testResults: '**/build/test-results/**/*.xml'
                         publishGradleCheckTestResults(prNumber: "null" , prTitle: "null", prOwner: "null", invokeType: "Timer", gitReference: "${GIT_REFERENCE}")
                         archiveArtifacts artifacts: 'failed-test-records.json', onlyIfFailed: true
                         sh("rm -rf *")
