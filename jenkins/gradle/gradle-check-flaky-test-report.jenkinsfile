@@ -16,7 +16,7 @@ pipeline {
     agent { label AGENT_LABEL }
     options {
         timeout(time: 2, unit: 'HOURS')
-        buildDiscarder(logRotator(daysToKeepStr: '30'))
+        buildDiscarder(logRotator(daysToKeepStr: '60'))
     }
     parameters {
         string(
@@ -74,7 +74,6 @@ pipeline {
                     def agent_name_array = params.AGENT_LABEL.tokenize('-')
                     def agent_name = agent_name_array[2] + " " + agent_name_array[4]
 
-                    println("Triggered by User or Triggered by Timer")
                     def repo_url = "${GIT_REPO_URL}".replace(".git", "/commit")
                     currentBuild.description = """runner: ${agent_name}<br>git: <a href="${GIT_REPO_URL}">${GIT_REPO_URL}</a><br>ref: <a href="${repo_url}/${GIT_REFERENCE}">${GIT_REFERENCE}</a>"""
 
@@ -88,7 +87,7 @@ pipeline {
             post() {
                 always {
                     script {
-                        publishGradleFlakyTestDetails(gitReference: "${GIT_REFERENCE}")
+                        publishGradleCheckTestResults(prNumber: "null" , prTitle: "null", prOwner: "null", invokeType: "Timer", gitReference: "${GIT_REFERENCE}")
                         archiveArtifacts artifacts: 'failed-test-records.json', onlyIfFailed: true
                         sh("rm -rf *")
                         postCleanup()
