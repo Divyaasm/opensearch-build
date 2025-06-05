@@ -88,16 +88,14 @@ class ValidateDocker(Validation):
                             subprocess.run(f'docker cp opensearch-node1:/usr/share/opensearch/plugins {self.tmp_dir.name}/plugins',
                                            shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                             native_plugins_list = self.get_native_plugin_list(self.tmp_dir.name)
-                            for container in ["opensearch-node1", "opensearch-node2"]:
-                                for native_plugin in native_plugins_list:
-                                    command = f'docker exec {container} sh .' + os.sep + 'bin' + os.sep + f'opensearch-plugin install --batch {native_plugin}'
-                                    logging.info(f"Executing {command}")
-                                    result = subprocess.run(command,
-                                                   shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-                                    logging.info(result.stderr)
-                                    time.sleep(2)
+                            for native_plugin in native_plugins_list:
+                                command = f'docker exec opensearch-node1 sh .' + os.sep + 'bin' + os.sep + f'opensearch-plugin install --batch {native_plugin}'
+                                logging.info(f"Executing {command}")
+                                result = subprocess.run(command,
+                                                        shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+                                logging.info(result.stderr)
 
-                                subprocess.run(f"docker-compose -f {self._target_yml_file} restart", shell=True, stdout=PIPE, stderr=PIPE,
+                            subprocess.run(f"docker-compose -f {self._target_yml_file} restart", shell=True, stdout=PIPE, stderr=PIPE,
                                                universal_newlines=True)
                         except subprocess.CalledProcessError:
                             logging.info("Docker daemon is not running")
@@ -249,7 +247,7 @@ class ValidateDocker(Validation):
         list(map(lambda r: self.inplace_change(self.target_yml_file, r[0], r[1]), self.replacements))
         os.environ["OPENSEARCH_INITIAL_ADMIN_PASSWORD"] = get_password(str(version))
         # spin up containers
-        services = "opensearch-node1 opensearch-node2" if "opensearch-dashboards" not in self.args.projects else ""
+        services = "opensearch-node1" if "opensearch-dashboards" not in self.args.projects else ""
         self.docker_compose_up = f'docker-compose -f {self.target_yml_file} up -d {services}'
         result = subprocess.run(self.docker_compose_up, shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
         return ('returncode=0' in (str(result)), self.target_yml_file)
