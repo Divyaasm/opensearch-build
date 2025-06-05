@@ -250,4 +250,5 @@ class ValidateDocker(Validation):
         services = "opensearch-node1" if "opensearch-dashboards" not in self.args.projects else "opensearch-node1 opensearch-dashboards"
         self.docker_compose_up = f'docker-compose -f {self.target_yml_file} up -d {services}'
         result = subprocess.run(self.docker_compose_up, shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+        logging.info(result.stderr)
         return ('returncode=0' in (str(result)), self.target_yml_file)
