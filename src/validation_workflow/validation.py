@@ -58,14 +58,16 @@ class Validation(ABC):
         for native_plugin in self.native_plugins_list:
             execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
 
-    def get_native_plugin_list(self, workdir: str) -> list:
+    def get_native_plugin_list(self, workdir: str, installed_plugins_list:list) -> list:
         bundle_manifest = BundleManifest.from_path(os.path.join(workdir, "manifest.yml"))
         commit_id = bundle_manifest.components["OpenSearch"].commit_id
+        logging.info(commit_id)
         plugin_url = f"https://api.github.com/repos/opensearch-project/OpenSearch/contents/plugins?ref={commit_id}"
+        logging.info(plugin_url)
         api_response = requests.get(plugin_url)
         if api_response.status_code == 200:
             response = api_response.json()
-            installed_plugins_list = os.listdir(os.path.join(workdir, "plugins"))
+            # installed_plugins_list = os.listdir(os.path.join(workdir, "plugins"))
             plugin_list = [i["name"] for i in response if i["name"] not in installed_plugins_list]
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
@@ -135,6 +137,7 @@ class Validation(ABC):
         }
         if 'opensearch-dashboards' in self.args.projects:
             self.test_readiness_urls['http://localhost:5601/api/status'] = 'opensearch-dashboards API'
+        logging.info(self.test_readiness_urls)
         for url, name in self.test_readiness_urls.items():
             try:
                 status_code, response_text = ApiTest(url, self.args.version).api_get()
