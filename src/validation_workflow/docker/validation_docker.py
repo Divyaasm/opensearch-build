@@ -85,11 +85,11 @@ class ValidateDocker(Validation):
                         try:
                             subprocess.run(f'docker cp opensearch-node1:/usr/share/opensearch/manifest.yml {self.tmp_dir.name}/manifest.yml',
                                            shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-                            subprocess.run(f'docker cp opensearch-node1:/usr/share/opensearch/plugins {self.tmp_dir.name}/plugins',
+                            result1 = subprocess.run(f'docker exec opensearch-node1 ls /usr/share/opensearch/plugins',
                                            shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-                            native_plugins_list = self.get_native_plugin_list(self.tmp_dir.name)
+                            native_plugins_list = self.get_native_plugin_list(self.tmp_dir.name, result1.stdout.strip().split('\n'))
                             for native_plugin in native_plugins_list:
-                                command = f'docker exec {container} sh .' + os.sep + 'bin' + os.sep + f'opensearch-plugin install --batch {native_plugin}'
+                                command = f'docker exec opensearch-node1 sh .' + os.sep + 'bin' + os.sep + f'opensearch-plugin install --batch {native_plugin}'
                                 logging.info(f"Executing {command}")
                                 result = subprocess.run(command,
                                                         shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)

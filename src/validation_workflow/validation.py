@@ -58,7 +58,8 @@ class Validation(ABC):
         for native_plugin in self.native_plugins_list:
             execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
 
-    def get_native_plugin_list(self, workdir: str, installed_plugins_list:list) -> list:
+    def get_native_plugin_list(self, workdir: str, installed_plugins_list: list) -> list:
+        logging.info("Print")
         bundle_manifest = BundleManifest.from_path(os.path.join(workdir, "manifest.yml"))
         commit_id = bundle_manifest.components["OpenSearch"].commit_id
         logging.info(commit_id)
