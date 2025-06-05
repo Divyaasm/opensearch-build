@@ -86,8 +86,7 @@ class ValidateDocker(Validation):
                                            shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                             result = subprocess.run(f'docker exec opensearch-node1 ls /usr/share/opensearch/plugins',
                                            shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-                            installed_plugins_list = result.stdout.strip().split('\n')
-                            native_plugins_list = self.get_native_plugin_list(self.tmp_dir.name, installed_plugins_list)
+                            native_plugins_list = self.get_native_plugin_list(self.tmp_dir.name, result.stdout.strip().split('\n'))
                             logging.info(native_plugins_list)
                             for native_plugin in native_plugins_list:
                                 command = f'docker exec opensearch-node1 sh .' + os.sep + 'bin' + os.sep + f'opensearch-plugin install --batch {native_plugin}'
