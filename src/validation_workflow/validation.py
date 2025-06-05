@@ -58,17 +58,19 @@ class Validation(ABC):
         for native_plugin in self.native_plugins_list:
             execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
 
-    def get_native_plugin_list(self, workdir: str, installed_plugins_list: list) -> list:
+    def get_native_plugin_list(self, workdir: str) -> list:
         bundle_manifest = BundleManifest.from_path(os.path.join(workdir, "manifest.yml"))
         commit_id = bundle_manifest.components["OpenSearch"].commit_id
         plugin_url = f"https://api.github.com/repos/opensearch-project/OpenSearch/contents/plugins?ref={commit_id}"
         api_response = requests.get(plugin_url)
         if api_response.status_code == 200:
             response = api_response.json()
+            installed_plugins_list = os.listdir(os.path.join(workdir, "plugins"))
             plugin_list = [i["name"] for i in response if i["name"] not in installed_plugins_list]
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
-            plugin_list.remove("identity-shiro")  # Assuming security plugin enabled in the artifacts
+            plugin_list.remove(
+                "identity-shiro")  # Since the security plugin is enabled in the artifacts and identity-shiro is also an identity plugin, we cannot have both the plugins installed together. # noqa: E501
             return plugin_list
         else:
             raise Exception("Github Api returned error code while retrieving the list of native plugins")
