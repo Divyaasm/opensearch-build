@@ -59,12 +59,9 @@ class Validation(ABC):
             execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
 
     def get_native_plugin_list(self, workdir: str, installed_plugins_list: list) -> list:
-        logging.info("Print")
         bundle_manifest = BundleManifest.from_path(os.path.join(workdir, "manifest.yml"))
         commit_id = bundle_manifest.components["OpenSearch"].commit_id
-        logging.info(commit_id)
         plugin_url = f"https://api.github.com/repos/opensearch-project/OpenSearch/contents/plugins?ref={commit_id}"
-        logging.info(plugin_url)
         api_response = requests.get(plugin_url)
         if api_response.status_code == 200:
             response = api_response.json()
