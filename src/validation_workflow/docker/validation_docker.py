@@ -7,6 +7,7 @@
 
 import logging
 import os
+import time
 import shutil
 import subprocess
 from subprocess import PIPE
@@ -94,6 +95,7 @@ class ValidateDocker(Validation):
                                     result = subprocess.run(command,
                                                    shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                                     logging.info(result.stderr)
+                                time.sleep(5)
 
                                 subprocess.run(f"docker-compose -f {self._target_yml_file} restart", shell=True, stdout=PIPE, stderr=PIPE,
                                                universal_newlines=True)
