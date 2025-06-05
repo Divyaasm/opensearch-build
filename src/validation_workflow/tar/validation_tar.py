@@ -34,7 +34,6 @@ class ValidateTar(Validation, DownloadUtils):
                     installed_plugins_list = os.listdir(os.path.join(self.tmp_dir.path, "opensearch", "plugins"))
                     logging.info(installed_plugins_list)
                     self.install_native_plugin(os.path.join(self.tmp_dir.path, "opensearch"), installed_plugins_list)
-
                 except:
                     return False
         except:
