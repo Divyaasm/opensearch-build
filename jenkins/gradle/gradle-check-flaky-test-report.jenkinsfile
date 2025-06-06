@@ -82,14 +82,13 @@ pipeline {
                        gitReference: "${GIT_REFERENCE}",
                        bwcCheckoutAlign: "false"
                     )
-                    publishGradleFlakyTestDetails(gitReference: "${GIT_REFERENCE}")
-
                 }
             }
             post() {
                 always {
                     script {
 //                         junit allowEmptyResults: true, testResults: '**/build/test-results/**/*.xml'
+                        publishGradleFlakyTestDetails(gitReference: "${GIT_REFERENCE}")
                         sh("ls -l")
 //                         archiveArtifacts artifacts: 'failed-test-records.json', onlyIfFailed: true
                         sh("rm -rf *")
