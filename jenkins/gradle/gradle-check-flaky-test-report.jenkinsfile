@@ -88,9 +88,9 @@ pipeline {
                 always {
                     script {
 //                         junit allowEmptyResults: true, testResults: '**/build/test-results/**/*.xml'
-                        publishGradleCheckTestResults(prNumber: "null" , prTitle: "null", prOwner: "null", invokeType: "Timer", gitReference: "${GIT_REFERENCE}")
+                        publishGradleFlakyTestDetails(gitReference: "${GIT_REFERENCE}")
                         sh("ls -l")
-                        archiveArtifacts artifacts: 'failed-test-records.json', onlyIfFailed: true
+                        archiveArtifacts artifacts: 'failed-test-records.json'
                         sh("rm -rf *")
                         postCleanup()
                     }
