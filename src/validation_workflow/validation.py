@@ -65,7 +65,7 @@ class Validation(ABC):
 
                 urllib.request.urlretrieve(plugin_url, os.path.join(path, "bin"))
 
-                result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', cwd=os.path.join(path, "bin"), shell=True, stdout=PIPE, stderr=PIPE,
+                result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch {os.path.join(path, "bin")}/repository-s3-2.19.1.zip', cwd=os.path.join(path, "bin"), shell=True, stdout=PIPE, stderr=PIPE,
                                                 universal_newlines=True)
                 logging.info(result_inspect)
 
