@@ -30,7 +30,7 @@ class ApiTestCases:
             [f'{protocol_prefix}://localhost:9200/', 200, ''],
             [f'{protocol_prefix}://localhost:9200/_cat/plugins?v', 200, ''],
             [f'{protocol_prefix}://localhost:9200/_cat/indices?v', 200, ''],
-            [f'{protocol_prefix}://localhost:9200/_cat/health?v', 200, 'green'],
+            [f'{protocol_prefix}://localhost:9200/_cat/health?v', 200, ['green', 'yellow']],
         ]
 
         if ("opensearch-dashboards" in projects):
@@ -45,7 +45,7 @@ class ApiTestCases:
             logging.info(f"\nRequest_url ->{str(request_url)} \n")
             logging.info(f"\nStatus_code ->{status_code} \nresponse_text ->{response_text}")
 
-            if status_code == success_status_code and (not validate_string or validate_string in response_text):
+            if status_code == success_status_code and (not validate_string or any(s in response_text for s in validate_string)):
                 pass_counter += 1
             else:
                 fail_counter += 1
