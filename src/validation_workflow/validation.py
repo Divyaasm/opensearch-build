@@ -13,6 +13,8 @@ import shutil
 import time
 from abc import ABC, abstractmethod
 from typing import Any
+import subprocess
+from subprocess import PIPE
 
 import requests
 
@@ -56,8 +58,11 @@ class Validation(ABC):
     def install_native_plugin(self, path: str, installed_plugins_list: list) -> None:
         self.native_plugins_list = self.get_native_plugin_list(path, installed_plugins_list)
         for native_plugin in self.native_plugins_list:
-            (_, stdout, stderr) = execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
-            logging.info(stderr)
+            result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', cwd=os.path.join(path, "bin"), shell=True, stdout=PIPE, stderr=PIPE,
+                                            universal_newlines=True)
+
+            # (_, stdout, stderr) = execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
+            logging.info(result_inspect.stderr)
 
     def get_native_plugin_list(self, workdir: str, installed_plugins_list: list) -> list:
         bundle_manifest = BundleManifest.from_path(os.path.join(workdir, "manifest.yml"))
