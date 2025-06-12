@@ -7,6 +7,7 @@
 
 
 import logging
+import urllib.request
 import os
 import re
 import shutil
@@ -57,12 +58,18 @@ class Validation(ABC):
 
     def install_native_plugin(self, path: str, installed_plugins_list: list) -> None:
         self.native_plugins_list = self.get_native_plugin_list(path, installed_plugins_list)
-        for native_plugin in self.native_plugins_list:
-            result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', cwd=os.path.join(path, "bin"), shell=True, stdout=PIPE, stderr=PIPE,
-                                            universal_newlines=True)
+        if self.args.artifact_type:
+            for native_plugin in self.native_plugins_list:
+                plugin_url = f'{self.base_url_staging}opensearch/{self.args.version}/{self.args.build_number["opensearch"]}/{self.args.platform}/'
+                f'{self.args.arch}/{self.args.distribution}/builds/opensearch/core-plugins/{native_plugin}-{self.args.version}.zip'
+
+                urllib.request.urlretrieve(plugin_url, os.path.join(path, "bin"))
+
+                result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', cwd=os.path.join(path, "bin"), shell=True, stdout=PIPE, stderr=PIPE,
+                                                universal_newlines=True)
+                logging.info(result_inspect)
 
             # (_, stdout, stderr) = execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
-            logging.info(result_inspect.stderr)
 
     def get_native_plugin_list(self, workdir: str, installed_plugins_list: list) -> list:
         bundle_manifest = BundleManifest.from_path(os.path.join(workdir, "manifest.yml"))
