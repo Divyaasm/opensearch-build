@@ -58,6 +58,7 @@ class Validation(ABC):
 
     def install_native_plugin(self, path: str, installed_plugins_list: list) -> None:
         self.native_plugins_list = self.get_native_plugin_list(path, installed_plugins_list)
+        logging.info(self.args.artifact_type)
         if self.args.artifact_type == "staging":
             logging.info("test")
             for native_plugin in self.native_plugins_list:
@@ -65,7 +66,7 @@ class Validation(ABC):
                              f'{self.args.arch}/{self.args.distribution}/builds/opensearch/core-plugins/{native_plugin}-{self.args.version}.zip'
                 logging.info(plugin_url)
 
-                urllib.request.urlretrieve(plugin_url, os.path.join(path, "bin"))
+                urllib.request.urlretrieve(plugin_url, path)
 
                 result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch {os.path.join(path, "bin")}/repository-s3-2.19.1.zip', cwd=os.path.join(path, "bin"), shell=True, stdout=PIPE, stderr=PIPE,
                                                 universal_newlines=True)
