@@ -80,7 +80,7 @@ class ValidateDocker(Validation):
                 if self.check_cluster_readiness():
                     # STEP 4 . OS, OSD API validation
 
-                    if self.args.validate_native_plugin:
+                    if self.args.artifact_type == "production":
                         try:
                             subprocess.run(f'docker cp opensearch-node1:/usr/share/opensearch/manifest.yml {self.tmp_dir.name}/manifest.yml',
                                            shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
@@ -101,11 +101,12 @@ class ValidateDocker(Validation):
                             return False
 
                         # Check for cluster readiness again and run api tests
-                        if self.check_cluster_readiness():
-                            _test_result, _counter = ApiTestCases().test_apis(self.args.version, self.args.projects, True)
-                        else:
+                        if not self.check_cluster_readiness():
                             self.cleanup()
                             return False
+
+                    _test_result, _counter = ApiTestCases().test_apis(self.args.version, self.args.projects, True)
+
 
                     if _test_result:
                         logging.info(f'All tests Pass : {_counter}')
