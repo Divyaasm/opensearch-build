@@ -62,6 +62,7 @@ class Validation(ABC):
             for native_plugin in self.native_plugins_list:
                 plugin_url = f'{self.base_url_staging}opensearch/{self.args.version}/{self.args.build_number["opensearch"]}/{self.args.platform}/'
                 f'{self.args.arch}/{self.args.distribution}/builds/opensearch/core-plugins/{native_plugin}-{self.args.version}.zip'
+                logging.info(plugin_url)
 
                 urllib.request.urlretrieve(plugin_url, os.path.join(path, "bin"))
 
