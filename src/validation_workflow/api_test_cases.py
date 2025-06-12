@@ -29,6 +29,7 @@ class ApiTestCases:
         test_apis = [
             [f'{protocol_prefix}://localhost:9200/', 200, ''],
             [f'{protocol_prefix}://localhost:9200/_cat/plugins?v', 200, ''],
+            [f'{protocol_prefix}://localhost:9200/_cat/indices?v', 200, '']
             [f'{protocol_prefix}://localhost:9200/_cat/health?v', 200, 'green'],
         ]
 
