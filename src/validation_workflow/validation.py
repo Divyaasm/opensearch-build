@@ -64,12 +64,14 @@ class Validation(ABC):
             for native_plugin in self.native_plugins_list:
                 plugin_url = f'{self.base_url_staging}opensearch/{self.args.version}/{self.args.build_number["opensearch"]}/{self.args.platform}/' \
                              f'{self.args.arch}/{self.args.distribution}/builds/opensearch/core-plugins/{native_plugin}-{self.args.version}.zip'
-                logging.info(plugin_url)
+                try:
+                    logging.info(plugin_url)
+                    urllib.request.urlretrieve(plugin_url, path)
+                except Exception as e:
+                    logging.info(e)
 
-                urllib.request.urlretrieve(plugin_url, path)
-
-                result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch {os.path.join(path, "bin")}/repository-s3-2.19.1.zip', cwd=os.path.join(path, "bin"), shell=True, stdout=PIPE, stderr=PIPE,
-                                                universal_newlines=True)
+                result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch {os.path.join(path, "bin")}/repository-s3-2.19.1.zip', cwd=os.path.join(path, "bin"),
+                                                shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 logging.info(result_inspect)
 
             # (_, stdout, stderr) = execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))

@@ -106,8 +106,6 @@ class ValidateDocker(Validation):
                             return False
 
                     _test_result, _counter = ApiTestCases().test_apis(self.args.version, self.args.projects, True)
-
-
                     if _test_result:
                         logging.info(f'All tests Pass : {_counter}')
                         return True
