@@ -7,7 +7,6 @@
 
 
 import logging
-import urllib.request
 import os
 import re
 import shutil
@@ -66,16 +65,19 @@ class Validation(ABC):
                              f'{self.args.arch}/{self.args.distribution}/builds/opensearch/core-plugins/{native_plugin}-{self.args.version}.zip'
                 try:
                     logging.info(plugin_url)
-                    urllib.request.urlretrieve(plugin_url, os.path.join(path, "bin", f'{native_plugin}-{self.args.version}.zip'))
+                    response = requests.get(plugin_url)
+                    with open(os.path.join(path, "bin"), 'wb') as f:
+                        f.write(response.content)
+                    # urllib.request.urlretrieve(plugin_url, os.path.join(path, "bin", f'{native_plugin}-{self.args.version}.zip'))
                 except Exception as e:
                     logging.info(e)
                 result = subprocess.run(
                     f'ls {native_plugin}-{self.args.version}.zip',
                     cwd=os.path.join(path, "bin"),
                     shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-                logging.info(result.stdout)
+                logging.info(result)
 
-                result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch file:{native_plugin}-{self.args.version}.zip', cwd=os.path.join(path, "bin"),
+                result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch file:{os.path.join(path, "bin",{native_plugin}-{self.args.version}.zip)}', cwd=os.path.join(path, "bin"),
                                                 shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 logging.info(result_inspect)
 
