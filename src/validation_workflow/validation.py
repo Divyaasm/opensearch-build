@@ -66,16 +66,16 @@ class Validation(ABC):
                              f'{self.args.arch}/{self.args.distribution}/builds/opensearch/core-plugins/{native_plugin}-{self.args.version}.zip'
                 try:
                     logging.info(plugin_url)
-                    urllib.request.urlretrieve(plugin_url, os.path.join(path, f'{native_plugin}-{self.args.version}.zip'))
+                    urllib.request.urlretrieve(plugin_url, os.path.join(path, "bin", f'{native_plugin}-{self.args.version}.zip'))
                 except Exception as e:
                     logging.info(e)
                 result = subprocess.run(
                     'ls',
-                    cwd=os.path.join(path),
+                    cwd=os.path.join(path, "bin"),
                     shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 logging.info(result.stdout)
 
-                result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch {os.path.join(path)}/{native_plugin}-{self.args.version}.zip', cwd=os.path.join(path, "bin"),
+                result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}-{self.args.version}.zip', cwd=os.path.join(path, "bin"),
                                                 shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 logging.info(result_inspect)
 
