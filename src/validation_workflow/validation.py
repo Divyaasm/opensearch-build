@@ -13,6 +13,8 @@ import shutil
 import time
 from abc import ABC, abstractmethod
 from typing import Any
+import subprocess
+from subprocess import PIPE
 
 import requests
 
@@ -55,8 +57,11 @@ class Validation(ABC):
 
     def install_native_plugin(self, path: str, installed_plugins_list: list) -> None:
         self.native_plugins_list = self.get_native_plugin_list(path, installed_plugins_list)
-        for native_plugin in self.native_plugins_list:
-            execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
+        if self.args.artifact_type == "staging":
+            self.download_and_install_native_plugin_zip(os.path.join(path, "bin"))
+        else:
+            for native_plugin in self.native_plugins_list:
+                execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
 
     def get_native_plugin_list(self, workdir: str, installed_plugins_list: list) -> list:
         bundle_manifest = BundleManifest.from_path(os.path.join(workdir, "manifest.yml"))
@@ -72,6 +77,20 @@ class Validation(ABC):
             return plugin_list
         else:
             raise Exception("Github Api returned error code while retrieving the list of native plugins")
+
+    def download_and_install_native_plugin_zip(self, download_path: str) -> None:
+        for native_plugin in self.native_plugins_list:
+            plugin_url = f'{self.base_url_staging}opensearch/{self.args.version}/{self.args.build_number["opensearch"]}/{self.args.platform}/' \
+                         f'{self.args.arch}/{self.args.distribution}/builds/opensearch/core-plugins/{native_plugin}-{self.args.version}.zip'
+            try:
+                response = requests.get(plugin_url)
+                with open(os.path.join(download_path, f'{native_plugin}-{self.args.version}.zip'), 'wb') as f:
+                    f.write(response.content)
+                execute(
+                    '.' + os.sep + f'opensearch-plugin install --batch file:{os.path.join(download_path, f"{native_plugin}-{self.args.version}.zip")}',
+                    download_path)
+            except Exception as e:
+                raise Exception("Unable to download and install native plugin")
 
     def get_version(self, project: str) -> str:
         return re.search(r'(\d+\.\d+\.\d+)', os.path.basename(project)).group(1)
