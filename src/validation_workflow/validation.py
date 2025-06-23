@@ -73,6 +73,7 @@ class Validation(ABC):
                     'ls',
                     cwd=os.path.join(path),
                     shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
+                logging.info(result.stdout)
 
                 result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch {os.path.join(path)}/{native_plugin}-{self.args.version}.zip', cwd=os.path.join(path, "bin"),
                                                 shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
