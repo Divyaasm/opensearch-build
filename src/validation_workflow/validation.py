@@ -66,7 +66,7 @@ class Validation(ABC):
                 try:
                     logging.info(plugin_url)
                     response = requests.get(plugin_url)
-                    with open(os.path.join(path, "bin"), 'wb') as f:
+                    with open(os.path.join(path, "bin", f'{native_plugin}-{self.args.version}.zip'), 'wb') as f:
                         f.write(response.content)
                     # urllib.request.urlretrieve(plugin_url, os.path.join(path, "bin", f'{native_plugin}-{self.args.version}.zip'))
                 except Exception as e:
