@@ -59,11 +59,13 @@ class Validation(ABC):
         for native_plugin in self.native_plugins_list:
             plugin_url = f'{self.base_url_staging}opensearch/{self.args.version}/{self.args.build_number["opensearch"]}/{self.args.platform}/' \
                          f'{self.args.arch}/{self.args.distribution}/builds/opensearch/core-plugins/{native_plugin}-{self.args.version}.zip'
+            logging.info(plugin_url)
 
             try:
                 response = requests.get(plugin_url)
                 with open(os.path.join(download_path, f'{native_plugin}-{self.args.version}.zip'), 'wb') as f:
                     f.write(response.content)
+                logging.info(response)
                 execute(
                     '.' + os.sep + f'opensearch-plugin install --batch file:{os.path.join(download_path, f"{native_plugin}-{self.args.version}.zip")}',
                     download_path)
@@ -72,7 +74,6 @@ class Validation(ABC):
 
     def install_native_plugin(self, path: str, installed_plugins_list: list) -> None:
         self.native_plugins_list = self.get_native_plugin_list(path, installed_plugins_list)
-        command = '.' + os.sep + f'opensearch-plugin install --batch'
         if self.args.artifact_type == "staging":
             self.download_native_plugin_zip(os.path.join(path, "bin"), self.native_plugins_list)
         else:
@@ -90,7 +91,6 @@ class Validation(ABC):
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
             plugin_list.remove("identity-shiro")  # Since the security plugin is enabled in the artifacts and identity-shiro is also an identity plugin, we cannot have both the plugins installed together. # noqa: E501
-            logging.info(plugin_list)
             return plugin_list
         else:
             raise Exception("Github Api returned error code while retrieving the list of native plugins")
