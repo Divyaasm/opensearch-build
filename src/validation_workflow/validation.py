@@ -58,7 +58,7 @@ class Validation(ABC):
     def install_native_plugin(self, path: str, installed_plugins_list: list) -> None:
         self.native_plugins_list = self.get_native_plugin_list(path, installed_plugins_list)
         if self.args.artifact_type == "staging":
-            self.download_and_install_native_plugin_zip(os.path.join(path))
+            self.download_and_install_native_plugin_zip(os.path.join(path, "bin"))
         else:
             for native_plugin in self.native_plugins_list:
                 execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
