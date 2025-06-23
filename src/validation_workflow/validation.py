@@ -68,19 +68,13 @@ class Validation(ABC):
                     response = requests.get(plugin_url)
                     with open(os.path.join(path, "bin", f'{native_plugin}-{self.args.version}.zip'), 'wb') as f:
                         f.write(response.content)
-                    # urllib.request.urlretrieve(plugin_url, os.path.join(path, "bin", f'{native_plugin}-{self.args.version}.zip'))
-                except Exception as e:
-                    logging.info(e)
-                    response = requests.get(plugin_url)
-                # result = subprocess.run(
-                #     f'ls {native_plugin}-{self.args.version}.zip',
-                #     cwd=os.path.join(path, "bin"),
-                #     shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-                # logging.info(result)
 
-                result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch file:{os.path.join(path, "bin", f"{native_plugin}-{self.args.version}.zip")}', cwd=os.path.join(path, "bin"),
-                                                shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
-                logging.info(result_inspect)
+                    execute('.' + os.sep + f'opensearch-plugin install --batch file:{os.path.join(path, "bin", f"{native_plugin}-{self.args.version}.zip")}', os.path.join(path, "bin"))
+                except Exception as e:
+                    logging.info("Unable to install native plugins")
+
+                # result_inspect = subprocess.run('.' + os.sep + f'opensearch-plugin install --batch file:{os.path.join(path, "bin", f"{native_plugin}-{self.args.version}.zip")}', cwd=os.path.join(path, "bin"),
+                #                                 shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
 
             # (_, stdout, stderr) = execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
 
