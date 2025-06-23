@@ -70,7 +70,7 @@ class Validation(ABC):
                 except Exception as e:
                     logging.info(e)
                 result = subprocess.run(
-                    'ls',
+                    f'ls {native_plugin}-{self.args.version}.zip',
                     cwd=os.path.join(path, "bin"),
                     shell=True, stdout=PIPE, stderr=PIPE, universal_newlines=True)
                 logging.info(result.stdout)
