@@ -20,7 +20,7 @@ def main() -> int:
     console.configure(level=args.logging_level)
     logging.getLogger("urllib3").setLevel(logging.WARNING)
 
-    with TemporaryDirectory() as work_dir:
+    with TemporaryDirectory(keep=True) as work_dir:
         if args.distribution == "docker":
             docker_source = args.docker_source
             for source in docker_source:
