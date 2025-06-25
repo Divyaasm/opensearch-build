@@ -134,6 +134,7 @@ class TestValidation(unittest.TestCase):
 
         self.assertEqual(["analysis-icu", "analysis-nori"], result)
 
+
     @patch('requests.get')
     @patch('manifests.bundle_manifest.BundleManifest.from_path')
     @patch('validation_workflow.validation.ValidationArgs')

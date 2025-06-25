@@ -13,8 +13,6 @@ import shutil
 import time
 from abc import ABC, abstractmethod
 from typing import Any
-import subprocess
-from subprocess import PIPE
 
 import requests
 
@@ -60,8 +58,12 @@ class Validation(ABC):
         if self.args.artifact_type == "staging":
             self.download_and_install_native_plugin_zip(os.path.join(path, "bin"))
         else:
-            for native_plugin in self.native_plugins_list:
-                execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
+            try:
+                for native_plugin in self.native_plugins_list:
+                    execute('.' + os.sep + f'opensearch-plugin install --batch {native_plugin}', os.path.join(path, "bin"))
+
+            except Exception as e:
+                raise Exception(f"Unable to download and install native plugin: {str(e)}")
 
     def get_native_plugin_list(self, workdir: str, installed_plugins_list: list) -> list:
         bundle_manifest = BundleManifest.from_path(os.path.join(workdir, "manifest.yml"))
@@ -90,7 +92,7 @@ class Validation(ABC):
                     '.' + os.sep + f'opensearch-plugin install --batch file:{os.path.join(download_path, f"{native_plugin}-{self.args.version}.zip")}',
                     download_path)
             except Exception as e:
-                raise Exception("Unable to download and install native plugin")
+                raise Exception(f"Unable to download and install native plugin: {str(e)}")
 
     def get_version(self, project: str) -> str:
         return re.search(r'(\d+\.\d+\.\d+)', os.path.basename(project)).group(1)
