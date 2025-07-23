@@ -7,9 +7,9 @@
  * compatible open source license.
  */
 
-lib = library(identifier: 'jenkins@6.9.2', retriever: modernSCM([
+lib = library(identifier: 'jenkins@addtimer', retriever: modernSCM([
     $class: 'GitSCMSource',
-    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
+    remote: 'https://github.com/Divyaasm/opensearch-build-libraries.git',
 ]))
 
 
