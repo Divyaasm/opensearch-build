@@ -9,7 +9,7 @@
 
 lib = library(identifier: 'jenkins@new-branch', retriever: modernSCM([
     $class: 'GitSCMSource',
-    remote: 'https://github.com/opensearch-project/opensearch-build-libraries.git',
+    remote: 'https://github.com/Divyaasm/opensearch-build-libraries.git',
 ]))
 
 
