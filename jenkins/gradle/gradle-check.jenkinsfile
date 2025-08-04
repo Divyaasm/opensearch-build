@@ -92,7 +92,7 @@ pipeline {
                         runGradleCheck(
                              gitRepoUrl: "${GIT_REPO_URL}",
                              gitReference: "${GIT_REFERENCE}",
-                             bwcCheckoutAlign: "${bwc_checkout_align}"
+                             bwcCheckoutAlign: "false"
                         )
                         sh("docker logout || echo docker error")
                 }
