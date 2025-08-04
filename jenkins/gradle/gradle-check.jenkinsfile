@@ -81,6 +81,10 @@ pipeline {
         stage('Run Gradle Check') {
             steps {
                 script {
+
+                        def agent_name_array = params.AGENT_LABEL.tokenize('-')
+                        def agent_name = agent_name_array[2] + " " + agent_name_array[4]
+
                         println("Triggered by User or Triggered by Timer")
                         def repo_url = "${GIT_REPO_URL}".replace(".git", "/commit")
                         currentBuild.description = """runner: ${agent_name}<br>git: <a href="${GIT_REPO_URL}">${GIT_REPO_URL}</a><br>ref: <a href="${repo_url}/${GIT_REFERENCE}">${GIT_REFERENCE}</a>"""
