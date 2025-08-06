@@ -31,8 +31,9 @@ class ValidateRpm(Validation, DownloadUtils):
                 self.validate_metadata(project)
                 self.validate_signature()
                 execute(f'sudo yum remove {project} -y', ".")
-                execute(f'sudo env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} rpm -ivh {os.path.join(self.tmp_dir.path, self.filename)}', str(self.tmp_dir.path), True, False)  # noqa: 501
-
+                ( returncode, stdout, stderr ) = execute(f'sudo env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} rpm -ivh {os.path.join(self.tmp_dir.path, self.filename)}', str(self.tmp_dir.path), True, False)  # noqa: 501
+                logging.info(stdout)
+                logging.info(stderr)
                 # installed_plugins_list = os.listdir(os.path.join(os.sep, "usr", "share", "opensearch", "plugins"))
                 # self.install_native_plugin(os.path.join(os.sep, "usr", "share", "opensearch"), installed_plugins_list)
 
@@ -45,6 +46,8 @@ class ValidateRpm(Validation, DownloadUtils):
             for project in self.args.projects:
                 execute(f'sudo systemctl start {project}', ".")
                 (stdout, stderr, status) = execute(f'sudo systemctl status {project}', ".")
+                logging.info(stdout)
+                logging.info(stderr)
                 if(status == 0):
                     logging.info(stdout)
                 else:
