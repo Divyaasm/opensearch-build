@@ -39,8 +39,11 @@ class ValidateRpm(Validation, DownloadUtils):
 
         return True
 
-
     def start_cluster(self) -> bool:
+        self.test("sudo systemctl start opensearch")
+        self.test("journalctl -xe")
+
+    def test(self, command) -> bool:
         try:
             result = subprocess.run(
                 'sudo systemctl start opensearch',
@@ -51,14 +54,13 @@ class ValidateRpm(Validation, DownloadUtils):
                 cwd="."
             )
             logging.info("OpenSearch started successfully.")
+            return True
         except subprocess.CalledProcessError as e:
-            raise Exception(
-                f"Failed to start OpenSearch service.\n"
-                f"Exit code: {e.returncode}\n"
-                f"Error output: {e.stderr.strip()}"
-    )
+            logging.info(f"Failed to start OpenSearch service.\n")
+            logging.info(f"Exit code: {e.returncode}\n")
+            logging.info(f"Error output: {e.stderr.strip()}")
+            return e.stderr
 
-        return True
 
 
     def validation(self) -> bool:

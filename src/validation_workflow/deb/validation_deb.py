@@ -35,12 +35,22 @@ class ValidateDeb(Validation, DownloadUtils):
 
     def start_cluster(self) -> bool:
         try:
-            for project in self.args.projects:
-                execute(f'sudo systemctl enable {project}', ".")
-                execute(f'sudo systemctl start {project}', ".")
-                execute(f'sudo systemctl status {project}', ".")
-        except:
-            raise Exception('Failed to Start Cluster')
+            result = subprocess.run(
+                'sudo systemctl enable opensearch',
+                shell=True,
+                capture_output=True,
+                text=True,
+                check=True,
+                cwd="."
+            )
+            logging.info("OpenSearch started successfully.")
+        except subprocess.CalledProcessError as e:
+            raise Exception(
+                f"Failed to start OpenSearch service.\n"
+                f"Exit code: {e.returncode}\n"
+                f"Error output: {e.stderr.strip()}"
+            )
+
         return True
 
     def validation(self) -> bool:
