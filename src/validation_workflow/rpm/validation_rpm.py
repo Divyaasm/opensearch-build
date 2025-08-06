@@ -54,11 +54,11 @@ class ValidateRpm(Validation, DownloadUtils):
                 check=True,
                 cwd="."
             )
+            logging.info(f" output: {result.stdout}")
             return True
         except subprocess.CalledProcessError as e:
             logging.info(f"Exit code: {e.returncode}\n")
             logging.info(f"Error output: {e.stderr.strip()}")
-            logging.info(f"Error output: {e.stdout}")
             return e.stderr
 
 
