@@ -46,7 +46,8 @@ class ValidateRpm(Validation, DownloadUtils):
                 'sudo systemctl start opensearch',
                 capture_output=True,
                 text=True,
-                check=True
+                check=True,
+                cwd="."
             )
             logging.info("OpenSearch started successfully.")
         except subprocess.CalledProcessError as e:
