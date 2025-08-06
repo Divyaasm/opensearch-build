@@ -44,6 +44,7 @@ class ValidateRpm(Validation, DownloadUtils):
         try:
             result = subprocess.run(
                 'sudo systemctl start opensearch',
+                shell=True,
                 capture_output=True,
                 text=True,
                 check=True,
