@@ -42,6 +42,7 @@ class ValidateRpm(Validation, DownloadUtils):
     def start_cluster(self) -> bool:
         self.test("sudo systemctl start opensearch")
         self.test("journalctl -xe")
+        self.test("sudo systemctl status opensearch")
 
     def test(self, command) -> bool:
         try:
