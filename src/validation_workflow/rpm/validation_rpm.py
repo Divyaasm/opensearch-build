@@ -7,6 +7,7 @@
 
 import logging
 import os
+import subprocess
 
 from system.execute import execute
 from system.temporary_directory import TemporaryDirectory
@@ -40,15 +41,20 @@ class ValidateRpm(Validation, DownloadUtils):
 
 
     def start_cluster(self) -> bool:
-        for project in self.args.projects:
-            execute(f'sudo systemctl start {project}', ".")
-            (stdout, stderr, status) = execute(f'sudo systemctl status {project}', ".")
-            logging.info(stdout)
-            logging.info(stderr)
-            if(status == 0):
-                logging.info(stdout)
-            else:
-                logging.info(stderr)
+        try:
+            result = subprocess.run(
+                'sudo systemctl start opensearch',
+                capture_output=True,
+                text=True,
+                check=True
+            )
+            logging.info("OpenSearch started successfully.")
+        except subprocess.CalledProcessError as e:
+            raise Exception(
+                f"Failed to start OpenSearch service.\n"
+                f"Exit code: {e.returncode}\n"
+                f"Error output: {e.stderr.strip()}"
+    )
 
         return True
 
