@@ -54,12 +54,11 @@ class ValidateRpm(Validation, DownloadUtils):
                 check=True,
                 cwd="."
             )
-            logging.info("OpenSearch started successfully.")
             return True
         except subprocess.CalledProcessError as e:
-            logging.info(f"Failed to start OpenSearch service.\n")
             logging.info(f"Exit code: {e.returncode}\n")
             logging.info(f"Error output: {e.stderr.strip()}")
+            logging.info(f"Error output: {e.stdout}")
             return e.stderr
 
 
