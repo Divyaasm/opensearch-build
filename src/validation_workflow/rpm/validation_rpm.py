@@ -23,39 +23,35 @@ class ValidateRpm(Validation, DownloadUtils):
         super().__init__(args, tmp_dir)
 
     def installation(self) -> bool:
-        try:
-            execute('sudo rpm --import https://artifacts.opensearch.org/publickeys/opensearch.pgp', str(self.tmp_dir.path), True, False)
-            execute('sudo rpm --import https://artifacts.opensearch.org/publickeys/opensearch-release.pgp', str(self.tmp_dir.path), True, False)
-            for project in self.args.projects:
-                self.filename = os.path.basename(self.args.file_path.get(project))
-                self.validate_metadata(project)
-                self.validate_signature()
-                execute(f'sudo yum remove {project} -y', ".")
-                ( returncode, stdout, stderr ) = execute(f'sudo env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} rpm -ivh {os.path.join(self.tmp_dir.path, self.filename)}', str(self.tmp_dir.path), True, False)  # noqa: 501
-                logging.info(stdout)
-                logging.info(stderr)
-                # installed_plugins_list = os.listdir(os.path.join(os.sep, "usr", "share", "opensearch", "plugins"))
-                # self.install_native_plugin(os.path.join(os.sep, "usr", "share", "opensearch"), installed_plugins_list)
+        execute('sudo rpm --import https://artifacts.opensearch.org/publickeys/opensearch.pgp', str(self.tmp_dir.path), True, False)
+        execute('sudo rpm --import https://artifacts.opensearch.org/publickeys/opensearch-release.pgp', str(self.tmp_dir.path), True, False)
+        for project in self.args.projects:
+            self.filename = os.path.basename(self.args.file_path.get(project))
+            self.validate_metadata(project)
+            self.validate_signature()
+            execute(f'sudo yum remove {project} -y', ".")
+            ( returncode, stdout, stderr ) = execute(f'sudo env OPENSEARCH_INITIAL_ADMIN_PASSWORD={get_password(str(self.args.version))} rpm -ivh {os.path.join(self.tmp_dir.path, self.filename)}', str(self.tmp_dir.path), True, False)  # noqa: 501
+            logging.info(stdout)
+            logging.info(stderr)
+            # installed_plugins_list = os.listdir(os.path.join(os.sep, "usr", "share", "opensearch", "plugins"))
+            # self.install_native_plugin(os.path.join(os.sep, "usr", "share", "opensearch"), installed_plugins_list)
 
-        except:
-            raise Exception('Failed to install Opensearch')
         return True
+
 
     def start_cluster(self) -> bool:
-        try:
-            for project in self.args.projects:
-                execute(f'sudo systemctl start {project}', ".")
-                (stdout, stderr, status) = execute(f'sudo systemctl status {project}', ".")
+        for project in self.args.projects:
+            execute(f'sudo systemctl start {project}', ".")
+            (stdout, stderr, status) = execute(f'sudo systemctl status {project}', ".")
+            logging.info(stdout)
+            logging.info(stderr)
+            if(status == 0):
                 logging.info(stdout)
+            else:
                 logging.info(stderr)
-                if(status == 0):
-                    logging.info(stdout)
-                else:
-                    logging.info(stderr)
 
-        except:
-            raise Exception('Failed to Start Cluster')
         return True
+
 
     def validation(self) -> bool:
         if self.check_cluster_readiness():
