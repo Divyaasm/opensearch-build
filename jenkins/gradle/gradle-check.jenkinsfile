@@ -95,8 +95,14 @@ pipeline {
                 }
             }
             post() {
+                failure {
+                    archiveArtifacts artifacts: '**/build/heapdump/*.hprof', allowEmptyArchive: true
+                }
                 always {
-                           postCleanup()
+                    sh ("cp -v `find search/build/reports/jacoco/ -name '*.xml' | head -n 1` codeCoverage.xml || echo")
+                    junit allowEmptyResults: true, testResults: '**/build/test-results/**/*.xml'
+                    archiveArtifacts artifacts: 'codeCoverage.xml'
+                    postCleanup()
                 }
             }
         }
