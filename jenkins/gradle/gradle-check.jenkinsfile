@@ -7,7 +7,7 @@
  * compatible open source license.
  */
 
-lib = library(identifier: 'jenkins@issue', retriever: modernSCM([
+lib = library(identifier: 'jenkins@new', retriever: modernSCM([
     $class: 'GitSCMSource',
     remote: 'https://github.com/Divyaasm/opensearch-build-libraries.git',
 ]))
@@ -31,7 +31,7 @@ pipeline {
         string(
             name: 'GIT_REPO_URL',
             description: 'OpenSearch core repository url on git, can be either the official upstream url or your fork url.',
-            defaultValue: 'https://github.com/opensearch-project/OpenSearch.git',
+            defaultValue: 'https://github.com/Divyaasm/OpenSearch.git',
             trim: true
         )
         string(
@@ -39,6 +39,11 @@ pipeline {
             description: 'Git branch, tag, commitid for reference to checkout commit of OpenSearch core before running the gradle check.',
             defaultValue: 'main',
             trim: true
+        )
+        booleanParam(
+                    name: 'SERVER_MODULE',
+                    description: 'Git branch, tag, commitid for reference to checkout commit of OpenSearch core before running the gradle check.',
+                    defaultValue: true,
         )
         // Must use agent with 1 executor or gradle check will show a lot of java-related errors
         // The c524xlarge is the instance type that has the least amount of errors during gradle check
@@ -89,7 +94,8 @@ pipeline {
                         runGradleCheck(
                              gitRepoUrl: "${GIT_REPO_URL}",
                              gitReference: "${GIT_REFERENCE}",
-                             bwcCheckoutAlign: "false"
+                             bwcCheckoutAlign: "false",
+                             serverModule: params.SERVER_MODULE
                         )
                         sh("docker logout || echo docker error")
                 }
