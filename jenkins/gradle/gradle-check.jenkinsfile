@@ -37,7 +37,7 @@ pipeline {
         string(
             name: 'GIT_REFERENCE',
             description: 'Git branch, tag, commitid for reference to checkout commit of OpenSearch core before running the gradle check.',
-            defaultValue: 'main',
+            defaultValue: 'testcodecov',
             trim: true
         )
         booleanParam(
