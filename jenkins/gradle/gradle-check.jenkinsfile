@@ -95,7 +95,7 @@ pipeline {
                              gitRepoUrl: "${GIT_REPO_URL}",
                              gitReference: "${GIT_REFERENCE}",
                              bwcCheckoutAlign: "false",
-                             serverModule: params.SERVER_MODULE
+//                              serverModule: params.SERVER_MODULE
                         )
                         sh("docker logout || echo docker error")
                 }
