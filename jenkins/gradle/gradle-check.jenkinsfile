@@ -43,7 +43,7 @@ pipeline {
         booleanParam(
                     name: 'SERVER_MODULE',
                     description: 'Git branch, tag, commitid for reference to checkout commit of OpenSearch core before running the gradle check.',
-                    defaultValue: true,
+                    defaultValue: false,
         )
         // Must use agent with 1 executor or gradle check will show a lot of java-related errors
         // The c524xlarge is the instance type that has the least amount of errors during gradle check
@@ -105,10 +105,9 @@ pipeline {
                     archiveArtifacts artifacts: '**/build/heapdump/*.hprof', allowEmptyArchive: true
                 }
                 always {
-                    sh ("cp -v `find search/build/reports/jacoco/ -name '*.xml' | head -n 1` codeCoverage.xml || echo")
+                    sh ("cp -v `find search/build/reports/jacoco/ -name '*.xml' | head -n 3` codeCoverage/ || echo")
                     junit allowEmptyResults: true, testResults: '**/build/test-results/**/*.xml'
-                    archiveArtifacts artifacts: 'codeCoverage.xml', onlyIfSuccessful: true
-
+                    archiveArtifacts artifacts: 'codeCoverage/*.xml'
                     postCleanup()
                 }
             }
