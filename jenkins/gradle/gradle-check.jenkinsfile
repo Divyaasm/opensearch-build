@@ -105,7 +105,7 @@ pipeline {
                     archiveArtifacts artifacts: '**/build/heapdump/*.hprof', allowEmptyArchive: true
                 }
                 always {
-                    sh ("cp -v `find search/server/build/reports/jacoco/ -name '*.xml' | head -n 1` codeCoverage.xml || echo")
+                    sh ("cp -v `find search/build/reports/jacoco/ -name '*.xml' | head -n 1` codeCoverage.xml || echo")
                     archiveArtifacts artifacts: 'codeCoverage.xml', onlyIfSuccessful: true
                     junit allowEmptyResults: true, testResults: '**/build/test-results/**/*.xml'
                     postCleanup()
