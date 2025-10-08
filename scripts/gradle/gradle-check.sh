@@ -13,51 +13,10 @@
 
 
 JENKINS_URL="https://build.ci.opensearch.org"
-TRIGGER_TOKEN=""
-GITHUB_USER=""
-GITHUB_TOKEN=""
-
-while getopts "u:t:p:" opt; do
-  case $opt in
-    t)
-      TRIGGER_TOKEN="$OPTARG"
-      ;;
-    u)
-      GITHUB_USER="$OPTARG"
-      ;;
-    p)
-      GITHUB_TOKEN="$OPTARG"
-      ;;
-    \?)
-      echo "Invalid option: -$OPTARG" >&2
-      exit 1
-      ;;
-    :)
-      echo "Option -$OPTARG requires an argument." >&2
-      exit 1
-      ;;
-  esac
-done
-
-if [ -z "$TRIGGER_TOKEN" ]; then
-  echo "Error: TRIGGER_TOKEN is required. Use -t option to provide it."
-  exit 1
-fi
-
-if [ -z "$GITHUB_USER" ]; then
-  echo "Error: GITHUB_USER is required. Use -u option to provide it."
-  exit 1
-fi
-
-if [ -z "$GITHUB_TOKEN" ]; then
-  echo "Error: GITHUB_TOKEN is required. Use -p option to provide it."
-  exit 1
-fi
-
-
 TIMEPASS=0
 TIMEOUT=7200
 RESULT="null"
+TRIGGER_TOKEN=$1
 PR_TITLE_NEW=`echo $pr_title | tr -dc '[:alnum:] ' | tr '[:upper:]' '[:lower:]'`
 PAYLOAD_JSON="{\"pr_from_sha\": \"$pr_from_sha\", \"pr_from_clone_url\": \"$pr_from_clone_url\", \"pr_to_clone_url\": \"$pr_to_clone_url\", \"pr_title\": \"$PR_TITLE_NEW\", \"pr_number\": \"$pr_number\", \"post_merge_action\": \"$post_merge_action\", \"pr_owner\": \"$pr_owner\"}"
 
@@ -69,7 +28,7 @@ perform_curl_and_process_with_jq() {
     local success=false
 
     while [ "$count" -lt "$max_retries" ]; do
-        response=$(curl -s -XGET "${url}api/json" --user ${GITHUB_USER}:${GITHUB_TOKEN})
+        response=$(curl -s -XGET "${url}api/json"
         processed_response=$(echo "$response" | jq --raw-output "$jq_filter")
         jq_exit_code=$?
 
@@ -109,7 +68,7 @@ echo "Check if queue exist in Jenkins after triggering"
 if [ -z "$QUEUE_URL" ] || [ "$QUEUE_URL" != "null" ]; then
     while [ "$RESULT" = "null" ] && [ "$TIMEPASS" -le "$TIMEOUT" ]; do
         echo "Use queue information to find build number in Jenkins if available"
-        WORKFLOW_URL=$(curl -s -XGET ${JENKINS_URL}/${QUEUE_URL}api/json --user ${GITHUB_USER}:${GITHUB_TOKEN} | jq --raw-output .executable.url)
+        WORKFLOW_URL=$(curl -s -XGET ${JENKINS_URL}/${QUEUE_URL}api/json | jq --raw-output .executable.url)
         echo WORKFLOW_URL $WORKFLOW_URL
     
         if [ -n "$WORKFLOW_URL" ] && [ "$WORKFLOW_URL" != "null" ]; then
@@ -131,7 +90,7 @@ if [ -z "$QUEUE_URL" ] || [ "$QUEUE_URL" != "null" ]; then
                 RESULT="TIMEOUT"
             else
                 echo "Complete the run, checking results now......"
-                RESULT=$(curl -s -XGET ${WORKFLOW_URL}api/json --user ${GITHUB_USER}:${GITHUB_TOKEN} | jq --raw-output .result)
+                RESULT=$(curl -s -XGET ${WORKFLOW_URL}api/json | jq --raw-output .result)
             fi
     
         else
