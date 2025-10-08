@@ -12,7 +12,7 @@
 # To trigger Jenkins Gradle Check from a PR
 
 
-JENKINS_URL="https://build.ci.opensearch.org"
+JENKINS_URL="http://opense-jenki-uvvgsiyuwmpg-2136880972.us-east-1.elb.amazonaws.com/"
 TIMEPASS=0
 TIMEOUT=7200
 RESULT="null"
@@ -104,7 +104,8 @@ fi
 echo "Please check jenkins url for logs: $WORKFLOW_URL"
 echo "Result: $RESULT"
 if [ "$RESULT" == "SUCCESS" ] || [ "$RESULT" == "UNSTABLE" ]; then
-    echo "Get codeCoverage.xml" && curl -SLO ${WORKFLOW_URL}artifact/codeCoverage.xml --user ${GITHUB_USER}:${GITHUB_TOKEN}
+    echo "Get testCodeCoverageReport.xml" && curl -SLO ${WORKFLOW_URL}artifact/testCodeCoverageReport.xml
+    echo "Get testCodeCoverageReportInternalClusterTest.xml" && curl -SLO ${WORKFLOW_URL}artifact/testCodeCoverageReportInternalClusterTest.xml
 else
     exit 1
 fi
