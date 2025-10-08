@@ -12,7 +12,7 @@
 # To trigger Jenkins Gradle Check from a PR
 
 
-JENKINS_URL="http://opense-jenki-uvvgsiyuwmpg-2136880972.us-east-1.elb.amazonaws.com/"
+JENKINS_URL="https://build.ci.opensearch.org"
 TIMEPASS=0
 TIMEOUT=7200
 RESULT="null"
@@ -28,7 +28,7 @@ perform_curl_and_process_with_jq() {
     local success=false
 
     while [ "$count" -lt "$max_retries" ]; do
-        response=$(curl -s -XGET "${url}api/json"
+        response=$(curl -s -XGET "${url}api/json")
         processed_response=$(echo "$response" | jq --raw-output "$jq_filter")
         jq_exit_code=$?
 
@@ -70,21 +70,21 @@ if [ -z "$QUEUE_URL" ] || [ "$QUEUE_URL" != "null" ]; then
         echo "Use queue information to find build number in Jenkins if available"
         WORKFLOW_URL=$(curl -s -XGET ${JENKINS_URL}/${QUEUE_URL}api/json | jq --raw-output .executable.url)
         echo WORKFLOW_URL $WORKFLOW_URL
-    
+
         if [ -n "$WORKFLOW_URL" ] && [ "$WORKFLOW_URL" != "null" ]; then
-    
+
             RUNNING="true"
-    
+
             echo "Waiting for Jenkins to complete the run"
             while [ "$RUNNING" = "true" ] && [ "$TIMEPASS" -le "$TIMEOUT" ]; do
                 echo "Still running, wait for another 30 seconds before checking again, max timeout $TIMEOUT"
                 echo "Jenkins Workflow Url: $WORKFLOW_URL"
-                TIMEPASS=$(( TIMEPASS + 30 )) && echo time passed: $TIMEPASS
+                TIMEPASS=$(( TIMEPASS + 30 )) && echo time pass: $TIMEPASS
                 sleep 30
                 RUNNING=$(perform_curl_and_process_with_jq "$WORKFLOW_URL" ".building" 10)
                 echo "Workflow running status :$RUNNING"
             done
-    
+
             if [ "$RUNNING" = "true" ]; then
                 echo "Timed out"
                 RESULT="TIMEOUT"
@@ -92,10 +92,10 @@ if [ -z "$QUEUE_URL" ] || [ "$QUEUE_URL" != "null" ]; then
                 echo "Complete the run, checking results now......"
                 RESULT=$(curl -s -XGET ${WORKFLOW_URL}api/json | jq --raw-output .result)
             fi
-    
+
         else
             echo "Job not started yet. Waiting for 60 seconds before next attempt."
-            TIMEPASS=$(( TIMEPASS + 60 )) && echo time passed: $TIMEPASS
+            TIMEPASS=$(( TIMEPASS + 60 )) && echo time pass: $TIMEPASS
             sleep 60
         fi
     done
@@ -106,6 +106,7 @@ echo "Result: $RESULT"
 if [ "$RESULT" == "SUCCESS" ] || [ "$RESULT" == "UNSTABLE" ]; then
     echo "Get testCodeCoverageReport.xml" && curl -SLO ${WORKFLOW_URL}artifact/testCodeCoverageReport.xml
     echo "Get testCodeCoverageReportInternalClusterTest.xml" && curl -SLO ${WORKFLOW_URL}artifact/testCodeCoverageReportInternalClusterTest.xml
+
 else
     exit 1
 fi
