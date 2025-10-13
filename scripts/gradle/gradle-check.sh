@@ -12,13 +12,13 @@
 # To trigger Jenkins Gradle Check from a PR
 
 
-JENKINS_URL="http://opense-jenki-uvvgsiyuwmpg-2136880972.us-east-1.elb.amazonaws.com/job/gradle-check/"
+JENKINS_URL="http://opense-jenki-uvvgsiyuwmpg-2136880972.us-east-1.elb.amazonaws.com"
 TIMEPASS=0
 TIMEOUT=7200
 RESULT="null"
 TRIGGER_TOKEN=$1
 PR_TITLE_NEW=`echo $pr_title | tr -dc '[:alnum:] ' | tr '[:upper:]' '[:lower:]'`
-PAYLOAD_JSON="{\"pr_from_sha\": \"$pr_from_sha\", \"pr_from_clone_url\": \"$pr_from_clone_url\", \"pr_to_clone_url\": \"$pr_to_clone_url\", \"pr_title\": \"$PR_TITLE_NEW\", \"pr_number\": \"$pr_number\", \"post_merge_action\": \"$post_merge_action\", \"pr_owner\": \"$pr_owner\"}"
+PAYLOAD_JSON="{\"pr_from_sha\": \"$pr_from_sha\", \"pr_from_clone_url\": \"$pr_from_clone_url\", \"pr_to_clone_url\": \"$pr_to_clone_url\", \"pr_title\": \"$PR_TITLE_NEW\", \"pr_number\": \"$pr_number\", \"post_merge_action\": \"$post_merge_action\", \"pr_owner\": \"$pr_owner\", \"module_name\": \"$module_name\"}"
 
 perform_curl_and_process_with_jq() {
     local url=$1

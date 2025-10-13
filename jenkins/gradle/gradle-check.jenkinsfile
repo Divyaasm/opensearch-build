@@ -40,11 +40,6 @@ pipeline {
             defaultValue: 'addcoverage',
             trim: true
         )
-        booleanParam(
-                    name: 'SERVER_MODULE',
-                    description: 'Git branch, tag, commitid for reference to checkout commit of OpenSearch core before running the gradle check.',
-                    defaultValue: false,
-        )
         // Must use agent with 1 executor or gradle check will show a lot of java-related errors
         // The c524xlarge is the instance type that has the least amount of errors during gradle check
         // https://github.com/opensearch-project/OpenSearch/issues/1975
@@ -68,6 +63,7 @@ pipeline {
                 [key: 'pr_number', value: '$.pr_number'],
                 [key: 'post_merge_action', value: '$.post_merge_action'],
                 [key: 'pr_owner', value: '$.pr_owner']
+                [key: 'module_name', value: '$.module_name']
             ],
             tokenCredentialId: 'jenkins-gradle-check-generic-webhook-token',
             causeString: 'Triggered by PR on OpenSearch core repository',
@@ -84,8 +80,49 @@ pipeline {
             steps {
                 script {
 
-                        def agent_name_array = params.AGENT_LABEL.tokenize('-')
-                        def agent_name = agent_name_array[2] + " " + agent_name_array[4]
+                    sh """
+                        set +x
+                        set -e
+                        JAVA_HOME_LIST=`env | grep JAVA | grep HOME`
+                        echo "JAVA_HOME_LIST \$JAVA_HOME_LIST"
+
+                        if [ -n "\$JAVA_HOME_LIST" ] && [ "\$JAVA_HOME_LIST" != "" ]; then
+                            for java_version in \$JAVA_HOME_LIST; do
+                                echo \$java_version
+                                java_path="`echo \$java_version | cut -d= -f2`/bin/java -version"
+                                eval \$java_path
+                            done
+                        else
+                            echo "Missing JAVA_HOME information in env vars, exit 1"
+                            exit 1
+                        fi
+                    """
+                    def agent_name_array = params.AGENT_LABEL.tokenize('-')
+                    def agent_name = agent_name_array[2] + " " + agent_name_array[4]
+
+                    def bwc_checkout_align = "false"
+
+                    if (!env.BUILD_CAUSE.contains('Started by user') && !env.BUILD_CAUSE.contains('Started by timer')) {
+                            def pr_url = "${pr_to_clone_url}".replace(".git", "/pull/${pr_number}")
+                            println("Triggered by GitHub: ${pr_to_clone_url}")
+                            if ("$post_merge_action" == "true") {
+                                currentBuild.description = """runner: ${agent_name}<br><a href="${pr_to_clone_url}">Others</a>: ${pr_title}"""
+                            }
+                            else {
+                                currentBuild.description = """runner: ${agent_name}<br><a href="${pr_url}">PR #${pr_number}</a>: ${pr_title} with bwc.checkout.align=true"""
+                                bwc_checkout_align = "true"
+                            }
+
+                            abortStaleJenkinsJobs(jobName: 'gradle-check', lookupTime: 3)
+
+                            runGradleCheck(
+                                gitRepoUrl: "${pr_from_clone_url}",
+                                gitReference: "${pr_from_sha}",
+                                bwcCheckoutAlign: "${bwc_checkout_align}",
+                                scope: "${module_name}"
+                            )
+                    }
+                    else {
 
                         println("Triggered by User or Triggered by Timer")
                         def repo_url = "${GIT_REPO_URL}".replace(".git", "/commit")
@@ -95,9 +132,9 @@ pipeline {
                              gitRepoUrl: "${GIT_REPO_URL}",
                              gitReference: "${GIT_REFERENCE}",
                              bwcCheckoutAlign: "false",
-                             serverModule: params.SERVER_MODULE
                         )
                         sh("docker logout || echo docker error")
+                    }
                 }
             }
             post() {
