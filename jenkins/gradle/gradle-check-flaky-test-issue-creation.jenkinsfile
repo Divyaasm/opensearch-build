@@ -26,11 +26,6 @@ pipeline {
         timeout(time: 1, unit: 'HOURS')
         buildDiscarder(logRotator(daysToKeepStr: '180'))
     }
-    triggers {
-        parameterizedCron('''
-            H */6 * * *
-        ''')
-    }
     stages {
         stage('Detect Gradle Check Flaky Tests') {
             steps {
