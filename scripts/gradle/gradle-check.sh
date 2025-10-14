@@ -104,7 +104,8 @@ fi
 echo "Please check jenkins url for logs: $WORKFLOW_URL"
 echo "Result: $RESULT"
 if [ "$RESULT" == "SUCCESS" ] || [ "$RESULT" == "UNSTABLE" ]; then
-    echo "Get Coverage reports" && curl -SLO ${WORKFLOW_URL}artifact/codeCoverage
+    echo "Get Coverage reports" && curl -SLO ${WORKFLOW_URL}artifact/codeCoverage/*zip*/codeCoverage.zip
+    unzip -o codeCoverage.zip
 else
     exit 1
 fi
