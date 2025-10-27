@@ -132,6 +132,7 @@ pipeline {
                              gitRepoUrl: "${GIT_REPO_URL}",
                              gitReference: "${GIT_REFERENCE}",
                              bwcCheckoutAlign: "false",
+                             scope: "all"
                         )
                         sh("docker logout || echo docker error")
                     }
