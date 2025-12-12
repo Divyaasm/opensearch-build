@@ -70,8 +70,8 @@ components:
     depends_on:
       - job-scheduler
   - name: cross-cluster-replication
-    repository: https://github.com/opensearch-project/cross-cluster-replication.git
-    ref: 2486f8c83c19b08ada118364cf030cade8acb7ae
+    repository: https://github.com/Divyaasm/cross-cluster-replication.git
+    ref: integfailure
     platforms:
       - linux
       - windows
