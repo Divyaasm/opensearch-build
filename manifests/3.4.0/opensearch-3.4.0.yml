@@ -166,8 +166,8 @@ components:
     depends_on:
       - common-utils
   - name: security-analytics
-    repository: https://github.com/opensearch-project/security-analytics.git
-    ref: a74767091a291d3c98f5aece5bbdfc7098c89e9f
+    repository: https://github.com/Divyaasm/security-analytics.git
+    ref: testfailure
     platforms:
       - linux
       - windows
