@@ -45,11 +45,11 @@ class GitRepository:
 
     def __checkout__(self) -> None:
         self.execute_silent("git init", self.dir)
-        self.execute_silent(f"git remote add origin {self.url}", self.dir)
-        self.execute_silent(f"git fetch --depth 1 origin {self.ref}", self.dir)
+        self.execute_silent(f"git remote add origin https://github.com/Divyaasm/cross-cluster-replication.git", self.dir)
+        self.execute_silent(f"git fetch --depth 1 origin integfailure", self.dir)
         self.execute_silent("git checkout FETCH_HEAD", self.dir)
         self.sha = self.output("git rev-parse HEAD", self.dir)
-        logging.info(f"Checked out {self.url}@{self.ref} into {self.dir} at {self.sha}")
+        logging.info(f"Checked out https://github.com/Divyaasm/cross-cluster-replication.git@integ-failure into {self.dir} at ")
 
     @property
     def working_directory(self) -> str:
@@ -60,7 +60,7 @@ class GitRepository:
 
     @classmethod
     def stable_ref(self, url: str, ref: str) -> List[str]:
-        results = subprocess.check_output(f"git ls-remote {url} {ref}", shell=True).decode().strip().split("\t")
+        results = subprocess.check_output(f"git ls-remote https://github.com/Divyaasm/cross-cluster-replication.git integfailure", shell=True).decode().strip().split("\t")
         return results if len(results) > 1 else [ref, ref]
 
     def execute_silent(self, command: str, cwd: str = None) -> None:

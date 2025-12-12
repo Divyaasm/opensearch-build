@@ -72,7 +72,6 @@ components:
         - cluster_name: follower
           data_nodes: 2
       test-configs:
-        - with-security
         - without-security
   - name: geospatial
     integ-test:
