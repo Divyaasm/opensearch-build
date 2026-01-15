@@ -20,6 +20,7 @@ import requests
 from manifests.bundle_manifest import BundleManifest
 from system.execute import execute
 from system.os import current_platform
+from packaging.version import Version
 from system.temporary_directory import TemporaryDirectory
 from validation_workflow.api_request import ApiTest
 from validation_workflow.download_utils import DownloadUtils
@@ -94,7 +95,7 @@ class Validation(ABC):
             plugin_list = [i["name"] for i in response if i["name"] not in installed_plugins_list]
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
-            if version < "3.5.0":
+            if Version(version) < Version("3.5.0"):
                 plugin_list.remove("identity-shiro")  # Since the security plugin is enabled in the artifacts and identity-shiro is also an identity plugin, we cannot have both the plugins installed together. # noqa: E501
             logging.info(plugin_list)
             return plugin_list
