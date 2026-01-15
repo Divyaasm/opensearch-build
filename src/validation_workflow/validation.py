@@ -90,6 +90,7 @@ class Validation(ABC):
         logging.info(api_response)
         if api_response.status_code == 200:
             response = api_response.json()
+            logging.info(response)
             plugin_list = [i["name"] for i in response if i["name"] not in installed_plugins_list]
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
