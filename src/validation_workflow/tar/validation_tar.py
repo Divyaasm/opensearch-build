@@ -33,6 +33,7 @@ class ValidateTar(Validation, DownloadUtils):
                     execute('mkdir ' + os.path.join(self.tmp_dir.path, project) + ' | tar -xzf ' + os.path.join(str(self.tmp_dir.path), self.filename) + ' -C ' + os.path.join(self.tmp_dir.path, project) + ' --strip-components=1', ".", True, False)  # noqa: E501
                     installed_plugins_list = os.listdir(os.path.join(self.tmp_dir.path, "opensearch", "plugins"))
                     self.install_native_plugin(os.path.join(self.tmp_dir.path, "opensearch"), installed_plugins_list)
+                    logging.info("plugin installation finished")
                 except:
                     return False
         except:
