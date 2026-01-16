@@ -189,14 +189,12 @@ class TestValidation(unittest.TestCase):
                          f"Unable to install native plugin: Command '.{os.sep}opensearch-plugin install"
                          f" --batch discovery-ec2', tmp{os.sep}trytytyuit{os.sep}bin' returned non-zero exit status 1.")
 
-    @patch('requests.get')
-    @patch('manifests.bundle_manifest.BundleManifest.from_path')
-    @patch('validation_workflow.validation.ValidationArgs')
-    @patch('system.temporary_directory.TemporaryDirectory')
-    def test_get_native_plugin_list(self, mock_temporary_directory: Mock, mock_validation_args: Mock,
-                                    mock_manifest_from_path: Mock, mock_get: Mock) -> None:
+    def _test_get_native_plugin_list_helper(self, version: str, mock_temporary_directory: Mock, 
+                                            mock_validation_args: Mock, mock_manifest_from_path: Mock, 
+                                            mock_get: Mock) -> None:
         mock_component = Mock()
         mock_component.commit_id = "abc123"
+        mock_component.artifacts = {"core-plugins": ["plugins/analysis-icu", "plugins/analysis-nori", "plugins/query-insights"]}
         mock_manifest = Mock()
         mock_manifest.components = {"OpenSearch": mock_component}
         mock_manifest_from_path.return_value = mock_manifest
@@ -212,11 +210,38 @@ class TestValidation(unittest.TestCase):
         mock_response.status_code = 200
         mock_get.return_value = mock_response
         mock_temporary_directory.return_value.path = "/tmp/trytytyuit/"
-        mock_validation_args.return_value.version = "3.0.0"
+        mock_validation_args.return_value.version = version
         validate_tar = ValidateTar(mock_validation_args.return_value, mock_temporary_directory.return_value)
         result = validate_tar.get_native_plugin_list(mock_temporary_directory.return_value.path, ["query-insights"])
 
-        self.assertEqual(["analysis-icu", "analysis-nori"], result)
+        self.assertEqual(["analysis-icu", "analysis-nori", "query-insights"], result)
+
+    @patch('requests.get')
+    @patch('manifests.bundle_manifest.BundleManifest.from_path')
+    @patch('validation_workflow.validation.ValidationArgs')
+    @patch('system.temporary_directory.TemporaryDirectory')
+    def test_get_native_plugin_list(self, mock_temporary_directory: Mock, mock_validation_args: Mock,
+                                    mock_manifest_from_path: Mock, mock_get: Mock) -> None:
+        self._test_get_native_plugin_list_helper("3.0.0", mock_temporary_directory, mock_validation_args, 
+                                                 mock_manifest_from_path, mock_get)
+
+    @patch('requests.get')
+    @patch('manifests.bundle_manifest.BundleManifest.from_path')
+    @patch('validation_workflow.validation.ValidationArgs')
+    @patch('system.temporary_directory.TemporaryDirectory')
+    def test_get_native_plugin_list_version_2_19_4(self, mock_temporary_directory: Mock, mock_validation_args: Mock,
+                                                   mock_manifest_from_path: Mock, mock_get: Mock) -> None:
+        self._test_get_native_plugin_list_helper("2.19.4", mock_temporary_directory, mock_validation_args, 
+                                                 mock_manifest_from_path, mock_get)
+
+    @patch('requests.get')
+    @patch('manifests.bundle_manifest.BundleManifest.from_path')
+    @patch('validation_workflow.validation.ValidationArgs')
+    @patch('system.temporary_directory.TemporaryDirectory')
+    def test_get_native_plugin_list_version_3_1_0(self, mock_temporary_directory: Mock, mock_validation_args: Mock,
+                                                  mock_manifest_from_path: Mock, mock_get: Mock) -> None:
+        self._test_get_native_plugin_list_helper("3.1.0", mock_temporary_directory, mock_validation_args, 
+                                                 mock_manifest_from_path, mock_get)
 
     @patch('requests.get')
     @patch('manifests.bundle_manifest.BundleManifest.from_path')
@@ -224,27 +249,14 @@ class TestValidation(unittest.TestCase):
     @patch('system.temporary_directory.TemporaryDirectory')
     def test_get_native_plugin_list_exception(self, mock_temporary_directory: Mock, mock_validation_args: Mock,
                                               mock_manifest_from_path: Mock, mock_get: Mock) -> None:
-        mock_component = Mock()
-        mock_component.commit_id = "abc123"
-        mock_manifest = Mock()
-        mock_manifest.components = {"OpenSearch": mock_component}
-        mock_manifest_from_path.return_value = mock_manifest
-
-        mock_response = Mock()
-        mock_response.json.return_value = [
-            {'name': 'analysis-icu', 'path': 'plugins/analysis-icu', 'sha': 'adce05e8b5beee96'},
-            {'name': 'analysis-nori', 'path': 'plugins/analysis-nori', 'sha': 'd3e5d7559hiji96'},
-            {'name': 'query-insights', 'path': 'plugins/analysis-nori', 'sha': 'd3e5d7559hiji96'}
-        ]
-        mock_response.status_code = 503
-        mock_get.return_value = mock_response
+        mock_manifest_from_path.side_effect = Exception("Manifest file not found")
         mock_temporary_directory.return_value.path = os.path.join("tmp", "trytytyuit")
         mock_validation_args.return_value.version = "3.0.0"
         validate_tar = ValidateTar(mock_validation_args.return_value, mock_temporary_directory.return_value)
         with self.assertRaises(Exception) as e1:
             validate_tar.get_native_plugin_list(mock_temporary_directory.return_value.path, ["query-insights", "ml-commons"])
 
-        self.assertEqual(str(e1.exception), "Github Api returned error code while retrieving the list of native plugins")
+        self.assertEqual(str(e1.exception), "Manifest file not found")
 
     @patch("time.sleep")
     @patch('validation_workflow.validation.Validation.check_http_request')
