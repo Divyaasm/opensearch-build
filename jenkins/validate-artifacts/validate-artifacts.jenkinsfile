@@ -254,7 +254,8 @@ pipeline {
                                                                 } else {
                                                                     validateArtifacts(
                                                                         file_path: "$FILEPATH",
-                                                                        allow_http: params.ALLOW_HTTP
+                                                                        allow_http: params.ALLOW_HTTP,
+                                                                        artifact_type: "$ARTIFACT_TYPE"
                                                                     )
                                                                 }
                                                             }
