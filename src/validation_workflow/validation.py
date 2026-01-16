@@ -83,13 +83,14 @@ class Validation(ABC):
             raise Exception(f"Unable to install native plugin: {str(e)}")
 
     def get_native_plugin_list(self, workdir: str, installed_plugins_list: list) -> list:
-        bundle_manifest = BundleManifest.from_path(os.path.join(workdir, "manifest.yml"))
-        commit_id = bundle_manifest.components["OpenSearch"].commit_id
-        logging.info(commit_id)
-        plugin_url = f"https://api.github.com/repos/opensearch-project/OpenSearch/contents/plugins?ref={commit_id}"
-        api_response = requests.get(plugin_url)
-        logging.info(api_response)
-        if api_response.status_code == 200:
+        try:
+            bundle_manifest = BundleManifest.from_path(os.path.join(workdir, "manifest.yml"))
+            commit_id = bundle_manifest.components["OpenSearch"].commit_id
+            logging.info(commit_id)
+            plugin_url = f"https://api.github.com/repos/opensearch-project/OpenSearch/contents/plugins?ref={commit_id}"
+            api_response = requests.get(plugin_url)
+            logging.info(api_response)
+            api_response.raise_for_status()
             response = api_response.json()
             logging.info(response)
             plugin_list = [i["name"] for i in response if i["name"] not in installed_plugins_list]
@@ -99,8 +100,11 @@ class Validation(ABC):
                 plugin_list.remove("identity-shiro")  # Since the security plugin is enabled in the artifacts and identity-shiro is also an identity plugin, we cannot have both the plugins installed together. # noqa: E501
             logging.info(plugin_list)
             return plugin_list
-        else:
-            raise Exception("Github Api returned error code while retrieving the list of native plugins")
+        except Exception:
+            logging.exception(
+                "Couldn't fetch native plugin list from Opensearch repository"
+            )
+            raise
 
     def get_version(self, project: str) -> str:
         return re.search(r'(\d+\.\d+\.\d+)', os.path.basename(project)).group(1)
