@@ -20,7 +20,6 @@ import requests
 from manifests.bundle_manifest import BundleManifest
 from system.execute import execute
 from system.os import current_platform
-from packaging.version import Version
 from system.temporary_directory import TemporaryDirectory
 from validation_workflow.api_request import ApiTest
 from validation_workflow.download_utils import DownloadUtils
@@ -63,7 +62,7 @@ class Validation(ABC):
             if self.args.artifact_type == "staging":
                 for native_plugin in native_plugins_list:
                     plugin_url = f'{self.base_url_staging}opensearch/{self.args.version}/{self.args.build_number["opensearch"]}/{self.args.platform}/' \
-                                 f'{self.args.arch}/{self.args.distribution}/builds/opensearch/core-plugins/{native_plugin}-{self.args.version}.zip'
+                                 f'{self.args.arch}/{self.args.distribution}/builds/opensearch/core-plugins/{native_plugin}'
                     response = requests.get(plugin_url)
                     with open(os.path.join(os.path.join(path, "bin"), f'{native_plugin}-{self.args.version}.zip'), 'wb') as f:
                         f.write(response.content)
@@ -81,21 +80,15 @@ class Validation(ABC):
     def get_native_plugin_list(self, workdir: str, installed_plugins_list: list) -> list:
         try:
             bundle_manifest = BundleManifest.from_path(os.path.join(workdir, "manifest.yml"))
-            commit_id = bundle_manifest.components["OpenSearch"].commit_id
-            plugin_url = f"https://api.github.com/repos/opensearch-project/OpenSearch/contents/plugins?ref={commit_id}"
-            api_response = requests.get(plugin_url)
-            if api_response.status_code != 200:
-                raise Exception("Github Api returned error code while retrieving the list of native plugins")
-            response = api_response.json()
-            plugin_list = [i["name"] for i in response if i["name"] not in installed_plugins_list]
-            plugin_list.remove("examples")
-            plugin_list.remove("build.gradle")
-            if Version(self.args.version) < Version("3.5.0"):
-                plugin_list.remove("identity-shiro")  # Since the security plugin is enabled in the artifacts and identity-shiro is also an identity plugin, we cannot have both the plugins installed together. # noqa: E501
-            return plugin_list
+            opensearch_component = bundle_manifest.components.get("OpenSearch")
+            if opensearch_component and hasattr(opensearch_component, 'artifacts'):
+                core_plugins = opensearch_component.artifacts.get("core-plugins", [])
+                plugin_list = [os.path.basename(plugin) for plugin in core_plugins]
+                return plugin_list
+            return []
         except Exception:
             logging.exception(
-                "Couldn't fetch native plugin list from Opensearch repository"
+                "Couldn't fetch native plugin list from manifest"
             )
             raise
 
