@@ -57,12 +57,14 @@ class Validation(ABC):
 
     def install_native_plugin(self, path: str, installed_plugins_list: list) -> None:
         native_plugins_list = self.get_native_plugin_list(path, installed_plugins_list)
+        logging.info(native_plugins_list)
         install_script = ".\\opensearch-plugin.bat" if current_platform() == "windows" else "./opensearch-plugin"
         try:
             if self.args.artifact_type == "staging":
                 for native_plugin in native_plugins_list:
                     plugin_url = f'{self.base_url_staging}opensearch/{self.args.version}/{self.args.build_number["opensearch"]}/{self.args.platform}/' \
                                  f'{self.args.arch}/{self.args.distribution}/builds/opensearch/core-plugins/{native_plugin}'
+                    logging.info(plugin_url)
                     response = requests.get(plugin_url)
                     with open(os.path.join(os.path.join(path, "bin"), f'{native_plugin}-{self.args.version}.zip'), 'wb') as f:
                         f.write(response.content)
@@ -84,6 +86,7 @@ class Validation(ABC):
             if opensearch_component and hasattr(opensearch_component, 'artifacts'):
                 core_plugins = opensearch_component.artifacts.get("core-plugins", [])
                 plugin_list = [os.path.basename(plugin) for plugin in core_plugins]
+                logging.info(plugin_list)
                 return plugin_list
             return []
         except Exception:
