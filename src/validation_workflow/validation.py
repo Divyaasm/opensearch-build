@@ -96,8 +96,8 @@ class Validation(ABC):
             plugin_list = [i["name"] for i in response if i["name"] not in installed_plugins_list]
             plugin_list.remove("examples")
             plugin_list.remove("build.gradle")
-            if Version(self.args.version) < Version("3.5.0"):
-                plugin_list.remove("identity-shiro")  # Since the security plugin is enabled in the artifacts and identity-shiro is also an identity plugin, we cannot have both the plugins installed together. # noqa: E501
+            # if Version(self.args.version) < Version("3.5.0"):
+            plugin_list.remove("identity-shiro")  # Since the security plugin is enabled in the artifacts and identity-shiro is also an identity plugin, we cannot have both the plugins installed together. # noqa: E501
             logging.info(plugin_list)
             return plugin_list
         except Exception:
