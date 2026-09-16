@@ -39,6 +39,69 @@ class Process:
             stderr=self.stderr,
         )
 
+    def log_output(self, label: str = "process") -> None:
+        """
+        Read and log the currently captured stdout/stderr of a running (or
+        finished) process WITHOUT terminating it. Safe to call at any time.
+        This surfaces the process output to the console/Jenkins log so that
+        startup failures are visible even when the process never became ready.
+        """
+        # Report whether the launched process has already exited. A non-None
+        # exit code means the launcher (e.g. opensearch-windows-install.bat)
+        # died early -- before any logs/*.log file could be written -- which is
+        # exactly the case we want visibility into.
+        exit_code = self.exit_code()
+        if exit_code is None:
+            logging.info(f"{label} is still running (pid {self.pid}); dumping output captured so far.")
+        else:
+            logging.error(f"{label} has already exited with code {exit_code}; it failed to stay up.")
+
+        for stream_name, stream in (("stdout", self.stdout), ("stderr", self.stderr)):
+            if stream is None:
+                # Process already terminated; fall back to cached data.
+                cached = self.__stdout_data__ if stream_name == "stdout" else self.__stderr_data__
+                if cached and cached.strip():
+                    logging.info(
+                        f"\n===== {label} {stream_name} (cached) BEGIN =====\n"
+                        f"{cached}\n"
+                        f"===== {label} {stream_name} END ====="
+                    )
+                continue
+            try:
+                # Flush any OS-level buffered writes from the child process so
+                # we read the most complete output available, then read from
+                # the start without disrupting ongoing writes.
+                try:
+                    stream.flush()
+                    os.fsync(stream.fileno())
+                except Exception:
+                    pass
+                current_pos = stream.tell()
+                stream.seek(0)
+                data = stream.read()
+                stream.seek(current_pos)
+            except Exception as e:
+                logging.warning(f"Could not read {stream_name} for {label}: {e}")
+                continue
+
+            if data and data.strip():
+                logging.info(
+                    f"\n===== {label} {stream_name} (captured) BEGIN =====\n"
+                    f"{data}\n"
+                    f"===== {label} {stream_name} END ====="
+                )
+            else:
+                logging.info(f"{label} {stream_name} is empty (no output captured yet)")
+
+    def exit_code(self) -> Any:
+        """
+        Return the process exit code if it has already terminated, or None if
+        it is still running. Returns None if the process was never started.
+        """
+        if not self.started:
+            return None
+        return self.process.poll()
+
     def terminate(self) -> int:
         if not self.started:
             raise ProcessNotStartedError()

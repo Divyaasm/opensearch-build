@@ -153,7 +153,18 @@ class Validation(ABC):
                 return True
             retry_count += 1
         logging.error(f"Maximum number of retries ({max_retry}) reached. Cluster is not ready for API test.")
+        # Surface the actual cluster startup logs to the console/Jenkins UI.
+        self.dump_cluster_logs()
         return False
+
+    def dump_cluster_logs(self) -> None:
+        """
+        Hook to print the captured stdout/stderr of cluster processes and any
+        on-disk logs when the cluster fails to become ready. Overridden by
+        artifact-specific subclasses (zip/tar/etc.) that own the actual
+        Process objects. Base implementation is a no-op.
+        """
+        logging.info("No cluster process logs available to dump for this validation type.")
 
     def check_http_request(self) -> bool:
         self.succesful_checks = 0
